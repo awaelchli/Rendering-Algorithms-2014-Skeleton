@@ -16,8 +16,9 @@ public class Sphere implements Intersectable {
     public static final Vector3f DEFAULT_CENTER = new Vector3f(0, 0, 0);
     public static final float DEFAULT_RADIUS = 1;
 
-    private Vector3f center;
-    private float radius;
+    public Vector3f center;
+    public float radius;
+    public Material material;
 
     public Sphere(Vector3f center, float radius) {
         this.center = center;
