@@ -91,7 +91,7 @@ public class PinholeCamera implements Camera {
 
         Matrix4f p = new Matrix4f();
         p.setIdentity();
-        float top = (float) Math.tan(this.verticalFOV / 2);
+        float top = (float) Math.tan(Math.toRadians(this.verticalFOV / 2));
         float right = this.aspect * top;
 
         p.m00 = 1 / right;
