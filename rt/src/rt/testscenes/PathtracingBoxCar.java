@@ -16,7 +16,7 @@ import rt.films.*;
 
 public class PathtracingBoxCar extends Scene {
 	
-	public PathtracingBoxCar()
+	/*public PathtracingBoxCar()
 	{	
 		outputFilename = new String("../output/testscenes/PathtracingBoxCar");
 				
@@ -99,6 +99,6 @@ public class PathtracingBoxCar extends Scene {
 		// List of lights
 		lightList = new LightList();
 		lightList.add(rectangleLight);
-	}
+	}*/
 	
 }

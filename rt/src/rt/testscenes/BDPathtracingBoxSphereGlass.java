@@ -13,7 +13,7 @@ import rt.films.*;
 
 public class BDPathtracingBoxSphereGlass extends Scene {
 	
-	public BDPathtracingBoxSphereGlass()
+	/*public BDPathtracingBoxSphereGlass()
 	{	
 		outputFilename = new String("../output/testscenes/BDPathtracingBoxSphereGlass");
 				
@@ -89,5 +89,5 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 			((BDPathTracingIntegratorFactory)integratorFactory).writeLightImage("../output/testscenes/lightimage");
 			((BDPathTracingIntegratorFactory)integratorFactory).addLightImage(film);
 		}
-	}
+	}*/
 }

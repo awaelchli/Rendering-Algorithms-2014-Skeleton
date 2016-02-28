@@ -40,9 +40,9 @@ public class MirrorSpheres extends Scene {
 		tonemapper = new ClampTonemapper();
 		
 		// Specify which integrator and sampler to use
-		integratorFactory = new WhittedIntegratorFactory();
+		/*integratorFactory = new WhittedIntegratorFactory();
 		samplerFactory = new OneSamplerFactory();
-		
+
 		// Three spheres
 		Matrix4f trafo = new Matrix4f();
 		trafo.setIdentity();
@@ -51,20 +51,20 @@ public class MirrorSpheres extends Scene {
 		// The parameters are kd, ks, shininess (for Blinn) and mirror reflectivity (for the mirror)
 		sphere1.material = new BlinnPlusMirror(new Spectrum(0.f,0.f,0.75f), new Spectrum(0.01f,0.01f,0.01f), 20.f, new Spectrum(0.5f,0.5f,0.5f));
 		trafo.setTranslation(new Vector3f(2.f,0.f,0.f));
-		
+
 		Sphere sphere2 = new Sphere();
 		sphere2.material = new BlinnPlusMirror(new Spectrum(0.f,0.75f,0.f), new Spectrum(0.01f,0.01f,0.01f), 20.f, new Spectrum(0.5f,0.5f,0.5f));
 		Instance sphere2Instance = new Instance(sphere2, trafo);
-		
+
 		trafo.setTranslation(new Vector3f(-2.f,0.f,0.f));
 		Sphere sphere3 = new Sphere();
 		sphere3.material = new BlinnPlusMirror(new Spectrum(0.75f,0.f,0.f), new Spectrum(0.01f,0.01f,0.01f), 20.f, new Spectrum(0.5f,0.5f,0.5f));
 		Instance sphere3Instance = new Instance(sphere3, trafo);
-		
+
 		// Ground plane
 		Plane plane = new Plane(new Vector3f(0.f, 1.f, 0.f), 1.f);
 		plane.material = new XYZCheckerboard();
-		
+
 		// Add objects to scene
 		IntersectableList sceneObjects = new IntersectableList();
 		sceneObjects.add(sphere1);
@@ -72,10 +72,10 @@ public class MirrorSpheres extends Scene {
 		sceneObjects.add(sphere3Instance);
 		sceneObjects.add(plane);
 		root = sceneObjects;
-			
+
 		// Light source, relatively far away but strong
 		LightGeometry pointLight = new PointLight(new Vector3f(0.f, 20.f, 20.f), new Spectrum(2500.f, 2500.f, 2500.f));
 		lightList = new LightList();
-		lightList.add(pointLight);
+		lightList.add(pointLight);*/
 	}
 }

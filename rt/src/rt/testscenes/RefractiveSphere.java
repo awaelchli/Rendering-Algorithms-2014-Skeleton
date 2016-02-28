@@ -40,7 +40,7 @@ public class RefractiveSphere extends Scene {
 		tonemapper = new ClampTonemapper();
 		
 		// Specify which integrator and sampler to use
-		integratorFactory = new WhittedIntegratorFactory();
+		/*integratorFactory = new WhittedIntegratorFactory();
 		samplerFactory = new RandomSamplerFactory();		
 		
 		Material refractive = new Refractive(1.3f);
@@ -76,7 +76,7 @@ public class RefractiveSphere extends Scene {
 		lightList = new LightList();
 		lightList.add(pointLight1);
 		lightList.add(pointLight2);
-		lightList.add(pointLight3);
+		lightList.add(pointLight3);*/
 	}
 	
 }

@@ -18,7 +18,7 @@ import rt.tonemappers.ClampTonemapper;
  */
 public class CSGScene extends Scene {
 	
-	public CSGScene()
+	/*public CSGScene()
 	{
 		// Output file name
 		outputFilename = new String("..//output//testscenes//CSGScene Whitted");
@@ -137,12 +137,12 @@ public class CSGScene extends Scene {
 		lightList.add(pointLight3);
 	}
 	
-	/**
+	*//**
 	 * Make a "horizontal" cross section through a cone with apex angle {@param a}.
 	 * The bottom plane is at z=0, the top at z=1. The radius of the bottom circle 
 	 * in the cross section is one (the top circle is bigger depending on the apex angle).
 	 * @param a apex angle for the cone
-	 */
+	 *//*
 	private CSGSolid coneCrossSection(float a, Material material)
 	{
 		// Makes a two-sided infinite cone with apex angle 90 degrees
@@ -174,6 +174,6 @@ public class CSGScene extends Scene {
 			((BDPathTracingIntegratorFactory)integratorFactory).writeLightImage("../output/testscenes/lightimage");
 			((BDPathTracingIntegratorFactory)integratorFactory).addLightImage(film);
 		}
-	}
+	}*/
 
 }

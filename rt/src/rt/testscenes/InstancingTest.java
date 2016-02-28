@@ -17,7 +17,7 @@ import rt.cameras.*;
  */
 public class InstancingTest extends Scene {
 
-	public InstancingTest()
+	/*public InstancingTest()
 	{
 		// Output file name
 		outputFilename = new String("../output/testscenes/InstancingTest");
@@ -61,5 +61,5 @@ public class InstancingTest extends Scene {
 		intersectableList.add(sphere3);
 		
 		root = intersectableList;
-	}
+	}*/
 }

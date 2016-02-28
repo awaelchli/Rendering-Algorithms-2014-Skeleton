@@ -28,7 +28,7 @@ public class BlinnSphere extends Scene {
 		// Number of samples per pixel
 		SPP = 1;
 		
-		// Specify which camera, film, and tonemapper to use
+/*		// Specify which camera, film, and tonemapper to use
 		Vector3f eye = new Vector3f(0.f, 0.f, 3.f);
 		Vector3f lookAt = new Vector3f(0.f, 0.f, 0.f);
 		Vector3f up = new Vector3f(0.f, 1.f, 0.f);
@@ -63,6 +63,6 @@ public class BlinnSphere extends Scene {
 		LightGeometry pl2 = new PointLight(new Vector3f(-.75f, .75f, 2.f), new Spectrum(1.f, 1.f, 1.f));
 		lightList = new LightList();
 		lightList.add(pl1);
-		lightList.add(pl2);
+		lightList.add(pl2);*/
 	}
 }

@@ -16,7 +16,7 @@ import rt.films.*;
 
 public class PathtracingBoxPeople extends Scene {
 	
-	public PathtracingBoxPeople()
+	/*public PathtracingBoxPeople()
 	{	
 		outputFilename = new String("../output/testscenes/PathtracingBoxPeople");
 				
@@ -119,15 +119,15 @@ public class PathtracingBoxPeople extends Scene {
 		// List of lights
 		lightList = new LightList();
 		lightList.add(rectangleLight);
-	}
+	}*/
 	
-	public void finish()
+	/*public void finish()
 	{
 		if(integratorFactory instanceof BDPathTracingIntegratorFactory)
 		{
 			((BDPathTracingIntegratorFactory)integratorFactory).writeLightImage("../output/testscenes/lightimage");
 			((BDPathTracingIntegratorFactory)integratorFactory).addLightImage(film);
 		}
-	}
+	}*/
 	
 }

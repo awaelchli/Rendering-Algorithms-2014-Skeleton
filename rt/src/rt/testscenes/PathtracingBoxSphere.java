@@ -13,7 +13,7 @@ import rt.films.*;
 
 public class PathtracingBoxSphere extends Scene {
 	
-	public PathtracingBoxSphere()
+	/*public PathtracingBoxSphere()
 	{	
 		outputFilename = new String("../output/testscenes/PathtracingBoxSphere");
 				
@@ -79,6 +79,6 @@ public class PathtracingBoxSphere extends Scene {
 		// List of lights
 		lightList = new LightList();
 		lightList.add(rectangleLight);
-	}
+	}*/
 	
 }
