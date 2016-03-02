@@ -3,6 +3,7 @@ package rt;
 import javax.imageio.ImageIO;
 
 import rt.testscenes.CameraTestScene;
+import rt.testscenes.InstancingTest;
 
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;

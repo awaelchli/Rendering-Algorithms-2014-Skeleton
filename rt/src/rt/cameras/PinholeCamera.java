@@ -10,8 +10,8 @@ import javax.vecmath.*;
  */
 public class PinholeCamera implements Camera {
 
-    public static final float DEFAULT_NEAR = -1;
-    public static final float DEFAULT_FAR = -10;
+    public static final float DEFAULT_NEAR = 1;
+    public static final float DEFAULT_FAR = 100;
 
     private Vector3f position;
     private Vector3f up;
@@ -96,9 +96,9 @@ public class PinholeCamera implements Camera {
 
         p.m00 = 1 / right;
         p.m11 = 1 / top;
-        p.m22 = -(this.near + this.far) / (this.near - this.far);
+        p.m22 = (this.near + this.far) / (this.near - this.far);
         p.m32 = -1;
-        p.m23 = -2  * this.near * this.far / (this.near - this.far);
+        p.m23 = 2  * this.near * this.far / (this.near - this.far);
         p.m33 = 0;
 
         return p;

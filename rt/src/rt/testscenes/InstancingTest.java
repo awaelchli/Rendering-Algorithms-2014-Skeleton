@@ -17,10 +17,10 @@ import rt.cameras.*;
  */
 public class InstancingTest extends Scene {
 
-	/*public InstancingTest()
+	public InstancingTest()
 	{
 		// Output file name
-		outputFilename = new String("../output/testscenes/InstancingTest");
+		outputFilename = new String("InstancingTest");
 		
 		// Image width and height in pixels
 		width = 1280;
@@ -61,5 +61,5 @@ public class InstancingTest extends Scene {
 		intersectableList.add(sphere3);
 		
 		root = intersectableList;
-	}*/
+	}
 }
