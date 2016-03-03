@@ -19,7 +19,7 @@ public class TriangleTest extends Scene {
 	public TriangleTest()
 	{
 		// Output file name
-		outputFilename = new String("../output/testscenes/TriangleTest");
+		outputFilename = new String("TriangleTest");
 		
 		// Image width and height in pixels
 		width = 512;

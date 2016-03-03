@@ -48,72 +48,80 @@ public class MeshTriangle implements Intersectable {
 		float z2 = vertices[v2*3+2];
 
 		// The three vertex positions of the triangle
-		Point3f a = new Point3f(x0, y0, z0);
-		Point3f b = new Point3f(x1, y1, z1);
-		Point3f c = new Point3f(x2, y2, z2);
+		Point3f A = new Point3f(x0, y0, z0);
+		Point3f B = new Point3f(x1, y1, z1);
+		Point3f C = new Point3f(x2, y2, z2);
 
-		// Edge vectors a->b and a->c
-		Vector3f ab = new Vector3f();
-		ab.sub(b, a);
-		Vector3f ac = new Vector3f();
-		ac.sub(c, a);
+		// Edge vectors b->a and c->a
+		Vector3f ba = new Vector3f();
+		ba.sub(A, B);
+		Vector3f ca = new Vector3f();
+		ca.sub(A, C);
 
-		Vector3f normal = new Vector3f();
-		normal.cross(ab, ac);
-		normal.normalize();
+		Matrix3f mat = new Matrix3f();
+		mat.setColumn(0, ba);
+		mat.setColumn(1, ca);
+		mat.setColumn(2, r.direction);
 
-		float nDotRay = normal.dot(r.direction);
+		Vector3f rightHandSide = new Vector3f();
+		rightHandSide.sub(A, r.origin);
 
-		if (nDotRay == 0) // Ray direction is parallel to triangle plane
+		/*
+		 * Computation of beta, gamma and t according to Shirley, p. 79
+		 */
+		float a = mat.m00;
+		float b = mat.m10;
+		float c = mat.m20;
+		float d = mat.m01;
+		float e = mat.m11;
+		float f = mat.m21;
+		float g = mat.m02;
+		float h = mat.m12;
+		float i = mat.m22;
+
+		float j = rightHandSide.x;
+		float k = rightHandSide.y;
+		float l = rightHandSide.z;
+
+		float ei_minus_hf = e * i - h * f;
+		float gf_minus_di = g * f - d * i;
+		float dh_minus_eg = d * h - e * g;
+		float ak_minus_jb = a * k - j * b;
+		float jc_minus_al = j * c - a * l;
+		float bl_minus_kc = b * l - k * c;
+
+		float m = a * ei_minus_hf + b * gf_minus_di + c * dh_minus_eg;
+
+		float t = - (f * ak_minus_jb + e * jc_minus_al + d * bl_minus_kc) / m;
+
+		if (t <= 0) // Intersection is behind the eye
 			return null;
 
-		// Distance of triangle plane to the origin
-		float d = normal.dot(new Vector3f(a));
+		float gamma = (i * ak_minus_jb + h * jc_minus_al + g * bl_minus_kc) / m;
 
-		// Compute the t-Parameter
-		float nDotRayOrigin = normal.dot(new Vector3f(r.origin));
-		float t = (d - nDotRayOrigin) / nDotRay;
+		if (gamma < 0 || gamma > 1) // Intersection is outside the triangle
+			return null;
 
-		// Intersection point q
+		float beta = (j * ei_minus_hf + k * gf_minus_di + l * dh_minus_eg) / m;
+
+		if (beta < 0 || beta > 1 - gamma) // Intersection is outside the triangle
+			return null;
+
+		// Valid intersection point on triangle
 		Point3f q = r.pointAt(t);
 
-		/*
-		 *	Compute barycentric coordinates of q
-		 */
-		Matrix3f mat = new Matrix3f();
-		mat.setRow(0, new Vector3f(a));
-		mat.setRow(1, new Vector3f(b));
-		mat.setRow(2, new Vector3f(c));
-
-		mat.invert();
-
-		Vector3f alphaCoeff = new Vector3f();
-		Vector3f betaCoeff = new Vector3f();
-		Vector3f gammaCoeff = new Vector3f();
-
-		mat.getRow(0, alphaCoeff);
-		mat.getRow(1, betaCoeff);
-		mat.getRow(2, gammaCoeff);
-
-		float alpha_q = alphaCoeff.dot(new Vector3f(q));
-		float beta_q = betaCoeff.dot(new Vector3f(q));
-		float gamma_q = gammaCoeff.dot(new Vector3f(q));
-
-		if (alpha_q <= 0 || beta_q <= 0 || gamma_q <= 0) {
-			// Intersection is not within the triangle
-			return null;
-		}
-
-		/*
-		 * Interpolate the normal and texture coordinates
-		 */
-		Vector3f interpNormal = normal;
-		float u = 0;
-		float v = 0;
-
-		// Return the hit record
 		Vector3f w = new Vector3f(r.direction);
 		w.negate();
+
+		Vector3f normal = new Vector3f();
+		normal.cross(ca, ba);
+		normal.normalize();
+		// TODO: interpolate vertex normals
+		Vector3f interpNormal = normal;
+
+		// TODO: interpolate texture coordinates
+		float u = 0;
+		float v = 0;
 
 		HitRecord hit = new HitRecord(t, q, interpNormal, w, mesh, mesh.material, u, v);
 		return hit;
