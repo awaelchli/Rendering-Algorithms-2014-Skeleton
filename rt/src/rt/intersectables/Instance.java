@@ -1,4 +1,8 @@
-package rt;
+package rt.intersectables;
+
+import rt.HitRecord;
+import rt.Intersectable;
+import rt.Ray;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -9,35 +13,47 @@ import javax.vecmath.Vector3f;
  */
 public class Instance implements Intersectable {
 
+    /**
+     * Reference to the actual object
+     */
     Intersectable reference;
 
+    /**
+     * The transformation from object to world coordinates
+     */
     Matrix4f transformation;
+
+    /**
+     * The transformation from world to object coordinates
+     */
+    Matrix4f inv_transformation;
 
     public Instance(Intersectable object, Matrix4f transformation) {
         this.reference = object;
-        this.transformation = new Matrix4f(transformation);
+        setTransformation(transformation);
     }
 
     public Instance(Intersectable object) {
         this.reference = object;
-        transformation = new Matrix4f();
-        transformation.setIdentity();
+        Matrix4f identity = new Matrix4f();
+        identity.setIdentity();
+        setTransformation(identity);
     }
 
     public void setTransformation(Matrix4f t) {
-        transformation = new Matrix4f(t);
+        this.transformation = new Matrix4f(t);
+        // Pre-compute inverse for later use
+        this.inv_transformation = new Matrix4f(t);
+        this.inv_transformation.invert();
     }
 
     @Override
     public HitRecord intersect(Ray r) {
 
-        Matrix4f invTransformation = new Matrix4f(this.transformation);
-        invTransformation.invert();
-
         Point3f newOrigin = new Point3f(r.origin);
         Vector3f newDirection = new Vector3f(r.direction);
-        invTransformation.transform(newOrigin);
-        invTransformation.transform(newDirection);
+        inv_transformation.transform(newOrigin);
+        inv_transformation.transform(newDirection);
 
         Ray transformedRay = new Ray(newOrigin, newDirection);
         HitRecord hit = reference.intersect(transformedRay);
@@ -45,11 +61,7 @@ public class Instance implements Intersectable {
         if (hit == null) // No intersection
             return null;
 
-        transformation.transform(hit.position);
-        transformation.transform(hit.normal);
-        transformation.transform(hit.t1);
-        transformation.transform(hit.t2);
-        transformation.transform(hit.w);
+        hit.transform(transformation, inv_transformation);
 
         return hit;
     }
