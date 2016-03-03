@@ -21,7 +21,7 @@ public class Dodecahedron extends Scene {
 	public Dodecahedron()
 	{
 		// Output file name
-		outputFilename = new String("../output/basicscenes/Dodecahedron");
+		outputFilename = new String("Dodecahedron");
 		
 		// Image width and height in pixels
 		width = 512;
@@ -42,7 +42,7 @@ public class Dodecahedron extends Scene {
 		// Define the root object (an intersectable) of the scene
 		// Two CSG planes and a dodecahedron
 		CSGNode n1 = new CSGNode(new CSGPlane(new Vector3f(0.f, 1.f, 0.f), 1.f), new CSGDodecahedron(), CSGNode.OperationType.ADD);
-		root = new CSGNode(n1, new CSGPlane(new Vector3f(0.f, 0.f, 1.f), 1.f), CSGNode.OperationType.ADD); 
+		root = new CSGNode(n1, new CSGPlane(new Vector3f(0.f, 0.f, 1.f), 1.f), CSGNode.OperationType.ADD);
 		
 		// Light sources
 		LightGeometry pointLight = new PointLight(new Vector3f(0.f, 0.f, 3.f), new Spectrum(15.f, 15.f, 15.f));

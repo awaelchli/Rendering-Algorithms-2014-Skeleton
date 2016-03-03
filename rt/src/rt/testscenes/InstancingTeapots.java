@@ -15,8 +15,6 @@ import rt.materials.*;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
-import org.omg.CORBA.TRANSACTION_MODE;
-
 /**
  * Test scene for instancing and rendering triangle meshes using the teapot model.
  */
@@ -78,7 +76,7 @@ public class InstancingTeapots extends Scene {
 		try
 		{
 			
-			mesh = ObjReader.read("..\\obj\\teapot.obj", 1.f);
+			mesh = ObjReader.read("obj/teapot.obj", 1.f);
 		} catch(IOException e) 
 		{
 			System.out.printf("Could not read .obj file\n");

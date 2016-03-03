@@ -17,10 +17,10 @@ import javax.vecmath.*;
  */
 public class CSGCylindersAndSpheres extends Scene {
 		
-	/*public CSGCylindersAndSpheres()
+	public CSGCylindersAndSpheres()
 	{
 		// Output file name
-		outputFilename = new String("../output/testscenes/CSGCylindersAndSpheres");
+		outputFilename = new String("CSGCylindersAndSpheres");
 		
 		// Image width and height in pixels
 		width = 1024;
@@ -95,5 +95,5 @@ public class CSGCylindersAndSpheres extends Scene {
 		LightGeometry pointLight = new PointLight(new Vector3f(0.f, 20.f, 20.f), new Spectrum(2000.f, 2000.f, 2000.f));
 		lightList = new LightList();
 		lightList.add(pointLight);
-	}*/
+	}
 }
