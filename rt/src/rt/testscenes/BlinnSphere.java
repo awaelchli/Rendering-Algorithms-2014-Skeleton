@@ -8,6 +8,7 @@ import rt.films.*;
 import rt.integrators.*;
 import rt.intersectables.*;
 import rt.lightsources.*;
+import rt.materials.Blinn;
 import rt.samplers.*;
 import rt.tonemappers.*;
 
@@ -19,7 +20,7 @@ public class BlinnSphere extends Scene {
 	public BlinnSphere()
 	{
 		// Output file name
-		outputFilename = new String("../output/testscenes/Blinn");
+		outputFilename = new String("Blinn");
 		
 		// Image width and height in pixels
 		width = 512;
@@ -28,7 +29,7 @@ public class BlinnSphere extends Scene {
 		// Number of samples per pixel
 		SPP = 1;
 		
-/*		// Specify which camera, film, and tonemapper to use
+		// Specify which camera, film, and tonemapper to use
 		Vector3f eye = new Vector3f(0.f, 0.f, 3.f);
 		Vector3f lookAt = new Vector3f(0.f, 0.f, 0.f);
 		Vector3f up = new Vector3f(0.f, 1.f, 0.f);
@@ -50,7 +51,7 @@ public class BlinnSphere extends Scene {
 		Sphere sphere = new Sphere();
 		// The Blinn material expects the diffuse and specular reflection coefficients, and the shininess 
 		// exponent as its parameters
-		sphere.material = new rt.materials.BlinnSphere(new Spectrum(.8f, 0.f, 0.f), new Spectrum(.4f, .4f, .4f), 50.f);
+		sphere.material = new Blinn(new Spectrum(.8f, 0.f, 0.f), new Spectrum(.4f, .4f, .4f), 50.f);
 		
 		IntersectableList intersectableList = new IntersectableList();
 		intersectableList.add(groundPlane);
@@ -63,6 +64,6 @@ public class BlinnSphere extends Scene {
 		LightGeometry pl2 = new PointLight(new Vector3f(-.75f, .75f, 2.f), new Spectrum(1.f, 1.f, 1.f));
 		lightList = new LightList();
 		lightList.add(pl1);
-		lightList.add(pl2);*/
+		lightList.add(pl2);
 	}
 }
