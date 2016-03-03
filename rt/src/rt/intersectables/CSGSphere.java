@@ -3,6 +3,8 @@ package rt.intersectables;
 import rt.HitRecord;
 import rt.Material;
 import rt.Ray;
+import rt.Spectrum;
+import rt.materials.Diffuse;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -17,7 +19,7 @@ public class CSGSphere extends CSGSolid {
     Vector3f center;
     float radius;
 
-    public Material material;
+    public Material material = Sphere.DEFAULT_MATERIAL;
 
     public CSGSphere(Vector3f center, float radius){
         this.center = center;
