@@ -3,6 +3,7 @@ package rt;
 import javax.imageio.ImageIO;
 
 import rt.testscenes.CameraTestScene;
+import rt.testscenes.InstancingTeapots;
 import rt.testscenes.InstancingTest;
 
 import java.util.*;
@@ -24,7 +25,7 @@ public class Main {
 	/** 
 	 * The scene to be rendered.
 	 */
-	public static Scene scene = new InstancingTest();
+	public static Scene scene = new InstancingTeapots();
 	/**
 	 * A render task represents a rectangular image region that is rendered
 	 * by a thread in one chunk.

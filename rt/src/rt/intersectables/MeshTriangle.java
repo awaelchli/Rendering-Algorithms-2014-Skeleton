@@ -46,8 +46,77 @@ public class MeshTriangle implements Intersectable {
 		float z0 = vertices[v0*3+2];
 		float z1 = vertices[v1*3+2];
 		float z2 = vertices[v2*3+2];
-		
-		return null;
+
+		// The three vertex positions of the triangle
+		Point3f a = new Point3f(x0, y0, z0);
+		Point3f b = new Point3f(x1, y1, z1);
+		Point3f c = new Point3f(x2, y2, z2);
+
+		// Edge vectors a->b and a->c
+		Vector3f ab = new Vector3f();
+		ab.sub(b, a);
+		Vector3f ac = new Vector3f();
+		ac.sub(c, a);
+
+		Vector3f normal = new Vector3f();
+		normal.cross(ab, ac);
+		normal.normalize();
+
+		float nDotRay = normal.dot(r.direction);
+
+		if (nDotRay == 0) // Ray direction is parallel to triangle plane
+			return null;
+
+		// Distance of triangle plane to the origin
+		float d = normal.dot(new Vector3f(a));
+
+		// Compute the t-Parameter
+		float nDotRayOrigin = normal.dot(new Vector3f(r.origin));
+		float t = (d - nDotRayOrigin) / nDotRay;
+
+		// Intersection point q
+		Point3f q = r.pointAt(t);
+
+		/*
+		 *	Compute barycentric coordinates of q
+		 */
+		Matrix3f mat = new Matrix3f();
+		mat.setRow(0, new Vector3f(a));
+		mat.setRow(1, new Vector3f(b));
+		mat.setRow(2, new Vector3f(c));
+
+		mat.invert();
+
+		Vector3f alphaCoeff = new Vector3f();
+		Vector3f betaCoeff = new Vector3f();
+		Vector3f gammaCoeff = new Vector3f();
+
+		mat.getRow(0, alphaCoeff);
+		mat.getRow(1, betaCoeff);
+		mat.getRow(2, gammaCoeff);
+
+		float alpha_q = alphaCoeff.dot(new Vector3f(q));
+		float beta_q = betaCoeff.dot(new Vector3f(q));
+		float gamma_q = gammaCoeff.dot(new Vector3f(q));
+
+		if (alpha_q <= 0 || beta_q <= 0 || gamma_q <= 0) {
+			// Intersection is not within the triangle
+			return null;
+		}
+
+		/*
+		 * Interpolate the normal and texture coordinates
+		 */
+		Vector3f interpNormal = normal;
+		float u = 0;
+		float v = 0;
+
+		// Return the hit record
+		Vector3f w = new Vector3f(r.direction);
+		w.negate();
+
+		HitRecord hit = new HitRecord(t, q, interpNormal, w, mesh, mesh.material, u, v);
+		return hit;
 	}
 	
 }

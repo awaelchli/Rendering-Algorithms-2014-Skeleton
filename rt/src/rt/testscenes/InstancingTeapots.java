@@ -20,16 +20,16 @@ import org.omg.CORBA.TRANSACTION_MODE;
 /**
  * Test scene for instancing and rendering triangle meshes using the teapot model.
  */
-/*public class InstancingTeapots extends Scene {
+public class InstancingTeapots extends Scene {
 
 	public IntersectableList objects;
 
-	*//**
+	/**
 	 * Timing: 8.5 sec on 12 core Xeon 2.5GHz, 24 threads
-	 *//*
+	 */
 	public InstancingTeapots()
 	{	
-		outputFilename = new String("../output/testscenes/InstancingTeapots");
+		outputFilename = new String("InstancingTeapots");
 		
 		// Specify integrator to be used
 		integratorFactory = new PointLightIntegratorFactory();
@@ -114,4 +114,4 @@ import org.omg.CORBA.TRANSACTION_MODE;
 		light = new PointLight(new Vector3f(-0.8f,0.2f,1.f), new Spectrum(1.5f, 1.5f, 1.5f));
 		lightList.add(light);		
 	}
-}*/
+}

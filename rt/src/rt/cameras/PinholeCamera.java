@@ -13,13 +13,40 @@ public class PinholeCamera implements Camera {
     public static final float DEFAULT_NEAR = 1;
     public static final float DEFAULT_FAR = 10;
 
+    /**
+     * Camera position in world coordinates
+     */
     private Vector3f position;
+
+    /**
+     * Up vector in world coordinates
+     */
     private Vector3f up;
+
+    /**
+     * Look-at point
+     */
     private Vector3f lookAt;
+
+    /**
+     * Vertical field of view in degrees
+     */
     private float verticalFOV;
+
+    /**
+     * Aspect ratio of the image
+     */
     private float aspect;
+
+    /**
+     * Width and height of the image
+     */
     private int width;
     private int height;
+
+    /**
+     * Near and far clipping planes
+     */
     private float near;
     private float far;
 
@@ -28,6 +55,19 @@ public class PinholeCamera implements Camera {
      */
     private Matrix4f m;
 
+    /**
+     * Creates a pinhole camera.
+     *
+     * @param position Camera position in world coordinates
+     * @param lookAt Look-at point in world coordinates
+     * @param up Up-vector in world coordinates
+     * @param verticalFOV Vertical field of view in degrees
+     * @param aspect Aspect ratio of the image
+     * @param width Width of the image
+     * @param height Height of the image
+     * @param near Near clipping plane
+     * @param far Far clipping plane
+     */
     public PinholeCamera(Vector3f position, Vector3f lookAt, Vector3f up, float verticalFOV, float aspect, int width, int height, float near, float far) {
         this.position = position;
         this.up = up;
