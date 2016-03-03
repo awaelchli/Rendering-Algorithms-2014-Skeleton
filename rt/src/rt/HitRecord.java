@@ -84,5 +84,40 @@ public class HitRecord  {
 		t2 = new Vector3f();
 		t2.cross(normal, t1);
 	}
+
+	/**
+	 * Transforms the points and vectors of this {@link HitRecord}, i.e. position, normal, etc.
+	 *
+	 * @param t The transformation to be applied.
+	 * @param inv Pre-computed inverse for the transformation of the normal.
+     */
+	public void transform(Matrix4f t, Matrix4f inv) {
+		if (position != null) {
+			t.transform(position);
+		}
+
+		if (normal != null) {
+			Matrix4f normalMatrix = new Matrix4f(inv);
+			normalMatrix.transpose();
+			normalMatrix.transform(normal);
+		}
+
+		if (w != null) {
+			t.transform(w);
+		}
+
+		if (t1 != null && t2 != null) {
+			Matrix4f normalMatrix = new Matrix4f(inv);
+			normalMatrix.transpose();
+			normalMatrix.transform(t1);
+			normalMatrix.transform(t2);
+		}
+	}
+
+	public void transform(Matrix4f t) {
+		Matrix4f inv = new Matrix4f(t);
+		inv.invert();
+		transform(t, inv);
+	}
 	
 }
