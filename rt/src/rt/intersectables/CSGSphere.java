@@ -6,6 +6,7 @@ import rt.Ray;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -21,6 +22,10 @@ public class CSGSphere extends CSGSolid {
     public CSGSphere(Vector3f center, float radius){
         this.center = center;
         this.radius = radius;
+    }
+
+    public CSGSphere() {
+        this(Sphere.DEFAULT_CENTER, Sphere.DEFAULT_RADIUS);
     }
 
     @Override
@@ -42,7 +47,7 @@ public class CSGSphere extends CSGSolid {
 
         if (discriminant < 0){
             // No intersection
-            return null;
+            return createBoundaries(null, null);
         }
 
         // t-Parameters at boundaries
@@ -72,17 +77,25 @@ public class CSGSphere extends CSGSolid {
         HitRecord hit1 = new HitRecord(t1, position1, normal1, w, this, this.material, u, v);
         HitRecord hit2 = new HitRecord(t2, position2, normal2, w, this, this.material, u, v);
 
+        return createBoundaries(hit1, hit2);
+    }
+
+    private ArrayList<IntervalBoundary> createBoundaries(HitRecord hit1, HitRecord hit2) {
         // First Boundary
         IntervalBoundary b1 = new IntervalBoundary();
         b1.type = BoundaryType.START;
-        b1.t = t1;
         b1.hitRecord = hit1;
 
         // Second Boundary
         IntervalBoundary b2 = new IntervalBoundary();
         b2.type = BoundaryType.END;
-        b2.t = t2;
         b2.hitRecord = hit2;
+
+        if (hit1 != null)
+            b1.t = hit1.t;
+
+        if (hit2 != null)
+            b2.t = hit2.t;
 
         ArrayList<IntervalBoundary> boundaries = new ArrayList<>();
         boundaries.add(b1);
