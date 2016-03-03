@@ -2,9 +2,9 @@ package rt;
 
 import javax.imageio.ImageIO;
 
-import rt.testscenes.CameraTestScene;
-import rt.testscenes.InstancingTeapots;
-import rt.testscenes.InstancingTest;
+import rt.basicscenes.Box;
+import rt.basicscenes.Dodecahedron;
+import rt.testscenes.*;
 
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -25,7 +25,7 @@ public class Main {
 	/** 
 	 * The scene to be rendered.
 	 */
-	public static Scene scene = new InstancingTeapots();
+	public static Scene scene = new CSGCylindersAndSpheres();
 	/**
 	 * A render task represents a rectangular image region that is rendered
 	 * by a thread in one chunk.
