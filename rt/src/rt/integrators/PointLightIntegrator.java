@@ -105,7 +105,7 @@ public class PointLightIntegrator implements Integrator {
 
 		HitRecord shadowRayHit = root.intersect(shadowRay);
 
-		if (shadowRayHit == null){
+		if (shadowRayHit == null) {
 			// No object hit
 			return false;
 		}
