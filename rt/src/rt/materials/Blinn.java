@@ -15,48 +15,34 @@ public class Blinn implements Material {
 
     Spectrum ks;
 
-    Spectrum ka;
-
     float shininess;
 
-    public Blinn(Spectrum kd, Spectrum ks, Spectrum ka, float shininess) {
+    public Blinn(Spectrum kd, Spectrum ks, float shininess) {
         this.kd = kd;
         this.ks = ks;
-        this.ka = ka;
         this.shininess = shininess;
-    }
-
-    public Blinn(Spectrum kd, Spectrum ks, float shininess) {
-        this(kd, ks, new Spectrum(0, 0, 0), shininess);
     }
 
     @Override
     public Spectrum evaluateBRDF(HitRecord hitRecord, Vector3f wOut, Vector3f wIn) {
-
-        float nDotl = wOut.dot(wIn);
-        Spectrum diffuse = new Spectrum(kd);
-        diffuse.mult(nDotl);
-
         Vector3f h = new Vector3f();
         h.add(wIn, wOut);
         h.normalize();
 
         float hDotn = h.dot(hitRecord.normal);
         float hDotns = (float) Math.pow(hDotn, shininess);
-        Spectrum specular = new Spectrum(ks);
-        specular.mult(hDotns);
+        Spectrum brdf = new Spectrum(ks);
+        brdf.mult(hDotns);
 
-        Spectrum brdf = new Spectrum();
-        brdf.add(diffuse);
-        brdf.add(specular);
-        brdf.add(ka);
+        // Add constant diffuse term
+        brdf.add(kd);
 
         return brdf;
     }
 
     @Override
     public Spectrum evaluateEmission(HitRecord hitRecord, Vector3f wOut) {
-        return null;
+        return new Spectrum(0, 0, 0);
     }
 
     @Override
@@ -86,11 +72,11 @@ public class Blinn implements Material {
 
     @Override
     public ShadingSample getEmissionSample(HitRecord hitRecord, float[] sample) {
-        return null;
+        return new ShadingSample();
     }
 
     @Override
     public boolean castsShadows() {
-        return false;
+        return true;
     }
 }

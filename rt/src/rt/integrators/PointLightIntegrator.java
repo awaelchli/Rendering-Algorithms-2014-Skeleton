@@ -16,9 +16,11 @@ import rt.Spectrum;
 import rt.StaticVecmath;
 
 /**
- * Integrator for Whitted style ray tracing. This is a basic version that needs to be extended!
+ * Integrator for Whitted style ray tracing.
  */
 public class PointLightIntegrator implements Integrator {
+
+	public static float EPSILON = 0.00001f;
 
 	LightList lightList;
 	Intersectable root;
@@ -53,6 +55,15 @@ public class PointLightIntegrator implements Integrator {
 			Vector3f lightDir = StaticVecmath.sub(lightHit.position, hitRecord.position);
 			float d2 = lightDir.lengthSquared();
 			lightDir.normalize();
+
+			// Check if point on surface lies in shadow of current light source
+			Point3f shadowRayOrigin = new Point3f(hitRecord.position);
+			Ray shadowRay = new Ray(shadowRayOrigin, lightDir);
+			HitRecord shadowRayHit = root.intersect(shadowRay);
+			if (shadowRayHit != null && shadowRayHit.t >= EPSILON) {
+				// Shadow ray hit another occluding surface
+				continue;
+			}
 			
 			// Evaluate the BRDF
 			Spectrum brdfValue = hitRecord.material.evaluateBRDF(hitRecord, hitRecord.w, lightDir);
