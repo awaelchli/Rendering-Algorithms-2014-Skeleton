@@ -60,10 +60,10 @@ public class BlinnSphere extends Scene {
 		root = intersectableList;
 		
 		// Light sources
-		LightGeometry pl1 = new PointLight(new Vector3f(.5f, .5f, 2.f), new Spectrum(1.f, 1.f, 1.f));
-		LightGeometry pl2 = new PointLight(new Vector3f(-.75f, .75f, 2.f), new Spectrum(1.f, 1.f, 1.f));
+		LightGeometry pl1 = new PointLight(new Vector3f(0,0, 2.f), new Spectrum(1.f, 1.f, 1.f));
+		//LightGeometry pl2 = new PointLight(new Vector3f(-.75f, .75f, 2.f), new Spectrum(1.f, 1.f, 1.f));
 		lightList = new LightList();
 		lightList.add(pl1);
-		lightList.add(pl2);
+		//lightList.add(pl2);
 	}
 }
