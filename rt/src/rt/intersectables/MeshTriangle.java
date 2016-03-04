@@ -4,6 +4,9 @@ import javax.vecmath.*;
 import rt.HitRecord;
 import rt.Intersectable;
 import rt.Ray;
+import rt.StaticVecmath;
+
+import java.awt.*;
 
 /**
  * Defines a triangle by referring back to a {@link Mesh}
@@ -28,29 +31,12 @@ public class MeshTriangle implements Intersectable {
 	
 	public HitRecord intersect(Ray r)
 	{
-		float vertices[] = mesh.vertices;
-		
-		// Access the triangle vertices as follows (same for the normals):		
-		// 1. Get three vertex indices for triangle
-		int v0 = mesh.indices[index*3];
-		int v1 = mesh.indices[index*3+1];
-		int v2 = mesh.indices[index*3+2];
-		
-		// 2. Access x,y,z coordinates for each vertex
-		float x0 = vertices[v0*3];
-		float x1 = vertices[v1*3];
-		float x2 = vertices[v2*3];
-		float y0 = vertices[v0*3+1];
-		float y1 = vertices[v1*3+1];
-		float y2 = vertices[v2*3+1];
-		float z0 = vertices[v0*3+2];
-		float z1 = vertices[v1*3+2];
-		float z2 = vertices[v2*3+2];
+		Point3f[] vertices = getVertexPositions();
 
 		// The three vertex positions of the triangle
-		Point3f A = new Point3f(x0, y0, z0);
-		Point3f B = new Point3f(x1, y1, z1);
-		Point3f C = new Point3f(x2, y2, z2);
+		Point3f A = vertices[0];
+		Point3f B = vertices[1];
+		Point3f C = vertices[2];
 
 		// Edge vectors b->a and c->a
 		Vector3f ba = new Vector3f();
@@ -110,21 +96,143 @@ public class MeshTriangle implements Intersectable {
 		// Valid intersection point on triangle
 		Point3f q = r.pointAt(t);
 
-		Vector3f w = new Vector3f(r.direction);
-		w.negate();
+		Vector3f w = StaticVecmath.negate(r.direction);
 
-		Vector3f normal = new Vector3f();
-		normal.cross(ca, ba);
+		Vector3f normal;
+		if (mesh.hasNormals()) {
+			// Interpolate vertex normals
+			normal = interpolateNormal(q);
+		} else {
+			normal = new Vector3f();
+			normal.cross(ba, ca);
+		}
 		normal.normalize();
-		// TODO: interpolate vertex normals
-		Vector3f interpNormal = normal;
 
 		// TODO: interpolate texture coordinates
 		float u = 0;
 		float v = 0;
 
-		HitRecord hit = new HitRecord(t, q, interpNormal, w, mesh, mesh.material, u, v);
+		HitRecord hit = new HitRecord(t, q, normal, w, mesh, mesh.material, u, v);
 		return hit;
+	}
+
+	/**
+	 * Computes the barycentric coordinates alpha, beta and gamma for a point on the triangle.
+	 *
+	 * @param position
+	 * @return a float[] containing the three barycentric coordinates
+     */
+	public float[] barycentricCoordinates(Point3f position) {
+		Point3f[] vertices = getVertexPositions();
+
+		Point3f p1 = vertices[0];
+		Point3f p2 = vertices[1];
+		Point3f p3 = vertices[2];
+
+		float area1 = signedArea(position, p2, p3);
+		float area2 = signedArea(position, p3, p1);
+		float area3 = signedArea(position, p1, p2);
+
+		float totalArea = area1 + area2 + area3;
+		float alpha = area1 / totalArea;
+		float beta = area2 / totalArea;
+		float gamma = area3 / totalArea;
+
+		/*Matrix3f mat = new Matrix3f();
+		mat.setRow(0, new Vector3f(vertices[0]));
+		mat.setRow(1, new Vector3f(vertices[1]));
+		mat.setRow(2, new Vector3f(vertices[2]));
+
+		mat.invert();
+		mat.transpose();
+
+		Vector3f alphaBetaGamma = new Vector3f(position);
+		mat.transform(alphaBetaGamma);
+
+		return new float[] {alphaBetaGamma.x, alphaBetaGamma.y, alphaBetaGamma.z};*/
+		return new float[] {alpha, beta, gamma};
+	}
+
+	private Vector3f interp(Vector3f v1, Vector3f v2, Vector3f v3, float alpha, float beta, float gamma) {
+		Vector3f interp = new Vector3f();
+		interp.scaleAdd(alpha, v1, interp);
+		interp.scaleAdd(beta, v2, interp);
+		interp.scaleAdd(gamma, v3, interp);
+		return interp;
+	}
+
+	private Vector3f interpolateNormal(Point3f position) {
+		Vector3f[] vertexNormals = getVertexNormals();
+		float[] bary = barycentricCoordinates(position);
+		float alpha = bary[0];
+		float beta = bary[1];
+		float gamma = bary[2];
+		return interp(vertexNormals[0], vertexNormals[1], vertexNormals[2], alpha, beta, gamma);
+	}
+
+	private float signedArea(Point3f p1, Point3f p2, Point3f p3) {
+		Vector3f v = StaticVecmath.sub(p2, p1);
+		Vector3f w = StaticVecmath.sub(p3, p1);
+		Vector3f normal = new Vector3f();
+		normal.cross(v, w);
+		float area = normal.length() / 2;
+		return area;
+	}
+
+	/**
+	 * Returns the three vertex positions in counter-clockwise order.
+	 */
+	public Point3f[] getVertexPositions() {
+		float vertices[] = mesh.vertices;
+
+		int v0 = mesh.indices[index*3];
+		int v1 = mesh.indices[index*3+1];
+		int v2 = mesh.indices[index*3+2];
+
+		float x0 = vertices[v0*3];
+		float x1 = vertices[v1*3];
+		float x2 = vertices[v2*3];
+		float y0 = vertices[v0*3+1];
+		float y1 = vertices[v1*3+1];
+		float y2 = vertices[v2*3+1];
+		float z0 = vertices[v0*3+2];
+		float z1 = vertices[v1*3+2];
+		float z2 = vertices[v2*3+2];
+
+		// The three vertex positions of the triangle
+		Point3f a = new Point3f(x0, y0, z0);
+		Point3f b = new Point3f(x1, y1, z1);
+		Point3f c = new Point3f(x2, y2, z2);
+
+		return new Point3f[] {a, b, c};
+	}
+
+	/**
+	 * Returns the three vertex normals in counter-clockwise order.
+	 */
+	public Vector3f[] getVertexNormals() {
+		float normals[] = mesh.normals;
+
+		int n0 = mesh.indices[index*3];
+		int n1 = mesh.indices[index*3+1];
+		int n2 = mesh.indices[index*3+2];
+
+		float x0 = normals[n0*3];
+		float x1 = normals[n1*3];
+		float x2 = normals[n2*3];
+		float y0 = normals[n0*3+1];
+		float y1 = normals[n1*3+1];
+		float y2 = normals[n2*3+1];
+		float z0 = normals[n0*3+2];
+		float z1 = normals[n1*3+2];
+		float z2 = normals[n2*3+2];
+
+		// The three vertex normals of the triangle
+		Vector3f normal0 = new Vector3f(x0, y0, z0);
+		Vector3f normal1 = new Vector3f(x1, y1, z1);
+		Vector3f normal2 = new Vector3f(x2, y2, z2);
+
+		return new Vector3f[] {normal0, normal1, normal2};
 	}
 	
 }
