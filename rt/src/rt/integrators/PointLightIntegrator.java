@@ -53,14 +53,15 @@ public class PointLightIntegrator implements Integrator {
 			float dummySample[] = new float[2];
 			HitRecord lightHit = lightSource.sample(dummySample);
 			Vector3f lightDir = StaticVecmath.sub(lightHit.position, hitRecord.position);
-			float d2 = lightDir.lengthSquared();
-			lightDir.normalize();
 
 			// Check if point on surface lies in shadow of current light source
-			if (hitRecord.material.castsShadows() && shootShadowRay(hitRecord.position, lightDir)) {
+			if (hitRecord.material.castsShadows() && isInShadow(hitRecord.position, lightDir)) {
 				// Shadow ray hit another occluding surface
 				continue;
 			}
+
+			float d2 = lightDir.lengthSquared();
+			lightDir.normalize();
 			
 			// Evaluate the BRDF
 			Spectrum brdfValue = hitRecord.material.evaluateBRDF(hitRecord, hitRecord.w, lightDir);
@@ -90,10 +91,31 @@ public class PointLightIntegrator implements Integrator {
 		return sampler.makeSamples(n, 2);
 	}
 
-	private boolean shootShadowRay(Point3f position, Vector3f lightDir) {
-		Ray shadowRay = new Ray(new Point3f(position), new Vector3f(lightDir));
+	/**
+	 * @param position Position of intersection on the surface
+	 * @param lightDir Direction pointing to light source with length that corresponds to the distance of the light source to the object
+     * @return true, if shadow ray hits a different object between the surface and light source and returns false otherwise
+     */
+	private boolean isInShadow(Point3f position, Vector3f lightDir) {
+
+		Point3f origin = new Point3f();
+		origin.scaleAdd(EPSILON, lightDir, position);
+
+		Ray shadowRay = new Ray(origin, lightDir);
+
 		HitRecord shadowRayHit = root.intersect(shadowRay);
-		return shadowRayHit != null && shadowRayHit.t >= EPSILON;
+
+		if (shadowRayHit == null){
+			// No object hit
+			return false;
+		}
+
+		if (shadowRayHit.t > lightDir.length()) {
+			// Hit is behind the light source
+			return false;
+		}
+
+		return true;
 	}
 
 }
