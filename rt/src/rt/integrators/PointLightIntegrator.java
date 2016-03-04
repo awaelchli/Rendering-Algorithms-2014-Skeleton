@@ -57,10 +57,7 @@ public class PointLightIntegrator implements Integrator {
 			lightDir.normalize();
 
 			// Check if point on surface lies in shadow of current light source
-			Point3f shadowRayOrigin = new Point3f(hitRecord.position);
-			Ray shadowRay = new Ray(shadowRayOrigin, lightDir);
-			HitRecord shadowRayHit = root.intersect(shadowRay);
-			if (shadowRayHit != null && shadowRayHit.t >= EPSILON) {
+			if (hitRecord.material.castsShadows() && shootShadowRay(hitRecord.position, lightDir)) {
 				// Shadow ray hit another occluding surface
 				continue;
 			}
@@ -91,6 +88,12 @@ public class PointLightIntegrator implements Integrator {
 
 	public float[][] makePixelSamples(Sampler sampler, int n) {
 		return sampler.makeSamples(n, 2);
+	}
+
+	private  boolean shootShadowRay(Point3f position, Vector3f lightDir) {
+		Ray shadowRay = new Ray(new Point3f(position), new Vector3f(lightDir));
+		HitRecord shadowRayHit = root.intersect(shadowRay);
+		return shadowRayHit != null && shadowRayHit.t >= EPSILON;
 	}
 
 }
