@@ -65,6 +65,10 @@ public class Mesh extends Aggregate {
 		}
 	}
 
+	public boolean hasNormals(){
+		return normals != null && normals.length != 0;
+	}
+
 	public Iterator<Intersectable> iterator() {
 		return new MeshIterator(triangles);
 	}
