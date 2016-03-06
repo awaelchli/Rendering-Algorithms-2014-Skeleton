@@ -31,8 +31,8 @@ public class CSGInstanceTest extends Scene {
 
         // Specify which camera, film, and tonemapper to use
         Vector3f eye = new Vector3f(5.f, 2.5f, 10.f);
-        Vector3f lookAt = new Vector3f(0.f, 0.f, 0.f);
-        Vector3f up = new Vector3f(0.f, 1.f, 0.f);
+        Vector3f lookAt = new Vector3f(0.f, -1f, 0.f);
+        Vector3f up = new Vector3f(0.f, 1.f, 0);
         float fov = 30.f;
         float aspect = 2.f;
         camera = new PinholeCamera(eye, lookAt, up, fov, aspect, width, height);
@@ -46,9 +46,10 @@ public class CSGInstanceTest extends Scene {
         // Construct a cross out of CSG cylinders and spheres
         Matrix4f trafo = new Matrix4f();
         trafo.setIdentity();
-        trafo.setScale(0.9f);
+        trafo.setScale(1.2f);
         // Note: CSGSphere makes a unit sphere centered at the origin
-        CSGInstance sphere = new CSGInstance(new CSGSphere(new Point3f(), 1), trafo);
+
+        Instance sphere = new Instance(new Sphere(new Point3f(), 1), trafo);
         //CSGSphere sphere = new CSGSphere(new Point3f(), 0.5f);
         /*// Note: CSGInfiniteCylinder makes an infinite cylinder with unit radius,
         // and the axis of the cylinder is the z-axis
