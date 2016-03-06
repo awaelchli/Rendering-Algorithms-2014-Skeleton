@@ -16,12 +16,12 @@ import java.util.ArrayList;
  */
 public class CSGSphere extends CSGSolid {
 
-    Vector3f center;
+    Point3f center;
     float radius;
 
     public Material material = Sphere.DEFAULT_MATERIAL;
 
-    public CSGSphere(Vector3f center, float radius){
+    public CSGSphere(Point3f center, float radius){
         this.center = center;
         this.radius = radius;
     }

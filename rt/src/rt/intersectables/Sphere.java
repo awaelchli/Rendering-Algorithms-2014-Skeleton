@@ -11,15 +11,15 @@ import javax.vecmath.Vector3f;
  */
 public class Sphere implements Intersectable {
 
-    public static final Vector3f DEFAULT_CENTER = new Vector3f(0, 0, 0);
+    public static final Point3f DEFAULT_CENTER = new Point3f(0, 0, 0);
     public static final float DEFAULT_RADIUS = 1;
     public static final Material DEFAULT_MATERIAL = new Diffuse(new Spectrum(1, 0, 0));
 
-    public Vector3f center;
+    public Point3f center;
     public float radius;
     public Material material = DEFAULT_MATERIAL;
 
-    public Sphere(Vector3f center, float radius) {
+    public Sphere(Point3f center, float radius) {
         this.center = center;
         this.radius = radius;
     }
