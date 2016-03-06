@@ -110,7 +110,7 @@ public class PointLightIntegrator implements Integrator {
 			return false;
 		}
 
-		if (shadowRayHit.t > lightDir.length()) {
+		if (shadowRayHit.t > 1 + EPSILON) {
 			// Hit is behind the light source
 			return false;
 		}
