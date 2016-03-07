@@ -13,7 +13,7 @@ public class Sphere implements Intersectable {
 
     public static final Point3f DEFAULT_CENTER = new Point3f(0, 0, 0);
     public static final float DEFAULT_RADIUS = 1;
-    public static final Material DEFAULT_MATERIAL = new Diffuse(new Spectrum(1, 0, 0));
+    public static final Material DEFAULT_MATERIAL = new Diffuse(new Spectrum(1, 1, 1));
 
     public Point3f center;
     public float radius;
