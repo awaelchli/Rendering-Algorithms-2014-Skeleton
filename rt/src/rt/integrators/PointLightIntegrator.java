@@ -57,7 +57,7 @@ public class PointLightIntegrator implements Integrator {
 			// Check if point on surface lies in shadow of current light source
 			if (hitRecord.material.castsShadows() && isInShadow(hitRecord, lightDir)) {
 				// Shadow ray hit another occluding surface
-				//continue;
+				continue;
 			}
 
 			float d2 = lightDir.lengthSquared();
