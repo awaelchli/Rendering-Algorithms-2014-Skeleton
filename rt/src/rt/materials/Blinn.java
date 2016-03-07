@@ -3,6 +3,7 @@ package rt.materials;
 import rt.HitRecord;
 import rt.Material;
 import rt.Spectrum;
+import rt.StaticVecmath;
 
 import javax.vecmath.Vector3f;
 
@@ -25,14 +26,18 @@ public class Blinn implements Material {
 
     @Override
     public Spectrum evaluateBRDF(HitRecord hitRecord, Vector3f wOut, Vector3f wIn) {
+
         Vector3f h = new Vector3f();
         h.add(wIn, wOut);
         h.normalize();
+
+        float nDotl = hitRecord.normal.dot(wIn) / wIn.length();
 
         float hDotn = h.dot(hitRecord.normal);
         float hDotns = (float) Math.pow(hDotn, shininess);
         Spectrum brdf = new Spectrum(ks);
         brdf.mult(hDotns);
+        brdf.mult(1 / nDotl);
 
         // Add constant diffuse term
         brdf.add(kd);
