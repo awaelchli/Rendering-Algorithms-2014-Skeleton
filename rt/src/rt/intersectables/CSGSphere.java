@@ -1,9 +1,6 @@
 package rt.intersectables;
 
-import rt.HitRecord;
-import rt.Material;
-import rt.Ray;
-import rt.Spectrum;
+import rt.*;
 import rt.materials.Diffuse;
 
 import javax.vecmath.Point3f;
@@ -35,17 +32,16 @@ public class CSGSphere extends CSGSolid {
         // Notation following http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter1.htm
 
         Vector3f d = new Vector3f(r.direction);
-        d.normalize();
         Point3f o = new Point3f(r.origin);
-
-        float b = 2 * (d.x * (o.x - center.x) + d.y * (o.y - center.y) + d.z * (o.z - center.z));
         float c1 = (o.x - center.x);
         float c2 = (o.y - center.y);
         float c3 = (o.z - center.z);
+
+        float a = d.dot(d);
+        float b = 2 * (d.x * c1 + d.y * c2 + d.z * c3);
         float c = c1 * c1 + c2 * c2 + c3 * c3 - radius * radius;
 
-        // a = 1
-        float discriminant = b * b - 4 * c;
+        float discriminant = b * b - 4 * a * c;
 
         if (discriminant < 0){
             // No intersection
@@ -53,8 +49,8 @@ public class CSGSphere extends CSGSolid {
         }
 
         // t-Parameters at boundaries
-        float t1 = (-b - (float) Math.sqrt(discriminant)) / 2;
-        float t2 = (-b + (float) Math.sqrt(discriminant)) / 2;
+        float t1 = (-b - (float) Math.sqrt(discriminant)) / (2 * a);
+        float t2 = (-b + (float) Math.sqrt(discriminant)) / (2 * a);
 
         // Position of first boundary
         Point3f position1 = r.pointAt(t1);
@@ -63,21 +59,20 @@ public class CSGSphere extends CSGSolid {
         Point3f position2 = r.pointAt(t2);
 
         // Normal at first boundary
-        Vector3f normal1 = new Vector3f(position1);
-        normal1.sub(this.center);
-        normal1.normalize();
+        Vector3f normal1 = StaticVecmath.sub(position1, center);
+        normal1.scale(1 / radius);
 
         // Normal at second boundary
-        Vector3f normal2 = new Vector3f(normal1);
-        normal2.negate();
+        Vector3f normal2 = StaticVecmath.sub(position2, center);
+        normal2.scale(1 / radius);
 
         // Ray direction
         Vector3f w = new Vector3f(d);
         w.negate();
 
         float u = 0, v = 0;
-        HitRecord hit1 = new HitRecord(t1, position1, normal1, w, this, this.material, u, v);
-        HitRecord hit2 = new HitRecord(t2, position2, normal2, w, this, this.material, u, v);
+        HitRecord hit1 = new HitRecord(t1, position1, normal1, w, this, material, u, v);
+        HitRecord hit2 = new HitRecord(t2, position2, normal2, w, this, material, u, v);
 
         return createBoundaries(hit1, hit2);
     }
