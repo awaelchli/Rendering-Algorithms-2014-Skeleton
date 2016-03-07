@@ -20,7 +20,7 @@ import rt.StaticVecmath;
  */
 public class PointLightIntegrator implements Integrator {
 
-	public static float EPSILON = 0.00001f;
+	public static float EPSILON = 0.0001f;
 
 	LightList lightList;
 	Intersectable root;
