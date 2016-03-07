@@ -92,6 +92,7 @@ public class HitRecord  {
 	 * @param inv Pre-computed inverse for the transformation of the normal.
      */
 	public void transform(Matrix4f t, Matrix4f inv) {
+
 		if (position != null) {
 			t.transform(position);
 		}
@@ -100,10 +101,12 @@ public class HitRecord  {
 			Matrix4f normalMatrix = new Matrix4f(inv);
 			normalMatrix.transpose();
 			normalMatrix.transform(normal);
+			normal.normalize();
 		}
 
 		if (w != null) {
 			t.transform(w);
+			w.normalize();
 		}
 
 		if (t1 != null && t2 != null) {
@@ -111,6 +114,8 @@ public class HitRecord  {
 			normalMatrix.transpose();
 			normalMatrix.transform(t1);
 			normalMatrix.transform(t2);
+			t1.normalize();
+			t2.normalize();
 		}
 	}
 
