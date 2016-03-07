@@ -55,9 +55,9 @@ public class PointLightIntegrator implements Integrator {
 			Vector3f lightDir = StaticVecmath.sub(lightHit.position, hitRecord.position);
 
 			// Check if point on surface lies in shadow of current light source
-			if (hitRecord.material.castsShadows() && isInShadow(hitRecord.position, lightDir)) {
+			if (hitRecord.material.castsShadows() && isInShadow(hitRecord, lightDir)) {
 				// Shadow ray hit another occluding surface
-				continue;
+				//continue;
 			}
 
 			float d2 = lightDir.lengthSquared();
@@ -92,14 +92,14 @@ public class PointLightIntegrator implements Integrator {
 	}
 
 	/**
-	 * @param position Position of intersection on the surface
+	 * @param hit {@link HitRecord} of intersection on the surface
 	 * @param lightDir Direction pointing to light source with length that corresponds to the distance of the light source to the object
      * @return true, if shadow ray hits a different object between the surface and light source and returns false otherwise
      */
-	private boolean isInShadow(Point3f position, Vector3f lightDir) {
+	private boolean isInShadow(HitRecord hit, Vector3f lightDir) {
 
 		Point3f origin = new Point3f();
-		origin.scaleAdd(EPSILON, lightDir, position);
+		origin.scaleAdd(EPSILON, hit.normal, hit.position);
 
 		Ray shadowRay = new Ray(origin, lightDir);
 
