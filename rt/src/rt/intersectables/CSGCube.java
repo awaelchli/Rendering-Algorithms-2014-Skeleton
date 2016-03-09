@@ -8,7 +8,7 @@ import rt.materials.Diffuse;
 import java.util.ArrayList;
 
 /**
- * A cube implemented using planes and CSG. The cube occupies the volume [-1,1] x [-1,1] x [-1,1]. 
+ * A cube implemented using planes and CSG. The cube occupies the volume [-1,1] x [-1,1] x [-1,1].
  */
 public class CSGCube extends CSGSolid {
 
@@ -16,10 +16,13 @@ public class CSGCube extends CSGSolid {
 		FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM
 	};
 
+    private CSGPlane front, back, left, right, top, bottom;
+
 	CSGNode root;
 
-	private CSGPlane front, back, left, right, top, bottom;
-
+    /**
+     * Create a solid cube that occupies the volume [-1,1] x [-1,1] x [-1,1] with default diffuse materials for each face.
+     */
 	public CSGCube()
 	{
 		right = new CSGPlane(new Vector3f(1.f,0.f,0.f),-1.f);
@@ -28,14 +31,14 @@ public class CSGCube extends CSGSolid {
 		bottom = new CSGPlane(new Vector3f(0.f,-1.f,0.f),-1.f);
 		front = new CSGPlane(new Vector3f(0.f,0.f,1.f),-1.f);
 		back = new CSGPlane(new Vector3f(0.f,0.f,-1.f),-1.f);
-		
+
 		right.material = new Diffuse(new Spectrum(1.f, 1.f, 1.f));
 		left.material = new Diffuse(new Spectrum(1.f, 0.f, 0.f));
 		top.material = new Diffuse(new Spectrum(0.f, 1.f, 0.f));
 		bottom.material = new Diffuse(new Spectrum(0.f, 0.f, 1.f));
 		front.material = new Diffuse(new Spectrum(1.f, 1.f, 0.f));
 		back.material = new Diffuse(new Spectrum(0.f, 1.f, 1.f));
-		
+
 		CSGNode n1 = new CSGNode(right, left, CSGNode.OperationType.INTERSECT);
 		CSGNode n2 = new CSGNode(top, bottom, CSGNode.OperationType.INTERSECT);
 		CSGNode n3 = new CSGNode(front, back, CSGNode.OperationType.INTERSECT);
@@ -43,6 +46,12 @@ public class CSGCube extends CSGSolid {
 		root = new CSGNode(n3, n4, CSGNode.OperationType.INTERSECT);
 	}
 
+    /**
+     * Assigns a material to one face of the cube.
+     *
+     * @param material
+     * @param face One of the six faces of the cube.
+     */
 	public void setMaterial(Material material, Face face){
 		switch (face) {
 			case FRONT:
@@ -66,6 +75,11 @@ public class CSGCube extends CSGSolid {
 		}
 	}
 
+    /**
+     * Assigns a material to all of the cubes faces.
+     *
+     * @param material
+     */
 	public void setMaterial(Material material) {
 		front.material = material;
 		back.material = material;
