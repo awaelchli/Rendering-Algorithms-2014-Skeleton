@@ -4,7 +4,6 @@ import javax.vecmath.*;
 
 import rt.*;
 import rt.materials.Diffuse;
-import sun.font.GlyphLayout;
 
 import java.util.ArrayList;
 
@@ -13,7 +12,7 @@ import java.util.ArrayList;
  */
 public class CSGCube extends CSGSolid {
 
-	public enum Side {
+	public enum Face {
 		FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM
 	};
 
@@ -44,8 +43,8 @@ public class CSGCube extends CSGSolid {
 		root = new CSGNode(n3, n4, CSGNode.OperationType.INTERSECT);
 	}
 
-	public void setMaterial(Material material, Side side){
-		switch (side) {
+	public void setMaterial(Material material, Face face){
+		switch (face) {
 			case FRONT:
 				front.material = material;
 				break;

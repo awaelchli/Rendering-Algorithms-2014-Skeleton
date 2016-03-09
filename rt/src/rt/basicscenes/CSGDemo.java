@@ -54,9 +54,9 @@ public class CSGDemo extends Scene {
         Matrix4f trafo = new Matrix4f();
         trafo.setIdentity();
         CSGCube cube_ = new CSGCube();
-        cube_.setMaterial(new Blinn(new Spectrum(0, 0.5f, 0), new Spectrum(1, 1, 1), 4), CSGCube.Side.FRONT);
-        cube_.setMaterial(new Blinn(new Spectrum(0.5f, 0.5f, 0), new Spectrum(1, 1, 1), 50), CSGCube.Side.TOP);
-        cube_.setMaterial(new Blinn(new Spectrum(0.9f, 0, 0), new Spectrum(1, 1, 1), 50), CSGCube.Side.RIGHT);
+        cube_.setMaterial(new Blinn(new Spectrum(0, 0.5f, 0), new Spectrum(1, 1, 1), 4), CSGCube.Face.FRONT);
+        cube_.setMaterial(new Blinn(new Spectrum(0.5f, 0.5f, 0), new Spectrum(1, 1, 1), 50), CSGCube.Face.TOP);
+        cube_.setMaterial(new Blinn(new Spectrum(0.9f, 0, 0), new Spectrum(1, 1, 1), 50), CSGCube.Face.RIGHT);
         CSGInstance cube = new CSGInstance(cube_, trafo);
         CSGSphere sphere_ = new CSGSphere(new Point3f(0, 0, 0), 1.35f);
         sphere_.material = new Blinn(new Spectrum(0, 0, 0.5f), new Spectrum(1, 1, 1), 50);
