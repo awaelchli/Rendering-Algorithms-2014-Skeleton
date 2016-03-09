@@ -3,6 +3,7 @@ package rt;
 import javax.imageio.ImageIO;
 
 import rt.basicscenes.Box;
+import rt.basicscenes.CSGDemo;
 import rt.basicscenes.Dodecahedron;
 import rt.testscenes.*;
 
@@ -25,7 +26,7 @@ public class Main {
 	/** 
 	 * The scene to be rendered.
 	 */
-	public static Scene scene = new BlinnSphere();
+	public static Scene scene = new CSGDemo();
 	/**
 	 * A render task represents a rectangular image region that is rendered
 	 * by a thread in one chunk.
