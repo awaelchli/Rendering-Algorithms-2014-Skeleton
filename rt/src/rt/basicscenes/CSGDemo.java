@@ -27,8 +27,8 @@ public class CSGDemo extends Scene {
         outputFilename = new String("CSGDemo");
 
         // Image width and height in pixels
-        width = 512;
-        height = 512;
+        width = 1024;
+        height = 1024;
 
         // Number of samples per pixel
         SPP = 1;
