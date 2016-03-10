@@ -33,17 +33,16 @@ public class Sphere implements Intersectable {
         // Notation following http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter1.htm
 
         Vector3f d = new Vector3f(r.direction);
-        d.normalize();
         Point3f o = new Point3f(r.origin);
-
-        float b = 2 * (d.x * (o.x - center.x) + d.y * (o.y - center.y) + d.z * (o.z - center.z));
         float c1 = (o.x - center.x);
         float c2 = (o.y - center.y);
         float c3 = (o.z - center.z);
+
+        float a = d.dot(d);
+        float b = 2 * (d.x * c1 + d.y * c2 + d.z * c3);
         float c = c1 * c1 + c2 * c2 + c3 * c3 - radius * radius;
 
-        // a = 1
-        float discriminant = b * b - 4 * c;
+        float discriminant = b * b - 4 * a * c;
 
         if (discriminant < 0){
             // No intersection
@@ -51,12 +50,12 @@ public class Sphere implements Intersectable {
         }
 
         float t;
-        float t0 = (-b - (float) Math.sqrt(discriminant)) / 2;
+        float t0 = (-b - (float) Math.sqrt(discriminant)) / (2 * a);
 
         if(t0 > 0){
             t = t0;
         } else {
-            float t1 = (-b + (float) Math.sqrt(discriminant)) / 2;
+            float t1 = (-b + (float) Math.sqrt(discriminant)) / (2 * a);
             if(t1 > 0){
                 t = t1;
             } else {
