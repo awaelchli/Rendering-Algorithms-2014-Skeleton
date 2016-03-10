@@ -58,4 +58,9 @@ public class Spectrum {
 		b = Math.min(max,  b);
 		b = Math.max(min, b);
 	}
+
+	@Override
+	public String toString() {
+		return "Spectrum{" + "r=" + r + ", g=" + g + ", b=" + b + '}';
+	}
 }
