@@ -20,5 +20,28 @@ public class Ray {
 		Point3f p = new Point3f(direction);
 		p.scaleAdd(t, origin);
 		return p;
-	} 
+	}
+
+	/**
+	 * Translates the origin of the ray by the given vector.
+     */
+	public void translate(Vector3f translation) {
+		origin.add(translation);
+	}
+
+	/**
+	 * Creates a new ray which is the reflection of this ray at the surface.
+     */
+	public static Ray reflect(HitRecord hitRecord) {
+
+		Vector3f incident = new Vector3f(hitRecord.w);
+		incident.negate();
+
+		float s = -2 * incident.dot(hitRecord.normal);
+
+		Vector3f r = new Vector3f();
+		r.scaleAdd(s, hitRecord.normal, incident);
+
+		return new Ray(hitRecord.position, r);
+	}
 }
