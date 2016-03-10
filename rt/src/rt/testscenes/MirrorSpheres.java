@@ -20,7 +20,7 @@ public class MirrorSpheres extends Scene {
 	public MirrorSpheres()
 	{
 		// Output file name
-		outputFilename = new String("../output/testscenes/MirrorSpheres");
+		outputFilename = new String("MirrorSpheres");
 		
 		// Image width and height in pixels
 		width = 1024;
@@ -40,7 +40,9 @@ public class MirrorSpheres extends Scene {
 		tonemapper = new ClampTonemapper();
 		
 		// Specify which integrator and sampler to use
-		/*integratorFactory = new WhittedIntegratorFactory();
+		WhittedIntegratorFactory factory = new WhittedIntegratorFactory();
+		factory.setRecursionDepth(5);
+		integratorFactory = factory;
 		samplerFactory = new OneSamplerFactory();
 
 		// Three spheres
@@ -76,6 +78,6 @@ public class MirrorSpheres extends Scene {
 		// Light source, relatively far away but strong
 		LightGeometry pointLight = new PointLight(new Vector3f(0.f, 20.f, 20.f), new Spectrum(2500.f, 2500.f, 2500.f));
 		lightList = new LightList();
-		lightList.add(pointLight);*/
+		lightList.add(pointLight);
 	}
 }

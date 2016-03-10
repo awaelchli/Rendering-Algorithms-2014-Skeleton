@@ -26,7 +26,7 @@ public class Main {
 	/** 
 	 * The scene to be rendered.
 	 */
-	public static Scene scene = new CSGDemo();
+	public static Scene scene = new MirrorSpheres();
 	/**
 	 * A render task represents a rectangular image region that is rendered
 	 * by a thread in one chunk.
