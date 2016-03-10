@@ -138,18 +138,6 @@ public class MeshTriangle implements Intersectable {
 		float beta = area2 / totalArea;
 		float gamma = area3 / totalArea;
 
-		/*Matrix3f mat = new Matrix3f();
-		mat.setRow(0, new Vector3f(vertices[0]));
-		mat.setRow(1, new Vector3f(vertices[1]));
-		mat.setRow(2, new Vector3f(vertices[2]));
-
-		mat.invert();
-		mat.transpose();
-
-		Vector3f alphaBetaGamma = new Vector3f(position);
-		mat.transform(alphaBetaGamma);
-
-		return new float[] {alphaBetaGamma.x, alphaBetaGamma.y, alphaBetaGamma.z};*/
 		return new float[] {alpha, beta, gamma};
 	}
 
