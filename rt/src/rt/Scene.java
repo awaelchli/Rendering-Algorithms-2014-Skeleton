@@ -16,6 +16,8 @@ public abstract class Scene {
 	protected Tonemapper tonemapper;
 	protected Intersectable root;
 	protected LightList lightList;
+	protected float epsilon = 0.001f;
+	protected int recursionDepth;
 	
 	public IntegratorFactory getIntegratorFactory() {
 		return integratorFactory;
@@ -54,6 +56,8 @@ public abstract class Scene {
 	{
 		return tonemapper;
 	}
+
+	public float getEpsilon() { return epsilon; }
 	
 	public void prepare()
 	{
