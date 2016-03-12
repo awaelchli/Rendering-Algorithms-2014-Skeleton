@@ -49,13 +49,14 @@ public class Mesh extends Aggregate {
 	/**
 	 * Make a mesh from arrays with vertices, normals, and indices.
 	 */
-	public Mesh(float[] vertices, float[] normals, float[] texCoordsFinal, int[] indices)
+	public Mesh(float[] vertices, float[] normals, float[] texCoords, int[] indices)
 	{
 		material = new Diffuse(new Spectrum(1.f, 1.f, 1.f));
 		
 		this.vertices = vertices;
 		this.normals = normals;
 		this.indices = indices;
+		this.texCoords = texCoords;
 		triangles = new MeshTriangle[indices.length/3];		
 		
 		// A triangle simply stores a triangle index and refers back to the mesh
@@ -67,6 +68,10 @@ public class Mesh extends Aggregate {
 
 	public boolean hasNormals(){
 		return normals != null && normals.length != 0;
+	}
+
+	public boolean hasTextureCoordinates(){
+		return texCoords != null && texCoords.length != 0;
 	}
 
 	public Iterator<Intersectable> iterator() {
