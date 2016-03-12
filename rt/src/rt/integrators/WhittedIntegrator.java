@@ -31,7 +31,7 @@ public class WhittedIntegrator implements Integrator {
 
     private Spectrum integrate(Ray r, int depth) {
 
-        if (depth == this.recursionDepth){
+        if (depth == this.recursionDepth) {
             return new Spectrum(0, 0, 0);
         }
 
@@ -46,36 +46,51 @@ public class WhittedIntegrator implements Integrator {
 
         // Iterate over all light sources
         Iterator<LightGeometry> it = lightList.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             LightGeometry lightSource = it.next();
             Spectrum spectrum = integrateLightSource(lightSource, hitRecord);
             // Accumulate
             outgoing.add(spectrum);
         }
 
-        if (material.hasSpecularReflection() && !material.hasSpecularRefraction()) {
-            // Material is a mirror
-            Ray reflectedRay = Ray.reflect(hitRecord);
-            epsilonTranslation(reflectedRay, hitRecord.normal);
-            Spectrum reflection = material.evaluateSpecularReflection(hitRecord).brdf;
-            reflection.mult(integrate(reflectedRay, depth + 1));
-            outgoing.add(reflection);
-        } else if (material.hasSpecularRefraction() && material.hasSpecularRefraction()) {
+        if (material.hasSpecularRefraction() && material.hasSpecularReflection()) {
+
             Material.ShadingSample reflectionSample = material.evaluateSpecularReflection(hitRecord);
             Material.ShadingSample refractionSample = material.evaluateSpecularRefraction(hitRecord);
+
+            float fresnel = refractionSample.p;
+
             Ray reflectedRay = new Ray(hitRecord.position, reflectionSample.w);
             Spectrum reflection = integrate(reflectedRay, depth + 1);
+            epsilonTranslation(reflectedRay, reflectedRay.direction);
             Spectrum refraction = new Spectrum(0, 0, 0);
+
             if (refractionSample.w != null) {
+                // No total inner reflection
                 Ray refractedRay = new Ray(hitRecord.position, refractionSample.w);
+                epsilonTranslation(refractedRay, refractedRay.direction);
                 refraction = integrate(refractedRay, depth + 1);
+                reflection.mult(reflectionSample.brdf);
+                refraction.mult(refractionSample.brdf);
             }
-            reflection.mult(reflectionSample.brdf);
-            refraction.mult(refractionSample.brdf);
+
+            reflection.mult(fresnel);
+            refraction.mult(1 - fresnel);
+
             Spectrum total = new Spectrum();
             total.add(reflection);
             total.add(refraction);
             outgoing.add(total);
+
+        } else if (material.hasSpecularReflection()) {
+            // Material is a mirror
+            Material.ShadingSample sample = material.evaluateSpecularReflection(hitRecord);
+            Ray reflectedRay = new Ray(hitRecord.position, sample.w);
+            epsilonTranslation(reflectedRay, hitRecord.normal);
+            Spectrum reflection = integrate(reflectedRay, depth + 1);
+            reflection.mult(sample.brdf);
+            reflection.mult(sample.p);
+            outgoing.add(reflection);
         }
 
         return outgoing;
@@ -113,7 +128,7 @@ public class WhittedIntegrator implements Integrator {
 
         // Geometry term: multiply with 1/(squared distance), only correct like this
         // for point lights (not area lights)!
-        s.mult(1.f/d2);
+        s.mult(1 / d2);
 
         return s;
     }
