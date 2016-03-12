@@ -98,21 +98,31 @@ public class MeshTriangle implements Intersectable {
 
 		Vector3f w = StaticVecmath.negate(r.direction);
 
+		// Compute barycentric coordinates for interpolation
+		float[] bary = barycentricCoordinates(q);
+		float bary_alpha = bary[0];
+		float bary_beta = bary[1];
+		float bary_gamma = bary[2];
+
 		Vector3f normal;
 		if (mesh.hasNormals()) {
 			// Interpolate vertex normals
-			normal = interpolateNormal(q);
+			Vector3f[] vertexNormals = getVertexNormals();
+			normal = interp(vertexNormals[0], vertexNormals[1], vertexNormals[2], bary_alpha, bary_beta, bary_gamma);
 		} else {
 			normal = new Vector3f();
 			normal.cross(ba, ca);
 		}
 		normal.normalize();
 
-		// TODO: interpolate texture coordinates
-		float u = 0;
-		float v = 0;
+		Point2f texCoord = new Point2f(0, 0);
+		if (mesh.hasTextureCoordinates()) {
+			// Interpolate texture coordinate
+			Point2f[] texCoords = getTextureCoordinates();
+			texCoord = interp(texCoords[0], texCoords[1], texCoords[2], bary_alpha, bary_beta, bary_gamma);
+		}
 
-		HitRecord hit = new HitRecord(t, q, normal, w, mesh, mesh.material, u, v);
+		HitRecord hit = new HitRecord(t, q, normal, w, mesh, mesh.material, texCoord.x, texCoord.y);
 		return hit;
 	}
 
@@ -149,13 +159,12 @@ public class MeshTriangle implements Intersectable {
 		return interp;
 	}
 
-	private Vector3f interpolateNormal(Point3f position) {
-		Vector3f[] vertexNormals = getVertexNormals();
-		float[] bary = barycentricCoordinates(position);
-		float alpha = bary[0];
-		float beta = bary[1];
-		float gamma = bary[2];
-		return interp(vertexNormals[0], vertexNormals[1], vertexNormals[2], alpha, beta, gamma);
+	private Point2f interp(Point2f t1, Point2f t2, Point2f t3, float alpha, float beta, float gamma){
+		Point2f interp = new Point2f();
+		interp.scaleAdd(alpha, t1, interp);
+		interp.scaleAdd(beta, t2, interp);
+		interp.scaleAdd(gamma, t3, interp);
+		return interp;
 	}
 
 	private float signedArea(Point3f p1, Point3f p2, Point3f p3) {
@@ -221,6 +230,30 @@ public class MeshTriangle implements Intersectable {
 		Vector3f normal2 = new Vector3f(x2, y2, z2);
 
 		return new Vector3f[] {normal0, normal1, normal2};
+	}
+
+	/**
+	 * Returns the three texture coordinate pairs in counter-clockwise order.
+	 */
+	public Point2f[] getTextureCoordinates() {
+		float texCoords[] = mesh.texCoords;
+
+		int n0 = mesh.indices[index*3];
+		int n1 = mesh.indices[index*3+1];
+		int n2 = mesh.indices[index*3+2];
+
+		float u0 = texCoords[n0*2];
+		float u1 = texCoords[n1*2];
+		float u2 = texCoords[n2*2];
+		float v0 = texCoords[n0*2+1];
+		float v1 = texCoords[n1*2+1];
+		float v2 = texCoords[n2*2+1];
+
+		Point2f tex0 = new Point2f(u0, v0);
+		Point2f tex1 = new Point2f(u1, v1);
+		Point2f tex2 = new Point2f(u2, v2);
+
+		return new Point2f[] {tex0, tex1, tex2};
 	}
 	
 }
