@@ -4,8 +4,6 @@ import rt.HitRecord;
 import rt.Material;
 import rt.Spectrum;
 import rt.Texture;
-
-import javax.vecmath.Point2f;
 import javax.vecmath.Vector3f;
 
 /**
@@ -19,6 +17,9 @@ public class BlinnTexture implements Material {
 
     float shininess;
 
+    /**
+     * A Blinn material with a texture as the diffuse term.
+     */
     public BlinnTexture(Texture texture, Spectrum ks, float shininess) {
         this.texture = texture;
         this.ks = ks;
