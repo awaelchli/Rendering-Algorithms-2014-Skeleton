@@ -3,7 +3,9 @@ package rt.intersectables;
 import rt.*;
 import rt.materials.Diffuse;
 
+import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple2f;
 import javax.vecmath.Vector3f;
 
 /**
@@ -75,8 +77,17 @@ public class Sphere implements Intersectable {
         Vector3f w = new Vector3f(d);
         w.negate();
 
-        float u = 0, v = 0;
+        Tuple2f texCoords = getUVcoordinates(normal);
 
-        return new HitRecord(t, position, normal, w, this, material, u, v);
+        return new HitRecord(t, position, normal, w, this, material, texCoords.x, texCoords.y);
+    }
+
+    private Tuple2f getUVcoordinates(Vector3f normal) {
+        assert  normal.length() == 1;
+
+        float u = 0.5f + (float) (Math.atan2(normal.z, normal.x) / (2 * Math.PI));
+        float v = 0.5f - (float) (Math.asin(normal.y) / Math.PI);
+
+        return new Point2f(u, v);
     }
 }
