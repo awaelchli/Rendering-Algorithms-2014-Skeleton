@@ -9,10 +9,15 @@ import javax.vecmath.Vector3f;
  */
 public class Refractive implements Material {
 
-    float refractionRatio;
+    float refractiveIndex;
 
-    public Refractive(float refractionRatio) {
-        this.refractionRatio = refractionRatio;
+    /**
+     * Creates a fully transparent refractive material.
+     *
+     * @param refractiveIndex   The refractive index of the material.
+     */
+    public Refractive(float refractiveIndex) {
+        this.refractiveIndex = refractiveIndex;
     }
 
     @Override
@@ -34,13 +39,11 @@ public class Refractive implements Material {
     public ShadingSample evaluateSpecularReflection(HitRecord hitRecord) {
 
         Ray reflectedRay = Ray.reflect(hitRecord);
-        float schlick = rSchlick2(hitRecord.normal, StaticVecmath.negate(hitRecord.w), refractionRatio);
 
         ShadingSample s = new ShadingSample();
         s.brdf = new Spectrum(1, 1, 1);
-        s.brdf.mult(schlick);
-        s.isSpecular = true;
         s.w = reflectedRay.direction;
+        s.p = 1;
         return s;
     }
 
@@ -52,19 +55,14 @@ public class Refractive implements Material {
     @Override
     public ShadingSample evaluateSpecularRefraction(HitRecord hitRecord) {
 
-        Ray refractedRay = Ray.refract(hitRecord, refractionRatio);
-        float schlick = rSchlick2(hitRecord.normal, StaticVecmath.negate(hitRecord.w), refractionRatio);
+        ShadingSample s = refract_schlick(hitRecord.normal, StaticVecmath.negate(hitRecord.w), refractiveIndex);
 
-        ShadingSample s = new ShadingSample();
-
-        if (refractedRay == null) {
+        if (s.w == null) {
             s.brdf = new Spectrum(0, 0, 0);
             return s;
         }
+
         s.brdf = new Spectrum(1, 1, 1);
-        s.brdf.mult(1 - schlick);
-        s.isSpecular = true;
-        s.w = refractedRay.direction;
 
         return s;
     }
@@ -84,21 +82,55 @@ public class Refractive implements Material {
         return false;
     }
 
-    public static float rSchlick2(Vector3f normal, Vector3f incident, float n) {
+    /**
+     * Refraction of incident light with Schlick's approximation.
+     *
+     * @param normal    The surface normal
+     * @param incident  The incident light direction
+     * @param index     Refractive index of the material
+     * @return          The shading sample containing the refracted direction w and fresnel term p.
+     *                  If the total internal reflection occurs, w is set to null and p = 0.
+     */
+    public static ShadingSample refract_schlick(Vector3f normal, Vector3f incident, float index) {
+
+        ShadingSample s = new ShadingSample();
+        s.w = new Vector3f(normal);
+
+        float cosI = -normal.dot(incident);
+        float n = index;
+
+
+        if (cosI > 0) {
+            // Ray is entering the material
+            n = 1 / index;
+        } else {
+            // Ray is leaving the material
+            cosI *= -1;
+            s.w.negate();
+        }
 
         float r0 = (n - 1) / (n + 1);
         r0 *= r0;
-        float cosI = -normal.dot(incident);
+        float sinT2 = n * n * (1 - cosI * cosI);
 
-        if (n > 1) {
-            // n1 > n2
-            float sinT2 = n * n * (1 - cosI * cosI);
-            if (sinT2 > 1) return 1; // Total internal reflection
-
-            cosI = (float) Math.sqrt(1 - sinT2);
+        if (sinT2 > 1) {
+            // Total internal reflection
+            s.w = null;
+            s.p = 0;
+            return s;
         }
 
-        float x = 1 -  cosI;
-        return r0 + (1 - r0) * x * x * x * x * x;
+        float cosT = (float) Math.sqrt(1 - sinT2);
+        s.w.scale(n * cosI - cosT);
+        s.w.scaleAdd(n, incident, s.w);
+
+        if (n > 1) {
+            cosI = cosT;
+        }
+
+        float x = 1 - cosI;
+        s.p = r0 + (1 - r0) * x * x * x * x * x;
+
+        return s;
     }
 }
