@@ -11,7 +11,7 @@ import javax.vecmath.Vector3f;
  */
 public class BlinnPlusMirror implements Material {
 
-    Material blinn;
+    Blinn blinn;
     Spectrum reflectivity;
 
     private Spectrum f;
@@ -55,7 +55,7 @@ public class BlinnPlusMirror implements Material {
     @Override
     public ShadingSample evaluateSpecularReflection(HitRecord hitRecord) {
         // Using Schlick's approximation:
-        // F = f + (1 - f) * (1 - w dot n)^5
+        // r = f + (1 - f) * (1 - w dot n)^5
         float nDotw = hitRecord.normal.dot(hitRecord.w);
         float x = 1 - nDotw;
         x = x * x * x * x * x;
@@ -64,9 +64,10 @@ public class BlinnPlusMirror implements Material {
         r.add(new Spectrum(1, 1, 1));
         r.mult(x);
         r.add(f);
-
         ShadingSample s = new ShadingSample();
-        s.brdf = r;
+        //s.brdf = r;
+        //s.brdf = blinn.ks;
+        s.brdf = reflectivity;
         return s;
     }
 

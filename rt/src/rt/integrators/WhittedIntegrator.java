@@ -53,16 +53,29 @@ public class WhittedIntegrator implements Integrator {
             outgoing.add(spectrum);
         }
 
-        if (material.hasSpecularReflection()) {
+        if (material.hasSpecularReflection() && !material.hasSpecularRefraction()) {
+            // Material is a mirror
             Ray reflectedRay = Ray.reflect(hitRecord);
             epsilonTranslation(reflectedRay, hitRecord.normal);
             Spectrum reflection = material.evaluateSpecularReflection(hitRecord).brdf;
             reflection.mult(integrate(reflectedRay, depth + 1));
             outgoing.add(reflection);
-        }
-
-        if (material.hasSpecularRefraction()) {
-
+        } else if (material.hasSpecularRefraction() && material.hasSpecularRefraction()) {
+            Material.ShadingSample reflectionSample = material.evaluateSpecularReflection(hitRecord);
+            Material.ShadingSample refractionSample = material.evaluateSpecularRefraction(hitRecord);
+            Ray reflectedRay = new Ray(hitRecord.position, reflectionSample.w);
+            Spectrum reflection = integrate(reflectedRay, depth + 1);
+            Spectrum refraction = new Spectrum(0, 0, 0);
+            if (refractionSample.w != null) {
+                Ray refractedRay = new Ray(hitRecord.position, refractionSample.w);
+                refraction = integrate(refractedRay, depth + 1);
+            }
+            reflection.mult(reflectionSample.brdf);
+            refraction.mult(refractionSample.brdf);
+            Spectrum total = new Spectrum();
+            total.add(reflection);
+            total.add(refraction);
+            outgoing.add(total);
         }
 
         return outgoing;
@@ -76,7 +89,7 @@ public class WhittedIntegrator implements Integrator {
         Vector3f lightDir = StaticVecmath.sub(lightHit.position, hitRecord.position);
 
         // Check if point on surface lies in shadow of current light source
-        if (hitRecord.material.castsShadows() && isInShadow(hitRecord, lightDir)) {
+        if (isInShadow(hitRecord, lightDir)) {
             // Shadow ray hit another occluding surface
             return new Spectrum(0, 0, 0);
         }
@@ -136,6 +149,10 @@ public class WhittedIntegrator implements Integrator {
 
         if (shadowRayHit.t > 1) {
             // Hit is behind the light source
+            return false;
+        }
+
+        if (!shadowRayHit.material.castsShadows()) {
             return false;
         }
 

@@ -29,9 +29,6 @@ public class Ray {
 		origin.add(translation);
 	}
 
-	/**
-	 * Creates a new ray which is the reflection of this ray at the surface.
-     */
 	public static Ray reflect(HitRecord hitRecord) {
 
 		Vector3f incident = new Vector3f(hitRecord.w);
@@ -43,5 +40,22 @@ public class Ray {
 		r.scaleAdd(s, hitRecord.normal, incident);
 
 		return new Ray(hitRecord.position, r);
+	}
+
+	public static Ray refract(HitRecord hitRecord, float n) {
+
+		Vector3f incident = new Vector3f(hitRecord.w);
+		incident.negate();
+
+		float cosI = -hitRecord.normal.dot(incident);
+		float sinT2 = n * n * (1 - cosI * cosI);
+		if (sinT2 > 1) return null; // total internal reflection
+		float cosT = (float) Math.sqrt(1 - sinT2);
+
+		Vector3f refractedDir = new Vector3f(hitRecord.normal);
+		refractedDir.scale(n * cosI - cosT);
+		refractedDir.scaleAdd(n, incident, refractedDir);
+
+		return new Ray(hitRecord.position, refractedDir);
 	}
 }
