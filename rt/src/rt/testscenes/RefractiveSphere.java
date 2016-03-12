@@ -19,8 +19,10 @@ public class RefractiveSphere extends Scene {
 		
 	public RefractiveSphere()
 	{
+		float refractiveIndex = 1.1f;
+
 		// Output file name
-		outputFilename = new String("RefractiveSphere");
+		outputFilename = new String("RefractiveSphere" + refractiveIndex);
 		
 		// Image width and height in pixels
 		width = 512;
@@ -28,6 +30,8 @@ public class RefractiveSphere extends Scene {
 		
 		// Number of samples per pixel
 		SPP = 32;
+
+		epsilon = 0.01f;
 		
 		// Specify which camera, film, and tonemapper to use
 		Vector3f eye = new Vector3f(0.f, 0.f, 3.f);
@@ -40,14 +44,14 @@ public class RefractiveSphere extends Scene {
 		tonemapper = new ClampTonemapper();
 		
 		// Specify which integrator and sampler to use
+		//PointLightIntegratorFactory factory = new PointLightIntegratorFactory();
 		WhittedIntegratorFactory factory = new WhittedIntegratorFactory();
-		factory.setRecursionDepth(3);
+		factory.setRecursionDepth(5);
 		integratorFactory = factory;
 		samplerFactory = new RandomSamplerFactory();		
 		
-		Material refractive = new Refractive(1.3f);
+		Material refractive = new Refractive(refractiveIndex);
 
-		
 		// Ground and back plane
 		// A grid with red and white lines, line thickness 0.01, zero offset shift, and tile size 0.125, all in world coordinates
 		XYZGrid grid = new XYZGrid(new Spectrum(0.2f, 0.f, 0.f), new Spectrum(1.f, 1.f, 1.f), 0.01f, new Vector3f(0.f, 0.f, 0.f), 0.125f);
@@ -72,9 +76,12 @@ public class RefractiveSphere extends Scene {
 		Vector3f lightPos = new Vector3f(eye);
 		lightPos.add(new Vector3f(-1.f, 0.f, 0.f));
 		LightGeometry pointLight1 = new PointLight(lightPos, new Spectrum(14.f, 14.f, 14.f));
+		//LightGeometry pointLight1 = new PointLight(lightPos, new Spectrum(100, 100, 100));
 		lightPos.add(new Vector3f(2.f, 0.f, 0.f));
 		LightGeometry pointLight2 = new PointLight(lightPos, new Spectrum(14.f, 14.f, 14.f));
+		//LightGeometry pointLight2 = new PointLight(lightPos, new Spectrum(100, 100, 100));
 		LightGeometry pointLight3 = new PointLight(new Vector3f(0.f, 7.f, 0.f), new Spectrum(14.f, 14.f, 14.f));
+		//LightGeometry pointLight3 = new PointLight(new Vector3f(0.f, 7.f, 0.f), new Spectrum(100, 100, 100));
 		lightList = new LightList();
 		lightList.add(pointLight1);
 		lightList.add(pointLight2);
