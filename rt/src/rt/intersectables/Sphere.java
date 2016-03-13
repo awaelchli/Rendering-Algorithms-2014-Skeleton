@@ -82,7 +82,7 @@ public class Sphere implements Intersectable {
         return new HitRecord(t, position, normal, w, this, material, texCoords.x, texCoords.y);
     }
 
-    private Tuple2f getUVcoordinates(Vector3f normal) {
+    static Tuple2f getUVcoordinates(Vector3f normal) {
         assert  normal.length() == 1;
 
         float u = 0.5f + (float) (Math.atan2(normal.z, normal.x) / (2 * Math.PI));

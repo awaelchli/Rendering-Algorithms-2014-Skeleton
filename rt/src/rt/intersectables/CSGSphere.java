@@ -4,6 +4,7 @@ import rt.*;
 import rt.materials.Diffuse;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple2f;
 import javax.vecmath.Vector3f;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -70,9 +71,11 @@ public class CSGSphere extends CSGSolid {
         Vector3f w = new Vector3f(d);
         w.negate();
 
-        float u = 0, v = 0;
-        HitRecord hit1 = new HitRecord(t1, position1, normal1, w, this, material, u, v);
-        HitRecord hit2 = new HitRecord(t2, position2, normal2, w, this, material, u, v);
+        Tuple2f uv1 = Sphere.getUVcoordinates(normal1);
+        Tuple2f uv2 = Sphere.getUVcoordinates(normal2);
+
+        HitRecord hit1 = new HitRecord(t1, position1, normal1, w, this, material, uv1.x, uv1.y);
+        HitRecord hit2 = new HitRecord(t2, position2, normal2, w, this, material, uv2.x, uv2.y);
 
         return createBoundaries(hit1, hit2);
     }
