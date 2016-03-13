@@ -21,6 +21,7 @@ public class Texture {
 
     BufferedImage texture;
     InterpolationMethod method;
+    float scale = 1;
 
     /**
      * Creates a texture from an image file.
@@ -58,6 +59,15 @@ public class Texture {
      * @return      The interpolated texture value as a spectrum (red, green, blue).
      */
     public Spectrum lookUp(float u, float v) {
+
+        u /= scale;
+        v /= scale;
+
+        u = u % 1f;
+        v = v % 1f;
+        u = u < 0 ? u + 1 : u;
+        v = v < 0 ? v + 1 : v;
+
         switch (method) {
             case nearest:
                 return nearestLookUp(u, v);
@@ -135,6 +145,9 @@ public class Texture {
         }
     }
 
+    public void setScale(float scale) {
+        this.scale = scale;
+    }
 
     public int getWidth() {
         return texture.getWidth();
