@@ -21,6 +21,9 @@ public abstract class NormalDisplacement {
         toWorld.setColumn(1, tangentV);
         toWorld.setColumn(2, normal);
 
+        toWorld.invert();
+        toWorld.transpose();
+
         // The new normal in local coordinates
         Vector3f localNormal = getTangentSpaceNormal(u, v);
 
