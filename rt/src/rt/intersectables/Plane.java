@@ -51,10 +51,33 @@ public class Plane implements Intersectable {
 			Vector3f wIn = new Vector3f(r.direction);
 			wIn.negate();
 			wIn.normalize();
-			return new HitRecord(t, position, retNormal, wIn, this, material,0.f, 0.f);
+			HitRecord hit = new HitRecord(t, position, retNormal, wIn, this, material,0.f, 0.f);
+
+			// Compute texture coordinates
+			Tuple2f texCoords = getTexCoords(position, hit.t1, hit.t2);
+			hit.u = texCoords.x;
+			hit.v = texCoords.y;
+
+			return hit;
 		} else {
 			return null;
 		}
+	}
+
+	private Tuple2f getTexCoords(Point3f position, Vector3f tangentU, Vector3f tangentV) {
+		Vector3f p = new Vector3f(position);
+
+		// Center of plane (closest point to origin)
+		Vector3f c = new Vector3f(normal);
+		c.scale(d);
+
+		Vector3f d = new Vector3f();
+		d.sub(p, c);
+
+		float u = d.dot(tangentU);
+		float v = d.dot(tangentV);
+
+		return new Point2f(u, v);
 	}
 
 }
