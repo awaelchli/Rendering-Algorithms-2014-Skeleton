@@ -15,9 +15,9 @@ public class BumpMaterial implements Material {
     Material material;
     NormalDisplacement normalDisplacement;
 
-    public BumpMaterial(Material material, NormalDisplacement bumpMap) {
+    public BumpMaterial(Material material, NormalDisplacement displacementMap) {
         this.material = material;
-        this.normalDisplacement = bumpMap;
+        this.normalDisplacement = displacementMap;
     }
 
     @Override
