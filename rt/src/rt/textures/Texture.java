@@ -1,4 +1,6 @@
-package rt;
+package rt.textures;
+
+import rt.Spectrum;
 
 import javax.imageio.ImageIO;
 import javax.media.jai.InterpolationBilinear;
@@ -131,6 +133,15 @@ public class Texture {
             System.err.println("Texture not found: " + filename);
             return;
         }
+    }
+
+
+    public int getWidth() {
+        return texture.getWidth();
+    }
+
+    public int getHeight() {
+        return texture.getHeight();
     }
 
  }

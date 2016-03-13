@@ -3,75 +3,66 @@ package rt.materials;
 import rt.HitRecord;
 import rt.Material;
 import rt.Spectrum;
-import rt.textures.Texture;
+import rt.textures.NormalDisplacement;
+
 import javax.vecmath.Vector3f;
 
 /**
- * Created by Adrian on 12.03.2016.
+ * Created by Adrian on 13.03.2016.
  */
-public class BlinnTexture implements Material {
+public class BumpMaterial implements Material {
 
-    Texture texture;
+    Material material;
+    NormalDisplacement normalDisplacement;
 
-    Spectrum ks;
-
-    float shininess;
-
-    /**
-     * A Blinn material with a texture as the diffuse term.
-     */
-    public BlinnTexture(Texture texture, Spectrum ks, float shininess) {
-        this.texture = texture;
-        this.ks = ks;
-        this.shininess = shininess;
+    public BumpMaterial(Material material, NormalDisplacement bumpMap) {
+        this.material = material;
+        this.normalDisplacement = bumpMap;
     }
 
     @Override
     public Spectrum evaluateBRDF(HitRecord hitRecord, Vector3f wOut, Vector3f wIn) {
-
-        Spectrum kd = texture.lookUp(hitRecord.u, hitRecord.v);
-        Blinn blinn = new Blinn(kd, ks, shininess);
-
-        return blinn.evaluateBRDF(hitRecord, wOut, wIn);
+        normalDisplacement.bumpNormal(hitRecord);
+        return material.evaluateBRDF(hitRecord, wOut, wIn);
     }
 
     @Override
     public Spectrum evaluateEmission(HitRecord hitRecord, Vector3f wOut) {
-        return null;
+        return material.evaluateEmission(hitRecord, wOut);
     }
 
     @Override
     public boolean hasSpecularReflection() {
-        return false;
+        return material.hasSpecularReflection();
     }
 
     @Override
     public ShadingSample evaluateSpecularReflection(HitRecord hitRecord) {
-        return null;
+        return material.evaluateSpecularReflection(hitRecord);
     }
 
     @Override
     public boolean hasSpecularRefraction() {
-        return false;
+        return material.hasSpecularRefraction();
     }
 
     @Override
     public ShadingSample evaluateSpecularRefraction(HitRecord hitRecord) {
-        return null;
+        return material.evaluateSpecularRefraction(hitRecord);
     }
 
     @Override
     public ShadingSample getShadingSample(HitRecord hitRecord, float[] sample) {
-        return null;
+        return material.getShadingSample(hitRecord, sample);
     }
 
     @Override
     public ShadingSample getEmissionSample(HitRecord hitRecord, float[] sample) {
-        return null;
+        return material.getEmissionSample(hitRecord, sample);
     }
 
     @Override
     public boolean castsShadows() {
-        return true;
+        return material.castsShadows();
     }
 }
