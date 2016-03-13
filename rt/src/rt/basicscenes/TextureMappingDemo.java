@@ -6,10 +6,10 @@ import rt.films.BoxFilterFilm;
 import rt.integrators.PointLightIntegratorFactory;
 import rt.intersectables.*;
 import rt.lightsources.PointLight;
-import rt.materials.Blinn;
 import rt.materials.BlinnTexture;
 import rt.materials.XYZGrid;
 import rt.samplers.OneSamplerFactory;
+import rt.textures.Texture;
 import rt.tonemappers.ClampTonemapper;
 
 import javax.vecmath.AxisAngle4f;
