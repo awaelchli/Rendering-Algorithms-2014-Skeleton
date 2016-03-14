@@ -40,6 +40,8 @@ public class Blinn implements Material {
         brdf.mult(1 / nDotl);
 
         // Add constant diffuse term
+        Spectrum kd = new Spectrum(this.kd);
+        kd.mult(1 / (float) Math.PI);
         brdf.add(kd);
 
         return brdf;

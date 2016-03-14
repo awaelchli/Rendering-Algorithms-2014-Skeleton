@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 
 import rt.basicscenes.Box;
 import rt.basicscenes.CSGDemo;
+import rt.basicscenes.CSGRefractiveDemo;
 import rt.basicscenes.Dodecahedron;
 import rt.testscenes.*;
 
@@ -26,7 +27,7 @@ public class Main {
 	/** 
 	 * The scene to be rendered.
 	 */
-	public static Scene scene = new MirrorSpheres();
+	public static Scene scene = new CSGRefractiveDemo();
 	/**
 	 * A render task represents a rectangular image region that is rendered
 	 * by a thread in one chunk.
