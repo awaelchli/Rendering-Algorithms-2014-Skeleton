@@ -55,7 +55,11 @@ public class Refractive implements Material {
     @Override
     public ShadingSample evaluateSpecularRefraction(HitRecord hitRecord) {
 
-        ShadingSample s = refract_schlick(hitRecord.normal, StaticVecmath.negate(hitRecord.w), refractiveIndex);
+        Vector3f incident = new Vector3f(hitRecord.w);
+        incident.normalize();
+        incident.negate();
+
+        ShadingSample s = refract_schlick(hitRecord.normal, incident, refractiveIndex);
 
         if (s.w == null) {
             s.brdf = new Spectrum(0, 0, 0);
@@ -85,8 +89,8 @@ public class Refractive implements Material {
     /**
      * Refraction of incident light with Schlick's approximation.
      *
-     * @param normal    The surface normal
-     * @param incident  The incident light direction
+     * @param normal    The surface normal (normalized)
+     * @param incident  The incident light direction (normalized)
      * @param index     Refractive index of the material
      * @return          The shading sample containing the refracted direction w and fresnel term p.
      *                  If the total internal reflection occurs, w is set to null and p = 0.

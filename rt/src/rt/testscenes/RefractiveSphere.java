@@ -19,7 +19,7 @@ public class RefractiveSphere extends Scene {
 		
 	public RefractiveSphere()
 	{
-		float refractiveIndex = 1.1f;
+		float refractiveIndex = 1.01f;
 
 		// Output file name
 		outputFilename = new String("RefractiveSphere" + refractiveIndex);
