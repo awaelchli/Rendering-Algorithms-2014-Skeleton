@@ -7,6 +7,7 @@ import rt.integrators.PointLightIntegratorFactory;
 import rt.intersectables.*;
 import rt.lightsources.PointLight;
 import rt.materials.BlinnTexture;
+import rt.materials.DiffuseTexture;
 import rt.materials.XYZGrid;
 import rt.samplers.OneSamplerFactory;
 import rt.textures.Texture;
@@ -54,7 +55,9 @@ public class TextureMappingDemo extends Scene {
 
         // Create sphere with texture of earth
         Texture earthTex = new Texture("textures/earth1.jpg", Texture.InterpolationMethod.bilinear);
-        BlinnTexture earthMaterial = new BlinnTexture(earthTex, new Spectrum(0.3f, 0.3f, 0.3f), 60);
+        Material earthMaterial = new BlinnTexture(earthTex, new Spectrum(0.3f, 0.3f, 0.3f), 20);
+
+        earthMaterial = new DiffuseTexture(earthTex);
 
         Sphere earth = new Sphere(new Point3f(0, 0, 0), 1);
         earth.material = earthMaterial;
@@ -69,7 +72,8 @@ public class TextureMappingDemo extends Scene {
         root = sceneObjects;
 
         // Light sources
-        LightGeometry sun = new PointLight(new Vector3f(0, 10, 4), new Spectrum(200, 200, 200));
+        float strength = 500;
+        LightGeometry sun = new PointLight(new Vector3f(0, 10, 0), new Spectrum(strength, strength, strength));
         lightList = new LightList();
         lightList.add(sun);
     }
