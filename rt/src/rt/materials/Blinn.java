@@ -26,7 +26,7 @@ public class Blinn implements Material {
 
     @Override
     public Spectrum evaluateBRDF(HitRecord hitRecord, Vector3f wOut, Vector3f wIn) {
-
+        
         Vector3f h = new Vector3f();
         h.add(wIn, wOut);
         h.normalize();

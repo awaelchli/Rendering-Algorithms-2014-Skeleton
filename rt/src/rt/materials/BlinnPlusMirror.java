@@ -17,7 +17,6 @@ public class BlinnPlusMirror implements Material {
 
     public  BlinnPlusMirror(Spectrum kd, Spectrum ks, float shininess, Spectrum reflectivity) {
         blinn = new Blinn(kd, ks, shininess);
-        //blinn.kd.mult(1 / (float) Math.PI);
         this.reflectivity = reflectivity;
     }
 

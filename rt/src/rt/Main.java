@@ -27,7 +27,7 @@ public class Main {
 	/** 
 	 * The scene to be rendered.
 	 */
-	public static Scene scene = new CSGRefractiveDemo();
+	public static Scene scene = new RefractiveSphere();
 	/**
 	 * A render task represents a rectangular image region that is rendered
 	 * by a thread in one chunk.

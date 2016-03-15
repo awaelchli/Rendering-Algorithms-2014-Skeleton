@@ -32,6 +32,7 @@ public class Ray {
 	public static Ray reflect(HitRecord hitRecord) {
 
 		Vector3f incident = new Vector3f(hitRecord.w);
+		incident.normalize();
 		incident.negate();
 
 		float s = -2 * incident.dot(hitRecord.normal);

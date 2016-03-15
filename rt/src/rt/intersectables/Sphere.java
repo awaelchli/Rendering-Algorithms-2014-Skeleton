@@ -83,7 +83,6 @@ public class Sphere implements Intersectable {
     }
 
     static Tuple2f getUVcoordinates(Vector3f normal) {
-        assert  normal.length() == 1;
 
         float u = 0.5f + (float) (Math.atan2(normal.z, normal.x) / (2 * Math.PI));
         float v = 0.5f - (float) (Math.asin(normal.y) / Math.PI);
