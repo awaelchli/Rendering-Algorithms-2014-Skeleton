@@ -2,10 +2,7 @@ package rt;
 
 import javax.imageio.ImageIO;
 
-import rt.basicscenes.Box;
-import rt.basicscenes.CSGDemo;
-import rt.basicscenes.CSGRefractiveDemo;
-import rt.basicscenes.Dodecahedron;
+import rt.basicscenes.*;
 import rt.testscenes.*;
 
 import java.util.*;
@@ -27,7 +24,7 @@ public class Main {
 	/** 
 	 * The scene to be rendered.
 	 */
-	public static Scene scene = new RefractiveSphere();
+	public static Scene scene = new BumpMappingTest();
 	/**
 	 * A render task represents a rectangular image region that is rendered
 	 * by a thread in one chunk.
