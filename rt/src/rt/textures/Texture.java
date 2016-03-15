@@ -21,7 +21,8 @@ public class Texture {
 
     BufferedImage texture;
     InterpolationMethod method;
-    float scale = 1;
+    float scaleU = 1;
+    float scaleV = 1;
 
     /**
      * Creates a texture from an image file.
@@ -60,8 +61,8 @@ public class Texture {
      */
     public Spectrum lookUp(float u, float v) {
 
-        u /= scale;
-        v /= scale;
+        u /= scaleU;
+        v /= scaleV;
 
         u = u % 1f;
         v = v % 1f;
@@ -146,7 +147,20 @@ public class Texture {
     }
 
     public void setScale(float scale) {
-        this.scale = scale;
+        setScale(scale, scale);
+    }
+
+    public void setScaleU(float scaleU) {
+        this.scaleU = scaleU;
+    }
+
+    public void setScaleV(float scaleV) {
+        this.scaleV = scaleV;
+    }
+
+    public void setScale(float scaleU, float scaleV) {
+        setScaleU(scaleU);
+        setScaleV(scaleV);
     }
 
     public int getWidth() {
