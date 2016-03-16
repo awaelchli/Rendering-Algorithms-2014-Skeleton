@@ -162,7 +162,7 @@ public class WhittedIntegrator implements Integrator {
             return false;
         }
 
-        if (shadowRayHit.t > 1) {
+        if (shadowRayHit.t > 1 - epsilon) {
             // Hit is behind the light source
             return false;
         }
