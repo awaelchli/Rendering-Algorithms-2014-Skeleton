@@ -34,8 +34,8 @@ public class BumpMappingTest extends Scene {
         outputFilename = new String("BumpMappingTest");
 
         // Image width and height in pixels
-        width = 1024;
-        height = 1024;
+        width = 2 * 1024;
+        height = 2 * 1024;
 
         // Number of samples per pixel
         SPP = 1;
@@ -66,6 +66,8 @@ public class BumpMappingTest extends Scene {
         Texture tex_wood = new Texture("textures/wood2.jpg");
         Texture tex_stone = new Texture("textures/normal-maps/200.JPG");
         Texture map_stone = new Texture("textures/normal-maps/200_norm.JPG");
+        Texture tex_earth = new Texture("textures/earth1.jpg");
+        Texture map_earth = new Texture("textures/earth1_norm.jpg");
         Texture orientTest = new Texture("textures/orientation_test.PNG");
         map2.setScale(0.1f);
         tex_wood.setScale(10);
@@ -99,30 +101,30 @@ public class BumpMappingTest extends Scene {
 
         Matrix4f trafo = new Matrix4f();
         trafo.setIdentity();
-        CSGCube cube_ = new CSGCube();
+
+//        CSGCube cube_ = new CSGCube();
+//        NormalMap normalMap1 = new NormalMap(map1);
+//        Blinn m1 = new Blinn(new Spectrum(0, 0.5f, 0), new Spectrum(1, 1, 1), 4);
+//        Blinn m2 = new Blinn(new Spectrum(0.5f, 0.5f, 0), new Spectrum(1, 1, 1), 50);
+//        Blinn m3 = new Blinn(new Spectrum(0.9f, 0, 0), new Spectrum(1, 1, 1), 50);
+//        BumpMaterial cubeMaterial1 = new BumpMaterial(m1, normalMap1);
+//        BumpMaterial cubeMaterial2 = new BumpMaterial(m2, normalMap1);
+//        BumpMaterial cubeMaterial3 = new BumpMaterial(m3, normalMap1);
+//        cube_.setMaterial(cubeMaterial1, CSGCube.Face.FRONT);
+//        cube_.setMaterial(cubeMaterial2, CSGCube.Face.TOP);
+//        cube_.setMaterial(cubeMaterial3, CSGCube.Face.RIGHT);
+//        CSGInstance cube = new CSGInstance(cube_, trafo);
 
 
-        NormalMap normalMap1 = new NormalMap(map1);
-        Blinn m1 = new Blinn(new Spectrum(0, 0.5f, 0), new Spectrum(1, 1, 1), 4);
-        Blinn m2 = new Blinn(new Spectrum(0.5f, 0.5f, 0), new Spectrum(1, 1, 1), 50);
-        Blinn m3 = new Blinn(new Spectrum(0.9f, 0, 0), new Spectrum(1, 1, 1), 50);
-        BumpMaterial cubeMaterial1 = new BumpMaterial(m1, normalMap1);
-        BumpMaterial cubeMaterial2 = new BumpMaterial(m2, normalMap1);
-        BumpMaterial cubeMaterial3 = new BumpMaterial(m3, normalMap1);
-
-        cube_.setMaterial(cubeMaterial1, CSGCube.Face.FRONT);
-        cube_.setMaterial(cubeMaterial2, CSGCube.Face.TOP);
-        cube_.setMaterial(cubeMaterial3, CSGCube.Face.RIGHT);
-        CSGInstance cube = new CSGInstance(cube_, trafo);
-
-
-//        CSGSphere sphere_ = new CSGSphere(new Point3f(0, 0, 0), 1.35f);
-
-
-//        NormalMap normalMap2 = new NormalMap(map2);
-//        Blinn m4 = new Blinn(new Spectrum(0, 0, 0.5f), new Spectrum(1, 1, 1), 20);
-//        sphere_.material = new BumpMaterial(m4, normalMap2);
-//        CSGInstance sphere = new CSGInstance(sphere_);
+        Sphere sphere = new Sphere(new Point3f(), 1);
+        BlinnTexture blinn_earth = new BlinnTexture(tex_earth, new Spectrum(0.1f, 0.1f, 0.1f), 20);
+        sphere.material = new BumpMaterial(blinn_earth, new NormalMap(map_earth));
+        trafo.setIdentity();
+        Vector3f ax = new Vector3f(1, 1, 0);
+        ax.normalize();
+        trafo.setRotation(new AxisAngle4f(ax, (float) Math.toRadians(100)));
+        trafo.setTranslation(new Vector3f(0.5f, 1.1f, 0));
+        Instance sphereInstance = new Instance(sphere, trafo);
 
         // Mirror cube
         CSGCube mirrorCube_ = new CSGCube();
@@ -139,14 +141,15 @@ public class BumpMappingTest extends Scene {
         sceneObjects.add(left);
         //sceneObjects.add(front);
         sceneObjects.add(mirrorCube);
+        sceneObjects.add(sphereInstance);
         root = sceneObjects;
 
         // Light sources
         LightGeometry pointLight1 = new PointLight(new Vector3f(-1, 3, -2), new Spectrum(30, 30, 30));
         LightGeometry pointLight2 = new PointLight(new Vector3f(0, 4, -1), new Spectrum(20, 20, 20));
         LightGeometry pointLight3 = new PointLight(new Vector3f(3, 4.5f, 4.5f), new Spectrum(30, 30, 30));
-        LightGeometry pointLight4 = new PointLight(new Vector3f(-4, 4.5f, 0), new Spectrum(30, 30, 30));
-        LightGeometry pointLight5 = new PointLight(new Vector3f(4, 4.5f, 0), new Spectrum(30, 30, 30));
+        LightGeometry pointLight4 = new PointLight(new Vector3f(-2, 4.5f, 3.5f), new Spectrum(30, 30, 30));
+        LightGeometry pointLight5 = new PointLight(new Vector3f(2, 4f, 3.5f), new Spectrum(30, 30, 30));
         lightList = new LightList();
         lightList.add(pointLight1);
         lightList.add(pointLight2);
