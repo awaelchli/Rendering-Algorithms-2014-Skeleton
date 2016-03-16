@@ -26,17 +26,25 @@ public class Blinn implements Material {
 
     @Override
     public Spectrum evaluateBRDF(HitRecord hitRecord, Vector3f wOut, Vector3f wIn) {
-        
+
+        Vector3f incident = new Vector3f(wIn);
+        Vector3f normal = new Vector3f(hitRecord.normal);
+        Vector3f out = new Vector3f(wOut);
+        incident.normalize();
+        normal.normalize();
+        out.normalize();
+
         Vector3f h = new Vector3f();
-        h.add(wIn, wOut);
+        h.add(incident, out);
         h.normalize();
 
-        float nDotl = hitRecord.normal.dot(wIn) / wIn.length();
+        float nDotl = normal.dot(incident);
 
-        float hDotn = h.dot(hitRecord.normal);
+        float hDotn = Math.max(h.dot(normal), 0);
         float hDotns = (float) Math.pow(hDotn, shininess);
         Spectrum brdf = new Spectrum(ks);
         brdf.mult(hDotns);
+
         brdf.mult(1 / nDotl);
 
         // Add constant diffuse term
