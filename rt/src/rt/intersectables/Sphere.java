@@ -72,7 +72,7 @@ public class Sphere implements Intersectable {
 
         Vector3f normal = new Vector3f(position);
         normal.sub(this.center);
-        normal.scale(1 / this.radius);
+        normal.normalize();
 
         Vector3f w = new Vector3f(d);
         w.negate();

@@ -61,11 +61,11 @@ public class CSGSphere extends CSGSolid {
 
         // Normal at first boundary
         Vector3f normal1 = StaticVecmath.sub(position1, center);
-        normal1.scale(1 / radius);
+        normal1.normalize();
 
         // Normal at second boundary
         Vector3f normal2 = StaticVecmath.sub(position2, center);
-        normal2.scale(1 / radius);
+        normal2.normalize();
 
         // Ray direction
         Vector3f w = new Vector3f(d);
