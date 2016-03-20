@@ -7,6 +7,7 @@ import rt.Ray;
 import rt.intersectables.Aggregate;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import java.util.Iterator;
 
 /**
@@ -33,7 +34,12 @@ public class BSPAccelerator implements Intersectable {
         return null;
     }
 
-    private float findSplitPlane(Aggregate objects, BSPNode.Axis axis) {
+    @Override
+    public BoundingBox getBoundingBox() {
+        return null;
+    }
+
+    private float findSplitPlane(Aggregate objects, Axis axis) {
 
         BoundingBox bbox = null;
 
@@ -46,8 +52,9 @@ public class BSPAccelerator implements Intersectable {
             numObjects++;
         }
         centerOfMass.scale(1f / numObjects);
-        
 
-        return bbox;
+        return Axis.getValueFromAxis(centerOfMass, axis);;
     }
+
+
 }
