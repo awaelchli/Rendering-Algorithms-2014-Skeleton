@@ -8,10 +8,6 @@ import java.util.List;
  */
 public class BSPNode {
 
-    public enum Axis {
-        X, Y, Z;
-    }
-
     float planePos;
     Axis axis;
     final List<BSPNode> children;
