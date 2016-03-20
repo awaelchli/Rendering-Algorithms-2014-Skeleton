@@ -21,6 +21,13 @@ public class BoundingBox {
         this.point2 = new Point3f(xmax, ymax, zmax);
     }
 
+    /**
+     * Copies an existing bounding box
+     */
+    public BoundingBox(BoundingBox b) {
+        this(b.point1, b.point2);
+    }
+
     public Point3f center() {
         Vector3f halfDiag = StaticVecmath.sub(point2, point1);
         Point3f center = new Point3f();
