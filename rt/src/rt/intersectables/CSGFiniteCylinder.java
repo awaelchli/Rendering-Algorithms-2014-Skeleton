@@ -1,5 +1,6 @@
 package rt.intersectables;
 
+import rt.BoundingBox;
 import rt.Material;
 import rt.Ray;
 import rt.Spectrum;
@@ -18,12 +19,13 @@ public class CSGFiniteCylinder extends CSGSolid {
     }
 
     CSGNode root;
+    float length;
 
     private CSGInfiniteCylinder body;
     private CSGPlane top, bottom;
 
     public CSGFiniteCylinder(float radius, float length) {
-
+        this.length = length;
         body = new CSGInfiniteCylinder(radius);
         top = new CSGPlane(new Vector3f(0, 0, -1), -length / 2);
         bottom = new CSGPlane(new Vector3f(0, 0, 1), -length / 2);
@@ -56,5 +58,11 @@ public class CSGFiniteCylinder extends CSGSolid {
     @Override
     ArrayList<IntervalBoundary> getIntervalBoundaries(Ray r) {
         return root.getIntervalBoundaries(r);
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        float r = body.radius;
+        return new BoundingBox(-r, r, -r, r, -length / 2, length / 2);
     }
 }

@@ -103,4 +103,14 @@ public class CSGSphere extends CSGSolid {
 
         return boundaries;
     }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        float r = radius;
+        Point3f p1 = new Point3f(-r, -r, -r);
+        Point3f p2 = new Point3f(r, r, r);
+        p1.add(center);
+        p2.add(center);
+        return new BoundingBox(p1, p2);
+    }
 }

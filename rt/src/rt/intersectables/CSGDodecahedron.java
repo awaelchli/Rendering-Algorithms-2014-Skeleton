@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javax.vecmath.*;
 
+import rt.BoundingBox;
 import rt.Material;
 import rt.Ray;
 import rt.Spectrum;
@@ -93,5 +94,10 @@ public class CSGDodecahedron extends CSGSolid {
 	ArrayList<IntervalBoundary> getIntervalBoundaries(Ray r)
 	{
 		return root.getIntervalBoundaries(r);
+	}
+
+	@Override
+	public BoundingBox getBoundingBox() {
+		return null;
 	}
 }

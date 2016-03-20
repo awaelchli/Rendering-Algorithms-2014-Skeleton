@@ -93,4 +93,9 @@ public class CSGCube extends CSGSolid {
 	ArrayList<IntervalBoundary> getIntervalBoundaries(Ray r) {
 		return root.getIntervalBoundaries(r);
 	}
+
+	@Override
+	public BoundingBox getBoundingBox() {
+		return new BoundingBox(-1, 1, -1, 1, -1, 1);
+	}
 }

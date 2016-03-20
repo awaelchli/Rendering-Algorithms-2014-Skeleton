@@ -3,11 +3,7 @@ package rt.intersectables;
 import java.util.ArrayList;
 import javax.vecmath.*;
 
-import rt.HitRecord;
-import rt.Intersectable;
-import rt.Material;
-import rt.Spectrum;
-import rt.Ray;
+import rt.*;
 import rt.materials.Diffuse;
 
 /**
@@ -120,5 +116,13 @@ public class CSGInfiniteCylinder extends CSGSolid {
 		boundaries.add(b2);
 		
 		return boundaries;
+	}
+
+	/**
+	 * @return null, the infinite cylinder cannot be bounded.
+     */
+	@Override
+	public BoundingBox getBoundingBox() {
+		return null;
 	}
 }

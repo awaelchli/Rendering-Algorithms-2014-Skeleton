@@ -14,4 +14,6 @@ public interface Intersectable {
 	 * @return a hit record, should return null if there is no intersection
 	 */
 	public HitRecord intersect(Ray r);
+
+	public BoundingBox getBoundingBox();
 }

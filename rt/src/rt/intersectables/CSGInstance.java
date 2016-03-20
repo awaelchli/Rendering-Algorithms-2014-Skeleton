@@ -1,5 +1,6 @@
 package rt.intersectables;
 
+import rt.BoundingBox;
 import rt.HitRecord;
 import rt.Intersectable;
 import rt.Ray;
@@ -69,5 +70,12 @@ public class CSGInstance extends CSGSolid {
         }
 
         return boundaries;
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        BoundingBox bb = new BoundingBox(reference.getBoundingBox());
+        // TODO: Transform bounding box and return
+        return bb;
     }
 }

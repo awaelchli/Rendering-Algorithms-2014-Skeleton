@@ -1,10 +1,8 @@
 package rt.intersectables;
 
 import javax.vecmath.*;
-import rt.HitRecord;
-import rt.Intersectable;
-import rt.Ray;
-import rt.StaticVecmath;
+
+import rt.*;
 
 import java.awt.*;
 
@@ -255,5 +253,16 @@ public class MeshTriangle implements Intersectable {
 
 		return new Point2f[] {tex0, tex1, tex2};
 	}
-	
+
+	@Override
+	public BoundingBox getBoundingBox() {
+		Point3f[] positions = getVertexPositions();
+		float xmin = Math.min(Math.min(positions[0].x, positions[1].x), positions[2].x);
+		float ymin = Math.min(Math.min(positions[0].y, positions[1].y), positions[2].y);
+		float zmin = Math.min(Math.min(positions[0].z, positions[1].z), positions[2].z);
+		float xmax = Math.max(Math.max(positions[0].x, positions[1].x), positions[2].x);
+		float ymax = Math.max(Math.max(positions[0].y, positions[1].y), positions[2].y);
+		float zmax = Math.max(Math.max(positions[0].z, positions[1].z), positions[2].z);
+		return new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
+	}
 }

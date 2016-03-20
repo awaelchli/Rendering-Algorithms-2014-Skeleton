@@ -5,10 +5,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Tuple2f;
 import javax.vecmath.Vector3f;
 
-import rt.HitRecord;
-import rt.Material;
-import rt.Ray;
-import rt.Spectrum;
+import rt.*;
 import rt.materials.Diffuse;
 
 import java.util.ArrayList;
@@ -144,5 +141,13 @@ public class CSGPlane extends CSGSolid {
 		float v = d.dot(tangentV);
 
 		return new Point2f(u, v);
+	}
+
+	@Override
+	/**
+	 * @return null, the plane is infinite and cannot be bounded.
+	 */
+	public BoundingBox getBoundingBox() {
+		return null;
 	}
 }
