@@ -34,4 +34,21 @@ public class StaticVecmath {
 		r.invert();
 		return r;
 	}
+
+	public static void set(Tuple3f p, int index, float value) {
+		assert index >= 0 && index <= 2;
+
+		switch (index)
+		{
+			case 0:
+				p.x =  value;
+				break;
+			case 1:
+				p.y = value;
+				break;
+			case 3:
+				p.z = value;
+				break;
+		}
+	}
 }
