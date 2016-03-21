@@ -1,4 +1,6 @@
-package rt;
+package rt.bsp;
+
+import rt.StaticVecmath;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -6,17 +8,22 @@ import javax.vecmath.Vector3f;
 /**
  * A axis aligned bounding box
  */
-public class BoundingBox {
+public class BoundingBox
+{
 
     Point3f point1;
     Point3f point2;
 
-    public BoundingBox(Point3f p1, Point3f p2) {
+    BoundingBox() {}
+
+    public BoundingBox(Point3f p1, Point3f p2)
+    {
         this.point1 = new Point3f(p1);
         this.point2 = new Point3f(p2);
     }
 
-    public BoundingBox(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
+    public BoundingBox(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax)
+    {
         this.point1 = new Point3f(xmin, ymin, zmin);
         this.point2 = new Point3f(xmax, ymax, zmax);
     }
@@ -24,18 +31,42 @@ public class BoundingBox {
     /**
      * Copies an existing bounding box
      */
-    public BoundingBox(BoundingBox b) {
+    public BoundingBox(BoundingBox b)
+    {
         this(b.point1, b.point2);
     }
 
-    public Point3f center() {
+    public Point3f center()
+    {
         Vector3f halfDiag = StaticVecmath.sub(point2, point1);
         Point3f center = new Point3f();
         center.scaleAdd(0.5f, halfDiag, point1);
         return center;
     }
 
-    public boolean contains(Point3f point) {
+    public void split(Axis axis, float p, BoundingBox left, BoundingBox right)
+    {
+        Point3f p1 = new Point3f(point1);
+        Point3f p2 = new Point3f(point2);
+
+        float v1 = axis.getValue(p1);
+        float v2 = axis.getValue(p2);
+
+        int i = axis.getIndex();
+
+        Point3f q1 = new Point3f(p2);
+        StaticVecmath.set(q1, i, p);
+        Point3f q2 = new Point3f(p1);
+        StaticVecmath.set(q2, i, p);
+
+        left.point1 = p1;
+        left.point2 = q1;
+        right.point1 = q2;
+        right.point2 = p2;
+    }
+
+    public boolean contains(Point3f point)
+    {
         boolean xContains = doesIntervalContain(point1.x, point2.x, point.x);
         boolean yContains = doesIntervalContain(point1.y, point2.y, point.y);
         boolean zContains = doesIntervalContain(point1.z, point2.z, point.z);
@@ -43,7 +74,8 @@ public class BoundingBox {
         return xContains && yContains && zContains;
     }
 
-    public boolean isIntersecting(BoundingBox other) {
+    public boolean isIntersecting(BoundingBox other)
+    {
 
         boolean xIntersects = doesIntervalIntersect(point1.x, point2.x, other.point1.x, other.point2.x);
         boolean yIntersects = doesIntervalIntersect(point1.y, point2.y, other.point1.y, other.point2.y);
@@ -55,12 +87,15 @@ public class BoundingBox {
     /**
      * Returns true if the intervals [a, b] and [c, d] intersect, and false otherwise.
      */
-    private boolean doesIntervalIntersect(float a, float b, float c, float d) {
+    private boolean doesIntervalIntersect(float a, float b, float c, float d)
+    {
         // Correct ordering of interval boundaries
-        if (a > b) {
+        if (a > b)
+        {
             return doesIntervalIntersect(b, a, c, d);
         }
-        if (c > d) {
+        if (c > d)
+        {
             return doesIntervalIntersect(a, b, d, c);
         }
 
@@ -68,8 +103,10 @@ public class BoundingBox {
 
     }
 
-    private boolean doesIntervalContain(float a, float b, float v) {
-        if(a > b) {
+    private boolean doesIntervalContain(float a, float b, float v)
+    {
+        if (a > b)
+        {
             return doesIntervalContain(b, a, v);
         }
         return v >= a && v <= b;
