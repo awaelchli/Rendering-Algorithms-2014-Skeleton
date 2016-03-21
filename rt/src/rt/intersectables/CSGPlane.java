@@ -145,7 +145,7 @@ public class CSGPlane extends CSGSolid {
 
 	@Override
 	/**
-	 * @return null, the plane is infinite and cannot be bounded.
+	 * @return null. Axis aligned bounding boxes are not possible for infinite planes.
 	 */
 	public BoundingBox getBoundingBox() {
 		return null;

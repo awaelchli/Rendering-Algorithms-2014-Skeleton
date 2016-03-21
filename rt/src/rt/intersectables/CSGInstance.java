@@ -73,9 +73,10 @@ public class CSGInstance extends CSGSolid {
     }
 
     @Override
+    /**
+     * @return null. Axis aligned bounding boxes are not supported for instancing.
+     */
     public BoundingBox getBoundingBox() {
-        BoundingBox bb = new BoundingBox(reference.getBoundingBox());
-        // TODO: Transform bounding box and return
-        return bb;
+        return null;
     }
 }

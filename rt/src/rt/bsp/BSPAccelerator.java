@@ -27,7 +27,19 @@ public class BSPAccelerator implements Intersectable {
 
     public void construct(Aggregate objects) {
 
+        int depth = 0;
+
+
+
     }
+
+    private BSPNode buildTree(Aggregate objects, BSPNode current, float depth) {
+        if (depth == maxDepth || objects.size()) {
+            // Create leaf node
+            new BSPLeaf();
+        }
+    }
+
 
     @Override
     public HitRecord intersect(Ray r) {

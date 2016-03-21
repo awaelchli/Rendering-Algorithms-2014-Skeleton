@@ -1,5 +1,6 @@
 package rt.intersectables;
 
+import rt.BoundingBox;
 import rt.HitRecord;
 import rt.Intersectable;
 import rt.Ray;
@@ -64,5 +65,13 @@ public class Instance implements Intersectable {
         hit.transform(transformation, inv_transformation);
 
         return hit;
+    }
+
+    @Override
+    /**
+     * @return null. Axis aligned bounding boxes are not supported for instancing.
+     */
+    public BoundingBox getBoundingBox() {
+        return null;
     }
 }

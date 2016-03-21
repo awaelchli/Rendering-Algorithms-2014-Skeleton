@@ -2,11 +2,7 @@ package rt.intersectables;
 
 import javax.vecmath.*;
 
-import rt.HitRecord;
-import rt.Intersectable;
-import rt.Material;
-import rt.Ray;
-import rt.Spectrum;
+import rt.*;
 import rt.materials.Diffuse;
 
 /**
@@ -78,6 +74,14 @@ public class Plane implements Intersectable {
 		float v = d.dot(tangentV);
 
 		return new Point2f(u, v);
+	}
+
+	@Override
+	/**
+	 * @return null. Axis aligned bounding boxes are not supported for infinite planes.
+	 */
+	public BoundingBox getBoundingBox() {
+		return null;
 	}
 
 }

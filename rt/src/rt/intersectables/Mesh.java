@@ -2,6 +2,7 @@ package rt.intersectables;
 
 import java.util.Iterator;
 
+import rt.BoundingBox;
 import rt.Intersectable;
 import rt.Material;
 import rt.Spectrum;
@@ -105,5 +106,24 @@ public class Mesh extends Aggregate {
 		{
 		}
 	}
-		
+
+	@Override
+	public BoundingBox getBoundingBox() {
+		float xmin = Float.POSITIVE_INFINITY;
+		float xmax = Float.NEGATIVE_INFINITY;
+		float ymin = Float.POSITIVE_INFINITY;
+		float ymax = Float.NEGATIVE_INFINITY;
+		float zmin = Float.POSITIVE_INFINITY;
+		float zmax = Float.NEGATIVE_INFINITY;
+
+		for(int i = 0; i < vertices.length / 3; i++) {
+			xmin = Math.min(vertices[i * 3], xmin);
+			xmax = Math.max(vertices[i * 3], xmax);
+			ymin = Math.min(vertices[i * 3 + 1], ymin);
+			ymax = Math.max(vertices[i * 3 + 1], ymax);
+			zmin = Math.min(vertices[i * 3 + 2], zmin);
+			zmax = Math.max(vertices[i * 3 + 2], zmax);
+		}
+		return new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
+	}
 }

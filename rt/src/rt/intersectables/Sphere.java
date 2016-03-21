@@ -89,4 +89,17 @@ public class Sphere implements Intersectable {
 
         return new Point2f(u, v);
     }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return boundingBox(this.center, this.radius);
+    }
+
+    static BoundingBox boundingBox(Point3f center, float r) {
+        Point3f p1 = new Point3f(-r, -r, -r);
+        Point3f p2 = new Point3f(r, r, r);
+        p1.add(center);
+        p2.add(center);
+        return new BoundingBox(p1, p2);
+    }
 }
