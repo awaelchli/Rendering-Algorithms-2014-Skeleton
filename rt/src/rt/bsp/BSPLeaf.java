@@ -1,6 +1,6 @@
 package rt.bsp;
 
-import rt.BoundingBox;
+import rt.intersectables.Aggregate;
 import rt.intersectables.IntersectableList;
 
 /**
@@ -8,9 +8,13 @@ import rt.intersectables.IntersectableList;
  */
 public class BSPLeaf extends BSPNode {
 
-    IntersectableList objects;
+    public BSPLeaf(BoundingBox boundingBox) {
+        this.bb = boundingBox;
+    }
 
-    public BSPLeaf(float planePos, Axis axis, BoundingBox boundingBox) {
-        super(planePos, axis, boundingBox);
+    @Override
+    public boolean isLeaf()
+    {
+        return true;
     }
 }

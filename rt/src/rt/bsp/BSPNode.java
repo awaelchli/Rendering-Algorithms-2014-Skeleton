@@ -1,8 +1,11 @@
 package rt.bsp;
 
-import rt.BoundingBox;
+import rt.Intersectable;
+import rt.intersectables.Aggregate;
+import rt.intersectables.IntersectableList;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -11,9 +14,16 @@ import java.util.List;
 public class BSPNode {
 
     float planePos;
-    BoundingBox bb;
     Axis axis;
-    final List<BSPNode> children;
+    BoundingBox bb;
+    List<BSPNode> children;
+
+    /**
+     * Only for leaf nodes
+     */
+    Aggregate objects;
+
+    BSPNode() {}
 
     public BSPNode(float planePos, Axis axis, BoundingBox boundingBox) {
         this.planePos = planePos;
@@ -22,4 +32,17 @@ public class BSPNode {
         children = new ArrayList<>();
     }
 
+    public BoundingBox getBoundingBox()
+    {
+        return bb;
+    }
+
+    public boolean isLeaf() {
+        return false;
+    }
+
+    public Aggregate getObjects()
+    {
+        return objects;
+    }
 }
