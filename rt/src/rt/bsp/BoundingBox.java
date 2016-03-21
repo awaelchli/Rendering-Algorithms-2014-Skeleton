@@ -44,6 +44,19 @@ public class BoundingBox
         return center;
     }
 
+    public float xmin() { return Math.min(point1.x, point2.x); }
+
+    public float ymin() { return Math.min(point1.y, point2.y); }
+
+    public float zmin() { return Math.min(point1.z, point2.z); }
+
+    public float xmax() { return Math.max(point1.x, point2.x); }
+
+    public float ymax() { return Math.max(point1.y, point2.y); }
+
+    public float zmax() { return Math.max(point1.z, point2.z); }
+
+
     public void split(Axis axis, float p, BoundingBox left, BoundingBox right)
     {
         Point3f p1 = new Point3f(point1);
@@ -85,6 +98,22 @@ public class BoundingBox
     }
 
     /**
+     * Enlarges the current bounding box such that it contains the {@param other} bounding box.
+     */
+    public void add(BoundingBox other)
+    {
+        float xmin = Math.min(xmin(), other.xmin());
+        float ymin = Math.min(ymin(), other.ymin());
+        float zmin = Math.min(zmin(), other.zmin());
+        float xmax = Math.max(xmax(), other.xmax());
+        float ymax = Math.max(ymax(), other.ymax());
+        float zmax = Math.max(ymax(), other.ymax());
+
+        point1.set(xmin, ymin, zmin);
+        point2.set(xmax, ymax, zmax);
+    }
+
+    /**
      * Returns true if the intervals [a, b] and [c, d] intersect, and false otherwise.
      */
     private boolean doesIntervalIntersect(float a, float b, float c, float d)
@@ -111,5 +140,4 @@ public class BoundingBox
         }
         return v >= a && v <= b;
     }
-
 }
