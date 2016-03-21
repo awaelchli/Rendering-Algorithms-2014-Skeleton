@@ -3,8 +3,7 @@ package rt.intersectables;
 import javax.vecmath.*;
 
 import rt.*;
-
-import java.awt.*;
+import rt.bsp.BoundingBox;
 
 /**
  * Defines a triangle by referring back to a {@link Mesh}

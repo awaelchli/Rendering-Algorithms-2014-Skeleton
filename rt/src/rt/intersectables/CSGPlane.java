@@ -6,6 +6,7 @@ import javax.vecmath.Tuple2f;
 import javax.vecmath.Vector3f;
 
 import rt.*;
+import rt.bsp.BoundingBox;
 import rt.materials.Diffuse;
 
 import java.util.ArrayList;

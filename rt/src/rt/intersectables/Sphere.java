@@ -1,6 +1,7 @@
 package rt.intersectables;
 
 import rt.*;
+import rt.bsp.BoundingBox;
 import rt.materials.Diffuse;
 
 import javax.vecmath.Point2f;

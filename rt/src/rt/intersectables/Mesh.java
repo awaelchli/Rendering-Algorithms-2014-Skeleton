@@ -2,7 +2,7 @@ package rt.intersectables;
 
 import java.util.Iterator;
 
-import rt.BoundingBox;
+import rt.bsp.BoundingBox;
 import rt.Intersectable;
 import rt.Material;
 import rt.Spectrum;
@@ -125,5 +125,11 @@ public class Mesh extends Aggregate {
 			zmax = Math.max(vertices[i * 3 + 2], zmax);
 		}
 		return new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
+	}
+
+	@Override
+	public int count()
+	{
+		return triangles.length;
 	}
 }

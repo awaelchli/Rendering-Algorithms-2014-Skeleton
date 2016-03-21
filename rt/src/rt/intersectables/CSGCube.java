@@ -3,6 +3,7 @@ package rt.intersectables;
 import javax.vecmath.*;
 
 import rt.*;
+import rt.bsp.BoundingBox;
 import rt.materials.Diffuse;
 
 import java.util.ArrayList;

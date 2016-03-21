@@ -1,6 +1,6 @@
 package rt.intersectables;
 
-import rt.BoundingBox;
+import rt.bsp.BoundingBox;
 import rt.HitRecord;
 import rt.Intersectable;
 import rt.Ray;

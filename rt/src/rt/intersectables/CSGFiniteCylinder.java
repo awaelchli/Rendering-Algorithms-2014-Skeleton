@@ -1,10 +1,8 @@
 package rt.intersectables;
 
-import rt.BoundingBox;
+import rt.bsp.BoundingBox;
 import rt.Material;
 import rt.Ray;
-import rt.Spectrum;
-import rt.materials.Diffuse;
 
 import javax.vecmath.Vector3f;
 import java.util.ArrayList;

@@ -1,5 +1,7 @@
 package rt;
 
+import rt.bsp.BoundingBox;
+
 /**
  * An intersectable supports ray-surface intersection.
  */

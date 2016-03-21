@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import rt.BoundingBox;
+import rt.bsp.BoundingBox;
 import rt.Ray;
 
 /**

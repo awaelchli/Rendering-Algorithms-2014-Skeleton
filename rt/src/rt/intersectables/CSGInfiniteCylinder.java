@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import javax.vecmath.*;
 
 import rt.*;
+import rt.bsp.BoundingBox;
 import rt.materials.Diffuse;
 
 /**

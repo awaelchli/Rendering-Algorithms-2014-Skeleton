@@ -1,12 +1,11 @@
 package rt.intersectables;
 
 import rt.*;
-import rt.materials.Diffuse;
+import rt.bsp.BoundingBox;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple2f;
 import javax.vecmath.Vector3f;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**

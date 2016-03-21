@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import javax.vecmath.*;
 
-import rt.BoundingBox;
+import rt.bsp.BoundingBox;
 import rt.Material;
 import rt.Ray;
 import rt.Spectrum;
