@@ -6,6 +6,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import rt.*;
+import rt.bsp.BoundingBox;
 import rt.materials.PointLightMaterial;
 
 /**
@@ -28,6 +29,15 @@ public class PointLight implements LightGeometry {
 	 * A ray never hit a point.
 	 */
 	public HitRecord intersect(Ray r) {
+		return null;
+	}
+
+	@Override
+	/**
+	 * A point light does not have a bounding box
+	 */
+	public BoundingBox getBoundingBox()
+	{
 		return null;
 	}
 
