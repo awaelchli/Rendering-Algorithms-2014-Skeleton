@@ -73,7 +73,30 @@ public class BSPAccelerator implements Intersectable
     @Override
     public HitRecord intersect(Ray r)
     {
-        return null;
+        return intersect(root, r);
+    }
+
+    // TODO: remove once propper intersection is implemented
+    private HitRecord intersect(BSPNode node, Ray r) {
+        if(node.isLeaf())
+        {
+            return node.getObjects().intersect(r);
+        }
+
+        HitRecord hitRecord = null;
+        float t = Float.MAX_VALUE;
+
+        Iterator<BSPNode> iterator = node.children.iterator();
+        while(iterator.hasNext()) {
+            HitRecord tmp = intersect(iterator.next(), r);
+            if(tmp!=null && tmp.t<t)
+            {
+                t = tmp.t;
+                hitRecord = tmp;
+            }
+        }
+
+        return hitRecord;
     }
 
     @Override
