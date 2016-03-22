@@ -1,5 +1,6 @@
 package rt.bsp;
 
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import rt.HitRecord;
 import rt.Intersectable;
 import rt.Ray;
@@ -37,20 +38,13 @@ public class BSPAccelerator implements Intersectable
         {
             // Create leaf node
             BSPLeaf current = new BSPLeaf(boundingBox);
-            IntersectableList list = new IntersectableList();
-            Iterator<Intersectable> iterator = objects.iterator();
-            while (iterator.hasNext())
-            {
-                Intersectable object = iterator.next();
-                if (object.getBoundingBox().isIntersecting(boundingBox))
-                {
-                    list.add(object);
-                }
-            }
-            current.objects = list;
+            current.objects = objects;
             return current;
         }
 
+        /*
+         *  Split the bounding box into left and right
+         */
         float splitPos = findSplitPlane(objects, currentAxis);
 
         BoundingBox leftBB = new BoundingBox();
@@ -59,8 +53,32 @@ public class BSPAccelerator implements Intersectable
         boundingBox.split(currentAxis, splitPos, leftBB, rightBB);
         Axis nextAxis = Axis.nextAxis(currentAxis);
 
-        BSPNode left = buildTree(objects, leftBB, nextAxis, depth + 1);
-        BSPNode right = buildTree(objects, leftBB, nextAxis, depth + 1);
+        /*
+         * Collect objects for the left and right half
+         */
+        IntersectableList leftObjs = new IntersectableList();
+        IntersectableList rightObjs = new IntersectableList();
+        Iterator<Intersectable> iterator = objects.iterator();
+        while (iterator.hasNext())
+        {
+            Intersectable object = iterator.next();
+            BoundingBox bb = object.getBoundingBox();
+
+            if (bb.isIntersecting(leftBB))
+            {
+                leftObjs.add(object);
+            }
+            if (bb.isIntersecting(rightBB))
+            {
+                rightObjs.add(object);
+            }
+        }
+
+        /*
+         *  Recursively build the sub-tree on the left and right node
+         */
+        BSPNode left = buildTree(leftObjs, leftBB, nextAxis, depth + 1);
+        BSPNode right = buildTree(rightObjs, rightBB, nextAxis, depth + 1);
 
         BSPNode current = new BSPNode(splitPos, currentAxis, boundingBox);
         current.children.add(left);

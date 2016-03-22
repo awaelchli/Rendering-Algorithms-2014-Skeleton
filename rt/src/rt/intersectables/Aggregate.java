@@ -39,6 +39,7 @@ public abstract class Aggregate implements Intersectable {
 		int count = 0;
 		Iterator<Intersectable> it = iterator();
 		while(it.hasNext()) {
+			it.next();
 			count++;
 		}
 		return count;

@@ -98,7 +98,6 @@ public class BSPTeapotTest extends Scene {
 		t.setTranslation(new Vector3f(0.f, -0.35f, 0.f));
 		Instance instance = new Instance(meshAccelerator, t);
 		objects.add(instance);
-//		root = objects;
 		
 		root = objects;
 

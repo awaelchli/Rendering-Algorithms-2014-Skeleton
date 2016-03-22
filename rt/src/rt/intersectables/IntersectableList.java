@@ -18,8 +18,14 @@ public class IntersectableList extends Aggregate {
 		list.add(i);
 	}
 	
-	public Iterator<Intersectable> iterator() {
+	public Iterator<Intersectable> iterator()
+	{
 		return list.iterator();
 	}
 
+	@Override
+	public int count()
+	{
+		return list.size();
+	}
 }

@@ -6,7 +6,7 @@ import javax.vecmath.Vector3f;
 /**
  * Simple enum to identify each axis.
  */
-enum Axis {
+public enum Axis {
 
     X, Y, Z;
 
