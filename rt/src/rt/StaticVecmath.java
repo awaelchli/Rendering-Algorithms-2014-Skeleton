@@ -35,20 +35,36 @@ public class StaticVecmath {
 		return r;
 	}
 
-	public static void set(Tuple3f p, int index, float value) {
+	public static void set(Tuple3f tuple, int index, float value) {
 		assert index >= 0 && index <= 2;
 
 		switch (index)
 		{
 			case 0:
-				p.x =  value;
+				tuple.x =  value;
 				break;
 			case 1:
-				p.y = value;
+				tuple.y = value;
 				break;
 			case 3:
-				p.z = value;
+				tuple.z = value;
 				break;
 		}
+	}
+
+	public static float get(Tuple3f tuple, int index)
+	{
+		assert index >= 0 && index <= 2;
+
+		switch (index)
+		{
+			case 0:
+				return tuple.x;
+			case 1:
+				return tuple.y;
+			case 3:
+				return tuple.z;
+		}
+		return Float.NaN;
 	}
 }

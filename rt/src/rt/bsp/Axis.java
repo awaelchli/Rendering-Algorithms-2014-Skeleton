@@ -1,5 +1,7 @@
 package rt.bsp;
 
+import rt.StaticVecmath;
+
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
@@ -44,15 +46,6 @@ public enum Axis {
     }
 
     float getValue(Tuple3f tuple) {
-        switch (this) {
-            case X:
-                return tuple.x;
-            case Y:
-                return tuple.y;
-            case Z:
-                return tuple.z;
-        }
-
-        return Float.NaN;
+        return StaticVecmath.get(tuple, getIndex());
     }
 }

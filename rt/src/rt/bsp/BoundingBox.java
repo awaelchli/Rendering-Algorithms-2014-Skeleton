@@ -1,5 +1,8 @@
 package rt.bsp;
 
+import rt.HitRecord;
+import rt.Intersectable;
+import rt.Ray;
 import rt.StaticVecmath;
 
 import javax.vecmath.Point3f;
@@ -140,4 +143,5 @@ public class BoundingBox
         }
         return v >= a && v <= b;
     }
+
 }

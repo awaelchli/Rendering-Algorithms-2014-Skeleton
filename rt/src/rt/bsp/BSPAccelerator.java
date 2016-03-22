@@ -9,6 +9,7 @@ import rt.intersectables.IntersectableList;
 
 import javax.vecmath.Point3f;
 import java.util.Iterator;
+import java.util.Stack;
 
 /**
  * Created by adrian on 18.03.16.
@@ -81,8 +82,8 @@ public class BSPAccelerator implements Intersectable
         BSPNode right = buildTree(rightObjs, rightBB, nextAxis, depth + 1);
 
         BSPNode current = new BSPNode(splitPos, currentAxis, boundingBox);
-        current.children.add(left);
-        current.children.add(right);
+        current.below = left;
+        current.above = right;
 
         return current;
     }
@@ -91,31 +92,94 @@ public class BSPAccelerator implements Intersectable
     @Override
     public HitRecord intersect(Ray r)
     {
-        return intersect(root, r);
-    }
-
-    // TODO: remove once propper intersection is implemented
-    private HitRecord intersect(BSPNode node, Ray r) {
-        if(node.isLeaf())
-        {
-            return node.getObjects().intersect(r);
-        }
-
         HitRecord hitRecord = null;
-        float t = Float.MAX_VALUE;
+        Stack<BSPStackItem> stack = new Stack<>();
+        BSPNode node = root;
+        float isect = Float.MAX_VALUE;
+        BSPStackItem rootItem = root.intersect(r);
+        float tmin = rootItem.tmin;
+        float tmax = rootItem.tmax;
 
-        Iterator<BSPNode> iterator = node.children.iterator();
-        while(iterator.hasNext()) {
-            HitRecord tmp = intersect(iterator.next(), r);
-            if(tmp!=null && tmp.t<t)
+        while(node != null)
+        {
+            if( isect < tmin ) break;
+            if( !node.isLeaf() )
             {
-                t = tmp.t;
-                hitRecord = tmp;
+                float tsplit = node.intersect(r).tsplit;
+
+                // order children
+                BSPNode first, second;
+                if(node.axis.getValue(r.origin) < node.planePos )
+                {
+                    first = node.below;
+                    second = node.above;
+                }
+                else
+                {
+                    first = node.above;
+                    second = node.below;
+                }
+
+                // process children
+                if( tsplit > tmax || tsplit < 0 || (tsplit == 0 /*&& ray towards first*/))
+                { // case 1: only first child is hit
+                    node = first;
+                }
+                else if(tsplit < tmin || (tsplit == 0 /*&& ray towards second*/))
+                { // case 2: only second child is hit
+                    node = second;
+                }
+                else
+                { // case 3: both children are hit
+                    node = first;
+                    BSPStackItem item = new BSPStackItem();
+                    item.node = second;
+                    item.tmin = tsplit;
+                    item.tmax = tmax;
+                    stack.push(item);
+                    tmax = tsplit;
+                }
+
+            }
+            else
+            {
+                HitRecord hit = node.objects.intersect(r);
+                if (hit != null)
+                {
+                    hitRecord = hit;
+                    isect = hitRecord.t;
+                }
+                BSPStackItem i = stack.pop();
+                node = i.node;
+                tmin = i.tmin;
+                tmax = i.tmax;
             }
         }
-
         return hitRecord;
     }
+
+//    // TODO: remove once propper intersection is implemented
+//    private HitRecord intersect(BSPNode node, Ray r) {
+//        if(node.isLeaf())
+//        {
+//            return node.getObjects().intersect(r);
+//        }
+//
+//        HitRecord hitRecord = null;
+//        float t = Float.MAX_VALUE;
+//
+//        Iterator<BSPNode> iterator = node.children.iterator();
+//        while(iterator.hasNext()) {
+//            HitRecord tmp = intersect(iterator.next(), r);
+//            if(tmp!=null && tmp.t<t)
+//            {
+//                t = tmp.t;
+//                hitRecord = tmp;
+//            }
+//        }
+//
+//        return hitRecord;
+//    }
 
     @Override
     public BoundingBox getBoundingBox()

@@ -6,5 +6,5 @@ package rt.bsp;
 public class BSPStackItem
 {
     BSPNode node;
-    float tmin, tmax;
+    float tmin, tmax, tsplit;
 }
