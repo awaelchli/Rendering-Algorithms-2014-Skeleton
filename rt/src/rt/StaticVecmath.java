@@ -46,7 +46,7 @@ public class StaticVecmath {
 			case 1:
 				tuple.y = value;
 				break;
-			case 3:
+			case 2:
 				tuple.z = value;
 				break;
 		}
@@ -62,7 +62,7 @@ public class StaticVecmath {
 				return tuple.x;
 			case 1:
 				return tuple.y;
-			case 3:
+			case 2:
 				return tuple.z;
 		}
 		return Float.NaN;
