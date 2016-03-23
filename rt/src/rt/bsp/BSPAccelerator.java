@@ -17,6 +17,8 @@ import java.util.Stack;
 public class BSPAccelerator implements Intersectable
 {
 
+    public static final float EPSILON = 0.001f;
+
     int maxDepth;
     int maxObjectsPerNode;
 
@@ -97,6 +99,12 @@ public class BSPAccelerator implements Intersectable
         BSPNode node = root;
         float isect = Float.MAX_VALUE;
         BSPStackItem rootItem = root.intersect(r);
+
+        if (rootItem == null) {
+            // Ray did not intersect with  bounding box of root node
+            return null;
+        }
+
         float tmin = rootItem.tmin;
         float tmax = rootItem.tmax;
 
@@ -105,6 +113,12 @@ public class BSPAccelerator implements Intersectable
             if( isect < tmin ) break;
             if( !node.isLeaf() )
             {
+
+//                float o = node.axis.getValue(r.origin);
+//                float d = node.axis.getValue(r.direction);
+//
+//                float tsplit = (node.planePos - o) / d;
+
                 float tsplit = node.intersect(r).tsplit;
 
                 // order children
@@ -121,11 +135,11 @@ public class BSPAccelerator implements Intersectable
                 }
 
                 // process children
-                if( tsplit > tmax || tsplit < 0 || (tsplit == 0 /*&& ray towards first*/))
+                if( tsplit > tmax || tsplit < 0 || (Math.abs(tsplit) < EPSILON && first.intersect(r) != null))
                 { // case 1: only first child is hit
                     node = first;
                 }
-                else if(tsplit < tmin || (tsplit == 0 /*&& ray towards second*/))
+                else if(tsplit < tmin || (Math.abs(tsplit) < EPSILON && second.intersect(r) != null))
                 { // case 2: only second child is hit
                     node = second;
                 }
@@ -144,10 +158,14 @@ public class BSPAccelerator implements Intersectable
             else
             {
                 HitRecord hit = node.objects.intersect(r);
-                if (hit != null)
+                if (hit != null && hit.t < isect && hit.t > 0)
                 {
                     hitRecord = hit;
                     isect = hitRecord.t;
+                }
+                if (stack.isEmpty())
+                { // No intersection
+                    break;
                 }
                 BSPStackItem i = stack.pop();
                 node = i.node;
