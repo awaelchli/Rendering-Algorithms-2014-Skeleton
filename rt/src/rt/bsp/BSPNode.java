@@ -119,6 +119,10 @@ public class BSPNode
 
     private float computeRaySplitPlaneIntersection(Ray r)
     {
+        if (isLeaf()) {
+            // no split plane exists for leafs
+            return Float.NaN;
+        }
         float o = axis.getValue(r.origin);
         float d = axis.getValue(r.direction);
 
