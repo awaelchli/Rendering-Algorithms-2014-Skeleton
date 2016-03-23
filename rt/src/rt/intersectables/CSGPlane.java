@@ -6,7 +6,7 @@ import javax.vecmath.Tuple2f;
 import javax.vecmath.Vector3f;
 
 import rt.*;
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 import rt.materials.Diffuse;
 
 import java.util.ArrayList;
@@ -148,7 +148,7 @@ public class CSGPlane extends CSGSolid {
 	/**
 	 * @return null. Axis aligned bounding boxes are not possible for infinite planes.
 	 */
-	public BoundingBox getBoundingBox() {
+	public AABoundingBox getBoundingBox() {
 		return null;
 	}
 }

@@ -1,32 +1,27 @@
 package rt.bsp;
 
-import rt.HitRecord;
-import rt.Intersectable;
-import rt.Ray;
+import rt.StaticMath;
 import rt.StaticVecmath;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 /**
- * A axis aligned bounding box
+ * An axis aligned bounding box
  */
-public class BoundingBox
+public class AABoundingBox
 {
-
     Point3f point1;
     Point3f point2;
 
-    BoundingBox() {}
-
-    public BoundingBox(Point3f p1, Point3f p2)
+    public AABoundingBox(Point3f p1, Point3f p2)
     {
         assert p1.x <= p2.x && p1.y <= p2.y && p1.z <= p2.z;
         this.point1 = new Point3f(p1);
         this.point2 = new Point3f(p2);
     }
 
-    public BoundingBox(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax)
+    public AABoundingBox(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax)
     {
         this(new Point3f(xmin, ymin, zmin), new Point3f(xmax, ymax, zmax));
     }
@@ -34,7 +29,7 @@ public class BoundingBox
     /**
      * Copies an existing bounding box
      */
-    public BoundingBox(BoundingBox b)
+    public AABoundingBox(AABoundingBox b)
     {
         this(b.point1, b.point2);
     }
@@ -60,13 +55,10 @@ public class BoundingBox
     public float zmax() { return Math.max(point1.z, point2.z); }
 
 
-    public void split(Axis axis, float p, BoundingBox left, BoundingBox right)
+    public AABoundingBox[] split(Axis axis, float p)
     {
         Point3f p1 = new Point3f(point1);
         Point3f p2 = new Point3f(point2);
-
-        float v1 = axis.getValue(p1);
-        float v2 = axis.getValue(p2);
 
         int i = axis.getIndex();
 
@@ -75,27 +67,27 @@ public class BoundingBox
         Point3f q2 = new Point3f(p1);
         StaticVecmath.set(q2, i, p);
 
-        left.point1 = p1;
-        left.point2 = q1;
-        right.point1 = q2;
-        right.point2 = p2;
+        AABoundingBox left = new AABoundingBox(p1, q1);
+        AABoundingBox right = new AABoundingBox(q2, p2);
+
+        return new AABoundingBox[] {left, right};
     }
 
     public boolean contains(Point3f point)
     {
-        boolean xContains = doesIntervalContain(point1.x, point2.x, point.x);
-        boolean yContains = doesIntervalContain(point1.y, point2.y, point.y);
-        boolean zContains = doesIntervalContain(point1.z, point2.z, point.z);
+        boolean xContains = StaticMath.doesIntervalContain(point1.x, point2.x, point.x);
+        boolean yContains = StaticMath.doesIntervalContain(point1.y, point2.y, point.y);
+        boolean zContains = StaticMath.doesIntervalContain(point1.z, point2.z, point.z);
 
         return xContains && yContains && zContains;
     }
 
-    public boolean isIntersecting(BoundingBox other)
+    public boolean isIntersecting(AABoundingBox other)
     {
 
-        boolean xIntersects = doesIntervalIntersect(point1.x, point2.x, other.point1.x, other.point2.x);
-        boolean yIntersects = doesIntervalIntersect(point1.y, point2.y, other.point1.y, other.point2.y);
-        boolean zIntersects = doesIntervalIntersect(point1.z, point2.z, other.point1.z, other.point2.z);
+        boolean xIntersects = StaticMath.doesIntervalIntersect(point1.x, point2.x, other.point1.x, other.point2.x);
+        boolean yIntersects = StaticMath.doesIntervalIntersect(point1.y, point2.y, other.point1.y, other.point2.y);
+        boolean zIntersects = StaticMath.doesIntervalIntersect(point1.z, point2.z, other.point1.z, other.point2.z);
 
         return xIntersects && yIntersects && zIntersects;
     }
@@ -103,7 +95,7 @@ public class BoundingBox
     /**
      * Enlarges the current bounding box such that it contains the {@param other} bounding box.
      */
-    public void add(BoundingBox other)
+    public void add(AABoundingBox other)
     {
         float xmin = Math.min(xmin(), other.xmin());
         float ymin = Math.min(ymin(), other.ymin());
@@ -116,32 +108,6 @@ public class BoundingBox
         point2.set(xmax, ymax, zmax);
     }
 
-    /**
-     * Returns true if the intervals [a, b] and [c, d] intersect, and false otherwise.
-     */
-    private boolean doesIntervalIntersect(float a, float b, float c, float d)
-    {
-        // Correct ordering of interval boundaries
-        if (a > b)
-        {
-            return doesIntervalIntersect(b, a, c, d);
-        }
-        if (c > d)
-        {
-            return doesIntervalIntersect(a, b, d, c);
-        }
 
-        return !(c > b || a > d);
-
-    }
-
-    private boolean doesIntervalContain(float a, float b, float v)
-    {
-        if (a > b)
-        {
-            return doesIntervalContain(b, a, v);
-        }
-        return v >= a && v <= b;
-    }
 
 }

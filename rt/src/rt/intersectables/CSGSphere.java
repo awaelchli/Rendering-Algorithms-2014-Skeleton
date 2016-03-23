@@ -1,7 +1,7 @@
 package rt.intersectables;
 
 import rt.*;
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple2f;
@@ -104,7 +104,7 @@ public class CSGSphere extends CSGSolid {
     }
 
     @Override
-    public BoundingBox getBoundingBox() {
+    public AABoundingBox getBoundingBox() {
         return Sphere.boundingBox(this.center, this.radius);
     }
 }

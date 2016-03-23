@@ -1,6 +1,6 @@
 package rt;
 
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 
 /**
  * An intersectable supports ray-surface intersection.
@@ -17,5 +17,5 @@ public interface Intersectable {
 	 */
 	public HitRecord intersect(Ray r);
 
-	public BoundingBox getBoundingBox();
+	public AABoundingBox getBoundingBox();
 }

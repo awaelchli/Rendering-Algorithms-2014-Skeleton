@@ -2,15 +2,8 @@ package rt.test;
 
 import org.junit.Before;
 import org.junit.Test;
-import rt.HitRecord;
-import rt.Material;
-import rt.Ray;
 import rt.bsp.Axis;
-import rt.bsp.BoundingBox;
-import rt.materials.Refractive;
-
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
+import rt.bsp.AABoundingBox;
 
 import static org.junit.Assert.*;
 
@@ -28,10 +21,10 @@ public class BSPAccelerationTest
     @Test
     public void testBoundingBoxIntersection()
     {
-        BoundingBox b1 = new BoundingBox(-1, 1, -1, 1, -1, 1);
-        BoundingBox b2 = new BoundingBox(0, 2, 0, 2, 0, 2);
-        BoundingBox b3 = new BoundingBox(1, 2, 1, 2, 1, 2);
-        BoundingBox b4 = new BoundingBox(0, 2, 0, 2, 3, 4);
+        AABoundingBox b1 = new AABoundingBox(-1, 1, -1, 1, -1, 1);
+        AABoundingBox b2 = new AABoundingBox(0, 2, 0, 2, 0, 2);
+        AABoundingBox b3 = new AABoundingBox(1, 2, 1, 2, 1, 2);
+        AABoundingBox b4 = new AABoundingBox(0, 2, 0, 2, 3, 4);
 
         assertTrue(b1.isIntersecting(b2));
         assertTrue(b2.isIntersecting(b1));
@@ -42,8 +35,8 @@ public class BSPAccelerationTest
     @Test
     public void testBoundingBoxAddition()
     {
-        BoundingBox b1 = new BoundingBox(-1, 0, 0, 1, 0, 1);
-        BoundingBox b2 = new BoundingBox(0, 1, 0, 1, 0, 1);
+        AABoundingBox b1 = new AABoundingBox(-1, 0, 0, 1, 0, 1);
+        AABoundingBox b2 = new AABoundingBox(0, 1, 0, 1, 0, 1);
 
         b1.add(b2);
         assertEquals(-1, b1.xmin(), EPS);
@@ -57,13 +50,13 @@ public class BSPAccelerationTest
     @Test
     public void testSplitBoundingBox()
     {
-        BoundingBox b1 = new BoundingBox(-1, 0, 0, 1, 0, 1);
+        AABoundingBox b1 = new AABoundingBox(-1, 0, 0, 1, 0, 1);
         float splitX = -0.5f;
         Axis xaxis = Axis.X;
 
-        BoundingBox left = new BoundingBox(0, 0, 0, 0, 0, 0);
-        BoundingBox right = new BoundingBox(0, 0, 0, 0, 0, 0);
-        b1.split(xaxis, splitX, left, right);
+        AABoundingBox[] boxes = b1.split(xaxis, splitX);
+        AABoundingBox left = boxes[0];
+        AABoundingBox right = boxes[1];
 
         assertEquals(-1, left.xmin(), EPS);
         assertEquals(-0.5f, right.xmin(), EPS);

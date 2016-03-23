@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import javax.vecmath.*;
 
 import rt.*;
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 import rt.materials.Diffuse;
 
 /**
@@ -123,7 +123,7 @@ public class CSGInfiniteCylinder extends CSGSolid {
 	 * @return null, the infinite cylinder cannot be bounded.
      */
 	@Override
-	public BoundingBox getBoundingBox() {
+	public AABoundingBox getBoundingBox() {
 		return null;
 	}
 }

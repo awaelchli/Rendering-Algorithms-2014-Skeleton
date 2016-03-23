@@ -86,7 +86,7 @@ public class BSPTeapotTest extends Scene {
 			return;
 		}
 
-		BSPAccelerator meshAccelerator = new BSPAccelerator(10, 5);
+		BSPAccelerator meshAccelerator = new BSPAccelerator(5, 10);
 		meshAccelerator.construct(mesh);
 
 

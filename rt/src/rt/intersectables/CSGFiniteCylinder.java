@@ -1,6 +1,6 @@
 package rt.intersectables;
 
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 import rt.Material;
 import rt.Ray;
 
@@ -59,8 +59,8 @@ public class CSGFiniteCylinder extends CSGSolid {
     }
 
     @Override
-    public BoundingBox getBoundingBox() {
+    public AABoundingBox getBoundingBox() {
         float r = body.radius;
-        return new BoundingBox(-r, r, -r, r, -length / 2, length / 2);
+        return new AABoundingBox(-r, r, -r, r, -length / 2, length / 2);
     }
 }

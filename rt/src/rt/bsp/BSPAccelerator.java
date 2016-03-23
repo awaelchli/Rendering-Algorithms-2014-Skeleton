@@ -1,6 +1,5 @@
 package rt.bsp;
 
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import rt.HitRecord;
 import rt.Intersectable;
 import rt.Ray;
@@ -12,34 +11,39 @@ import java.util.Iterator;
 import java.util.Stack;
 
 /**
- * Created by adrian on 18.03.16.
+ * Implements an acceleration structure using axis aligned bounding boxes
  */
 public class BSPAccelerator implements Intersectable
 {
 
     public static final float EPSILON = 0.001f;
 
-    int maxDepth;
-    int maxObjectsPerNode;
+    private int maxDepth, maxObjectsPerNode;
+    private BSPNode root;
 
-    BSPNode root;
-
-    public BSPAccelerator(int maxDepth, int maxObjectsPerNode)
+    /**
+     * Initializes an acceleration structure with parameters for the stopping criteria.
+     * @param maxObjectsPerNode     If this number is reached in the construction process, the node will not be split again.
+     * @param maxDepth              The maximum depth of the tree. If this number is reached, the node will not be further split.
+     */
+    public BSPAccelerator(int maxObjectsPerNode, int maxDepth)
     {
         this.maxDepth = maxDepth;
         this.maxObjectsPerNode = maxObjectsPerNode;
     }
 
+    /**
+     * Recursively constructs the acceleration structure on the given {@param objects}.
+     */
     public void construct(Aggregate objects)
     {
         root = buildTree(objects, objects.getBoundingBox(), Axis.X, 0);
     }
 
-    private BSPNode buildTree(Aggregate objects, BoundingBox boundingBox, Axis currentAxis, float depth)
+    private BSPNode buildTree(Aggregate objects, AABoundingBox boundingBox, Axis currentAxis, float depth)
     {
         if (depth == maxDepth || objects.count() <= maxObjectsPerNode)
-        {
-            // Create leaf node
+        {   // Stopping criteria are met: Create leaf node
             BSPLeaf current = new BSPLeaf(boundingBox);
             current.objects = objects;
             return current;
@@ -50,10 +54,10 @@ public class BSPAccelerator implements Intersectable
          */
         float splitPos = findSplitPlane(objects, currentAxis);
 
-        BoundingBox leftBB = new BoundingBox();
-        BoundingBox rightBB = new BoundingBox();
+        AABoundingBox[] boxes = boundingBox.split(currentAxis, splitPos);
+        AABoundingBox leftBB = boxes[0];
+        AABoundingBox rightBB = boxes[1];
 
-        boundingBox.split(currentAxis, splitPos, leftBB, rightBB);
         Axis nextAxis = Axis.nextAxis(currentAxis);
 
         /*
@@ -65,7 +69,7 @@ public class BSPAccelerator implements Intersectable
         while (iterator.hasNext())
         {
             Intersectable object = iterator.next();
-            BoundingBox bb = object.getBoundingBox();
+            AABoundingBox bb = object.getBoundingBox();
 
             if (bb.isIntersecting(leftBB))
             {
@@ -91,35 +95,33 @@ public class BSPAccelerator implements Intersectable
     }
 
 
+    /**
+     * Accelerated intersection test by kd-tree traversal.
+     * The tree must be built with {@link #construct(Aggregate)} beforehand.
+     */
     @Override
     public HitRecord intersect(Ray r)
     {
-        HitRecord hitRecord = null;
+        HitRecord closest = null;
         Stack<BSPStackItem> stack = new Stack<>();
         BSPNode node = root;
         float isect = Float.MAX_VALUE;
-        BSPStackItem rootItem = root.intersect(r);
+        float[] interval = root.intersect(r);
 
-        if (rootItem == null) {
+        if (interval == null) {
             // Ray did not intersect with  bounding box of root node
             return null;
         }
 
-        float tmin = rootItem.tmin;
-        float tmax = rootItem.tmax;
+        float tmin = interval[0];
+        float tmax = interval[1];
 
         while(node != null)
         {
             if( isect < tmin ) break;
             if( !node.isLeaf() )
             {
-
-//                float o = node.axis.getValue(r.origin);
-//                float d = node.axis.getValue(r.direction);
-//
-//                float tsplit = (node.planePos - o) / d;
-
-                float tsplit = node.intersect(r).tsplit;
+                float tsplit = computeRaySplitPlaneIntersection(r, node);
 
                 // order children
                 BSPNode first, second;
@@ -160,8 +162,8 @@ public class BSPAccelerator implements Intersectable
                 HitRecord hit = node.objects.intersect(r);
                 if (hit != null && hit.t < isect && hit.t > 0)
                 {
-                    hitRecord = hit;
-                    isect = hitRecord.t;
+                    closest = hit;
+                    isect = closest.t;
                 }
                 if (stack.isEmpty())
                 { // No intersection
@@ -173,34 +175,11 @@ public class BSPAccelerator implements Intersectable
                 tmax = i.tmax;
             }
         }
-        return hitRecord;
+        return closest;
     }
 
-//    // TODO: remove once propper intersection is implemented
-//    private HitRecord intersect(BSPNode node, Ray r) {
-//        if(node.isLeaf())
-//        {
-//            return node.getObjects().intersect(r);
-//        }
-//
-//        HitRecord hitRecord = null;
-//        float t = Float.MAX_VALUE;
-//
-//        Iterator<BSPNode> iterator = node.children.iterator();
-//        while(iterator.hasNext()) {
-//            HitRecord tmp = intersect(iterator.next(), r);
-//            if(tmp!=null && tmp.t<t)
-//            {
-//                t = tmp.t;
-//                hitRecord = tmp;
-//            }
-//        }
-//
-//        return hitRecord;
-//    }
-
     @Override
-    public BoundingBox getBoundingBox()
+    public AABoundingBox getBoundingBox()
     {
         return root.getBoundingBox();
     }
@@ -208,14 +187,14 @@ public class BSPAccelerator implements Intersectable
     private float findSplitPlane(Aggregate objects, Axis axis)
     {
 
-        BoundingBox bbox = null;
+        AABoundingBox bbox = null;
 
         Point3f centerOfMass = new Point3f();
         int numObjects = 0;
         Iterator<Intersectable> iterator = objects.iterator();
         while (iterator.hasNext())
         {
-            BoundingBox b = iterator.next().getBoundingBox();
+            AABoundingBox b = iterator.next().getBoundingBox();
             centerOfMass.add(b.center());
             numObjects++;
         }
@@ -224,4 +203,26 @@ public class BSPAccelerator implements Intersectable
         return axis.getValue(centerOfMass);
     }
 
+    private float computeRaySplitPlaneIntersection(Ray r, BSPNode node)
+    {
+        if (node.isLeaf()) {
+            // no split plane exists for leafs
+            return Float.NaN;
+        }
+        assert node.axis != null;
+
+        float o = node.axis.getValue(r.origin);
+        float d = node.axis.getValue(r.direction);
+
+        return (node.planePos - o) / d;
+    }
+
+    /**
+     * A simple stack item used to calculate intersections.
+     */
+    class BSPStackItem
+    {
+        BSPNode node;
+        float tmin, tmax, tsplit;
+    }
 }

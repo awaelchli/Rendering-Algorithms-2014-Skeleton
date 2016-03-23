@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 import rt.Ray;
 
 /**
@@ -117,7 +117,7 @@ public class CSGNode extends CSGSolid {
 	}
 
 	@Override
-	public BoundingBox getBoundingBox() {
+	public AABoundingBox getBoundingBox() {
 		// TODO: implement based on operation (add, subtract, intersect)
 		return null;
 	}

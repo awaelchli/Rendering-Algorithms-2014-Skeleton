@@ -6,7 +6,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import rt.*;
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 import rt.materials.PointLightMaterial;
 
 /**
@@ -36,7 +36,7 @@ public class PointLight implements LightGeometry {
 	/**
 	 * A point light does not have a bounding box
 	 */
-	public BoundingBox getBoundingBox()
+	public AABoundingBox getBoundingBox()
 	{
 		return null;
 	}

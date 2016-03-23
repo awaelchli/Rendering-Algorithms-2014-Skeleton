@@ -1,6 +1,6 @@
 package rt.intersectables;
 
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 import rt.Ray;
 
 import javax.vecmath.Matrix4f;
@@ -74,7 +74,7 @@ public class CSGInstance extends CSGSolid {
     /**
      * @return null. Axis aligned bounding boxes are not supported for instancing.
      */
-    public BoundingBox getBoundingBox() {
+    public AABoundingBox getBoundingBox() {
         return null;
     }
 }

@@ -1,6 +1,6 @@
 package rt.intersectables;
 
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 import rt.HitRecord;
 import rt.Intersectable;
 import rt.Ray;
@@ -71,7 +71,7 @@ public class Instance implements Intersectable {
     /**
      * @return null. Axis aligned bounding boxes are not supported for instancing.
      */
-    public BoundingBox getBoundingBox() {
+    public AABoundingBox getBoundingBox() {
         return null;
     }
 }

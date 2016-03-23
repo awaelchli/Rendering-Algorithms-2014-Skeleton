@@ -1,7 +1,7 @@
 package rt.intersectables;
 
 import rt.*;
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 import rt.materials.Diffuse;
 
 import javax.vecmath.Point2f;
@@ -92,15 +92,15 @@ public class Sphere implements Intersectable {
     }
 
     @Override
-    public BoundingBox getBoundingBox() {
+    public AABoundingBox getBoundingBox() {
         return boundingBox(this.center, this.radius);
     }
 
-    static BoundingBox boundingBox(Point3f center, float r) {
+    static AABoundingBox boundingBox(Point3f center, float r) {
         Point3f p1 = new Point3f(-r, -r, -r);
         Point3f p2 = new Point3f(r, r, r);
         p1.add(center);
         p2.add(center);
-        return new BoundingBox(p1, p2);
+        return new AABoundingBox(p1, p2);
     }
 }

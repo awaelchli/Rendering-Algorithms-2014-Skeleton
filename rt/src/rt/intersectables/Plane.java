@@ -3,7 +3,7 @@ package rt.intersectables;
 import javax.vecmath.*;
 
 import rt.*;
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 import rt.materials.Diffuse;
 
 /**
@@ -81,7 +81,7 @@ public class Plane implements Intersectable {
 	/**
 	 * @return null. Axis aligned bounding boxes are not supported for infinite planes.
 	 */
-	public BoundingBox getBoundingBox() {
+	public AABoundingBox getBoundingBox() {
 		return null;
 	}
 

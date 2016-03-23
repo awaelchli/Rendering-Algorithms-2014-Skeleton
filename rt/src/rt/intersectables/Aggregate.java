@@ -5,7 +5,7 @@ import java.util.Iterator;
 import rt.HitRecord;
 import rt.Intersectable;
 import rt.Ray;
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 
 /**
  * A group of {@link Intersectable} objects.
@@ -46,7 +46,7 @@ public abstract class Aggregate implements Intersectable {
 	}
 
 	@Override
-	public BoundingBox getBoundingBox()
+	public AABoundingBox getBoundingBox()
 	{
 		Iterator<Intersectable> it = iterator();
 
@@ -54,7 +54,7 @@ public abstract class Aggregate implements Intersectable {
 			return null;
 		}
 
-		BoundingBox boundingBox = it.next().getBoundingBox();
+		AABoundingBox boundingBox = it.next().getBoundingBox();
 
 		while(it.hasNext())
 		{

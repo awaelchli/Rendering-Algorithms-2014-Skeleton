@@ -3,7 +3,7 @@ package rt.intersectables;
 import javax.vecmath.*;
 
 import rt.*;
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 
 /**
  * Defines a triangle by referring back to a {@link Mesh}
@@ -254,7 +254,7 @@ public class MeshTriangle implements Intersectable {
 	}
 
 	@Override
-	public BoundingBox getBoundingBox() {
+	public AABoundingBox getBoundingBox() {
 		Point3f[] positions = getVertexPositions();
 		float xmin = Math.min(Math.min(positions[0].x, positions[1].x), positions[2].x);
 		float ymin = Math.min(Math.min(positions[0].y, positions[1].y), positions[2].y);
@@ -262,6 +262,6 @@ public class MeshTriangle implements Intersectable {
 		float xmax = Math.max(Math.max(positions[0].x, positions[1].x), positions[2].x);
 		float ymax = Math.max(Math.max(positions[0].y, positions[1].y), positions[2].y);
 		float zmax = Math.max(Math.max(positions[0].z, positions[1].z), positions[2].z);
-		return new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
+		return new AABoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
 	}
 }

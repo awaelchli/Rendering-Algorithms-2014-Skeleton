@@ -3,7 +3,7 @@ package rt.intersectables;
 import javax.vecmath.*;
 
 import rt.*;
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 import rt.materials.Diffuse;
 
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public class CSGCube extends CSGSolid {
 	}
 
 	@Override
-	public BoundingBox getBoundingBox() {
-		return new BoundingBox(-1, 1, -1, 1, -1, 1);
+	public AABoundingBox getBoundingBox() {
+		return new AABoundingBox(-1, 1, -1, 1, -1, 1);
 	}
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import javax.vecmath.*;
 
-import rt.bsp.BoundingBox;
+import rt.bsp.AABoundingBox;
 import rt.Material;
 import rt.Ray;
 import rt.Spectrum;
@@ -97,7 +97,7 @@ public class CSGDodecahedron extends CSGSolid {
 	}
 
 	@Override
-	public BoundingBox getBoundingBox() {
+	public AABoundingBox getBoundingBox() {
 		return null;
 	}
 }
