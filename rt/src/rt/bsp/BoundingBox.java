@@ -21,14 +21,14 @@ public class BoundingBox
 
     public BoundingBox(Point3f p1, Point3f p2)
     {
+        assert p1.x <= p2.x && p1.y <= p2.y && p1.z <= p2.z;
         this.point1 = new Point3f(p1);
         this.point2 = new Point3f(p2);
     }
 
     public BoundingBox(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax)
     {
-        this.point1 = new Point3f(xmin, ymin, zmin);
-        this.point2 = new Point3f(xmax, ymax, zmax);
+        this(new Point3f(xmin, ymin, zmin), new Point3f(xmax, ymax, zmax));
     }
 
     /**
