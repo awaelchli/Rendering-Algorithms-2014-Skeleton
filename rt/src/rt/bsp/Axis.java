@@ -25,15 +25,9 @@ public enum Axis {
     }
 
     Vector3f getUnitVector() {
-        switch (this) {
-            case X:
-                return new Vector3f(1, 0, 0);
-            case Y:
-                return new Vector3f(0, 1, 0);
-            case Z:
-                return new Vector3f(0, 0, 1);
-        }
-        return null;
+        Vector3f v = new Vector3f();
+        StaticVecmath.set(v, getIndex(), 1);
+        return v;
     }
 
     int getIndex() {
