@@ -1,12 +1,23 @@
 package rt.bsp;
 
+import rt.intersectables.Aggregate;
+
 /**
- * Created by adrian on 18.03.16.
+ * The leaf node in the BSP tree.
+ * It has no above and below node and no split axis/plane.
+ * It stores a reference to the objects that are inside its bounding box.
  */
 public class BSPLeaf extends BSPNode {
 
-    public BSPLeaf(AABoundingBox boundingBox) {
+    /**
+     * Creates a new leaf node.
+     *
+     * @param boundingBox   The bounding box of this node.
+     * @param objects       The objects that intersect with the {@param boundingBox} of this node.
+     */
+    public BSPLeaf(AABoundingBox boundingBox, Aggregate objects) {
         this.bb = boundingBox;
+        this.objects = objects;
     }
 
     @Override

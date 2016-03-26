@@ -44,8 +44,7 @@ public class BSPAccelerator implements Intersectable
     {
         if (depth == maxDepth || objects.count() <= maxObjectsPerNode)
         {   // Stopping criteria are met: Create leaf node
-            BSPLeaf current = new BSPLeaf(boundingBox);
-            current.objects = objects;
+            BSPLeaf current = new BSPLeaf(boundingBox, objects);
             return current;
         }
 

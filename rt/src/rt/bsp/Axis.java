@@ -12,6 +12,10 @@ public enum Axis {
 
     X, Y, Z;
 
+    /**
+     * Returns the next axis in the cycle.
+     * X -> Y, Y -> Z, Z -> X
+     */
     static Axis nextAxis(Axis current) {
         switch (current) {
             case X:
@@ -24,12 +28,18 @@ public enum Axis {
         return null;
     }
 
+    /**
+     * Returns the unit vector of this axis.
+     */
     Vector3f getUnitVector() {
         Vector3f v = new Vector3f();
         StaticVecmath.set(v, getIndex(), 1);
         return v;
     }
 
+    /**
+     * Returns the index for this axis, i.e. 0 for X, 1 for Y and 2 for Z.
+     */
     int getIndex() {
         switch (this) {
             case X: return 0;
@@ -39,6 +49,9 @@ public enum Axis {
         return -1;
     }
 
+    /**
+     * Returns the value in the {@param tuple} associated with this axis.
+     */
     float getValue(Tuple3f tuple) {
         return StaticVecmath.get(tuple, getIndex());
     }
