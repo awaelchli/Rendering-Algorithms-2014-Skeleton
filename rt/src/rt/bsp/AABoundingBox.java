@@ -14,26 +14,45 @@ public class AABoundingBox
     Point3f point1;
     Point3f point2;
 
+    /**
+     * Creates an axis aligned bounding box defined by two points representing the minimum and maximum interval boundaries.
+     * The constructor automatically checks if the values in {@param p1} are smaller than the corresponding values in {@param p2} and swaps them if necessary.
+     *
+     * @param p1    First corner of the box
+     * @param p2    Second corner of the box, opposite of {@param p1}
+     */
     public AABoundingBox(Point3f p1, Point3f p2)
     {
-        assert p1.x <= p2.x && p1.y <= p2.y && p1.z <= p2.z;
-        this.point1 = new Point3f(p1);
-        this.point2 = new Point3f(p2);
+        this.point1 = new Point3f(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), Math.min(p1.z, p2.z));
+        this.point2 = new Point3f(Math.max(p1.x, p2.x), Math.max(p1.y, p2.y), Math.max(p1.z, p2.z));
     }
 
+    /**
+     * Creates an axis aligned bounding box defined by three intervals [{@param xmin}, {@param xmax}], [{@param ymin}, {@param ymax}] and [{@param zmin}, {@param zmax}].
+     *
+     * @param xmin  Lower bound for the interval on the X-Axis.
+     * @param xmax  Upper bound for the interval on the X-Axis.
+     * @param ymin  Lower bound for the interval on the Y-Axis.
+     * @param ymax  Upper bound for the interval on the Y-Axis.
+     * @param zmin  Lower bound for the interval on the Z-Axis.
+     * @param zmax  Upper bound for the interval on the Z-Axis.
+     */
     public AABoundingBox(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax)
     {
         this(new Point3f(xmin, ymin, zmin), new Point3f(xmax, ymax, zmax));
     }
 
     /**
-     * Copies an existing bounding box
+     * Copies an existing {@link AABoundingBox}.
      */
     public AABoundingBox(AABoundingBox b)
     {
         this(b.point1, b.point2);
     }
 
+    /**
+     * Returns the center point of this bounding box.
+     */
     public Point3f center()
     {
         Vector3f halfDiag = StaticVecmath.sub(point2, point1);
@@ -42,19 +61,25 @@ public class AABoundingBox
         return center;
     }
 
-    public float xmin() { return Math.min(point1.x, point2.x); }
+    public float xmin() { return point1.x; }
 
-    public float ymin() { return Math.min(point1.y, point2.y); }
+    public float ymin() { return point1.y; }
 
-    public float zmin() { return Math.min(point1.z, point2.z); }
+    public float zmin() { return point1.z; }
 
-    public float xmax() { return Math.max(point1.x, point2.x); }
+    public float xmax() { return point2.x; }
 
-    public float ymax() { return Math.max(point1.y, point2.y); }
+    public float ymax() { return point2.y; }
 
-    public float zmax() { return Math.max(point1.z, point2.z); }
+    public float zmax() { return point2.z; }
 
-
+    /**
+     * Splits this bounding box into two bounding boxes.
+     *
+     * @param axis  The {@link Axis} along which the box should be split.
+     * @param p     The point on the {@param axis} at which the box should be split.
+     * @return      An array of size two containing the bounding boxes.
+     */
     public AABoundingBox[] split(Axis axis, float p)
     {
         Point3f p1 = new Point3f(point1);
@@ -73,21 +98,27 @@ public class AABoundingBox
         return new AABoundingBox[] {left, right};
     }
 
+    /**
+     * Returns true if this bounding box contains the given {@param point}, and false otherwise.
+     */
     public boolean contains(Point3f point)
     {
-        boolean xContains = StaticMath.doesIntervalContain(point1.x, point2.x, point.x);
-        boolean yContains = StaticMath.doesIntervalContain(point1.y, point2.y, point.y);
-        boolean zContains = StaticMath.doesIntervalContain(point1.z, point2.z, point.z);
+        boolean xContains = StaticMath.doesIntervalContain(xmin(), xmax(), point.x);
+        boolean yContains = StaticMath.doesIntervalContain(ymin(), ymax(), point.y);
+        boolean zContains = StaticMath.doesIntervalContain(zmin(), zmax(), point.z);
 
         return xContains && yContains && zContains;
     }
 
+    /**
+     * Returns true if this bounding box intersects the {@param other} bounding box.
+     */
     public boolean isIntersecting(AABoundingBox other)
     {
 
-        boolean xIntersects = StaticMath.doesIntervalIntersect(point1.x, point2.x, other.point1.x, other.point2.x);
-        boolean yIntersects = StaticMath.doesIntervalIntersect(point1.y, point2.y, other.point1.y, other.point2.y);
-        boolean zIntersects = StaticMath.doesIntervalIntersect(point1.z, point2.z, other.point1.z, other.point2.z);
+        boolean xIntersects = StaticMath.doesIntervalIntersect(xmin(), xmax(), other.xmin(), other.xmax());
+        boolean yIntersects = StaticMath.doesIntervalIntersect(ymin(), ymax(), other.ymin(), other.ymax());
+        boolean zIntersects = StaticMath.doesIntervalIntersect(zmin(), zmax(), other.zmin(), other.zmax());
 
         return xIntersects && yIntersects && zIntersects;
     }
