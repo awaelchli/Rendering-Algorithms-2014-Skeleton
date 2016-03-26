@@ -5,6 +5,7 @@ import rt.bsp.BSPAccelerator;
 import rt.cameras.PinholeCamera;
 import rt.films.BoxFilterFilm;
 import rt.integrators.PointLightIntegratorFactory;
+import rt.integrators.WhittedIntegratorFactory;
 import rt.intersectables.Instance;
 import rt.intersectables.IntersectableList;
 import rt.intersectables.Mesh;
@@ -33,7 +34,7 @@ public class BSPTeapotTest extends Scene {
 		outputFilename = new String("BSPTeapotTest");
 		
 		// Specify integrator to be used
-		integratorFactory = new PointLightIntegratorFactory();
+		integratorFactory = new WhittedIntegratorFactory();
 		
 		// Specify pixel sampler to be used
 		samplerFactory = new OneSamplerFactory();
@@ -43,8 +44,8 @@ public class BSPTeapotTest extends Scene {
 		Vector3f lookAt = new Vector3f(0.f,0.f,0.f);
 		Vector3f up = new Vector3f(0.f,1.f,0.f);
 		float fov = 60.f;
-		int width = 256;
-		int height = 256;
+		int width = 500;
+		int height = 500;
 		float aspect = (float)width/(float)height;
 		camera = new PinholeCamera(eye, lookAt, up, fov, aspect, width, height);
 		film = new BoxFilterFilm(width, height);						
