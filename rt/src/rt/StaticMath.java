@@ -6,7 +6,7 @@ package rt;
 public class StaticMath
 {
     /**
-     * Returns true if the intervals [a, b] and [c, d] intersect, and false otherwise.
+     * Returns true if the intervals [{@param a}, {@param b}] and [{@param c}, {@param d}] intersect, and false otherwise.
      */
     public static boolean doesIntervalIntersect(float a, float b, float c, float d)
     {
@@ -24,6 +24,9 @@ public class StaticMath
 
     }
 
+    /**
+     * Returns true if the interval [{@param a}, {@param b}] contains the point {@param v}, and false otherwise.
+     */
     public static boolean doesIntervalContain(float a, float b, float v)
     {
         if (a > b)
