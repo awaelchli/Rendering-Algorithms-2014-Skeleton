@@ -115,7 +115,6 @@ public class AABoundingBox
      */
     public boolean isIntersecting(AABoundingBox other)
     {
-
         boolean xIntersects = StaticMath.doesIntervalIntersect(xmin(), xmax(), other.xmin(), other.xmax());
         boolean yIntersects = StaticMath.doesIntervalIntersect(ymin(), ymax(), other.ymin(), other.ymax());
         boolean zIntersects = StaticMath.doesIntervalIntersect(zmin(), zmax(), other.zmin(), other.zmax());
