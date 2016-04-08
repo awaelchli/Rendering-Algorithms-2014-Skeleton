@@ -62,10 +62,9 @@ public class BSPTeapotLand extends Scene {
 		objects = new IntersectableList();
 
 		// Ground plane
-//		Plane plane = new Plane(new Vector3f(0.f, 1.f, 0.f), 1.f);
-//		plane.material = new XYZCheckerboard();
-				
-		//objects.add(plane);
+		Plane plane = new Plane(new Vector3f(0.f, 1.f, 0.f), 1.f);
+		plane.material = new XYZCheckerboard();
+		objects.add(plane);
 		
 		/*
 		 * Load the teapot model
@@ -73,7 +72,6 @@ public class BSPTeapotLand extends Scene {
 		Mesh mesh;
 		try
 		{
-			
 			mesh = ObjReader.read("obj/teapot.obj", 0.3f);
 		} catch(IOException e) 
 		{
@@ -81,14 +79,17 @@ public class BSPTeapotLand extends Scene {
 			return;
 		}
 
-		BSPAccelerator teapotAccelerator = new BSPAccelerator(5, 10);
+		int nTriangles = mesh.count();
+		int maxTeapotDepth = (int) Math.ceil(8 + 1.3 * Math.log(nTriangles));
+
+		BSPAccelerator teapotAccelerator = new BSPAccelerator(5, maxTeapotDepth);
 		teapotAccelerator.construct(mesh);
 
 		// Holds all teapots
 		IntersectableList teapots = new IntersectableList();
 
-		int numX = 10;
-		int numY = 10;
+		int numX = 20;
+		int numY = 20;
 		float dx = 0.7f;
 		float dy = 0.7f;
 
@@ -111,6 +112,7 @@ public class BSPTeapotLand extends Scene {
 				transf.setTranslation(p);
 
 				Instance teapotInstance = new Instance(teapotAccelerator, transf);
+				//Instance teapotInstance = new Instance(mesh, transf);
 				teapots.add(teapotInstance);
 			}
 		}
@@ -118,7 +120,8 @@ public class BSPTeapotLand extends Scene {
 		/*
 		 * One final accelerator for all teapot instances
 		 */
-		BSPAccelerator allTeapots = new BSPAccelerator(5, 10);
+		int teapotGridDepth = (int) Math.ceil(8 + 1.3 * Math.log(numX * numY));
+		BSPAccelerator allTeapots = new BSPAccelerator(5, teapotGridDepth);
 		allTeapots.construct(teapots);
 
 		objects.add(allTeapots);

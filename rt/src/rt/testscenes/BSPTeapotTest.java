@@ -80,14 +80,16 @@ public class BSPTeapotTest extends Scene {
 		try
 		{
 			
-			mesh = ObjReader.read("obj/teapot.obj", 1.f);
+			mesh = ObjReader.read("obj/Specter_GT3.obj", 1f);
 		} catch(IOException e) 
 		{
 			System.out.printf("Could not read .obj file\n");
 			return;
 		}
 
-		BSPAccelerator meshAccelerator = new BSPAccelerator(5, 10);
+		//int nTriangles = mesh.count();
+		//int maxDepth = (int) Math.ceil(8 + 1.3 * Math.log(nTriangles));
+		BSPAccelerator meshAccelerator = new BSPAccelerator(5, 20);
 		meshAccelerator.construct(mesh);
 
 
@@ -96,7 +98,7 @@ public class BSPTeapotTest extends Scene {
 		
 
 		t.setScale(0.5f);
-		t.setTranslation(new Vector3f(0.f, -0.35f, 0.f));
+		t.setTranslation(new Vector3f(0.f, -0.35f, 0.1f));
 		Instance instance = new Instance(meshAccelerator, t);
 		objects.add(instance);
 		
