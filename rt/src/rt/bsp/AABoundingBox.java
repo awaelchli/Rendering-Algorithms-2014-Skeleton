@@ -132,7 +132,7 @@ public class AABoundingBox
         float zmin = Math.min(zmin(), other.zmin());
         float xmax = Math.max(xmax(), other.xmax());
         float ymax = Math.max(ymax(), other.ymax());
-        float zmax = Math.max(ymax(), other.ymax());
+        float zmax = Math.max(zmax(), other.zmax());
 
         point1.set(xmin, ymin, zmin);
         point2.set(xmax, ymax, zmax);
