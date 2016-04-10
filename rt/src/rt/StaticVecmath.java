@@ -1,6 +1,7 @@
 package rt;
 
 import javax.vecmath.*;
+import java.util.Vector;
 
 /**
  * Static utility functions to make it easier to work with the vecmath package.
@@ -66,5 +67,12 @@ public class StaticVecmath {
 				return tuple.z;
 		}
 		return Float.NaN;
+	}
+
+	public static Vector3f cross(Vector3f v1, Vector3f v2)
+	{
+		Vector3f cross = new Vector3f();
+		cross.cross(v1, v2);
+		return cross;
 	}
 }
