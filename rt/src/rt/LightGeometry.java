@@ -11,4 +11,9 @@ public interface LightGeometry extends Intersectable {
 	 * Sample a point on a light geometry.
 	 */
 	public HitRecord sample(float[] s);
+
+	/**
+	 * The area of the light source.
+	 */
+	public float area();
 }

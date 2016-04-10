@@ -9,7 +9,7 @@ import rt.Scene;
  */
 public class WhittedIntegratorFactory implements IntegratorFactory {
 
-    public int recursionDepth = 1;
+    int recursionDepth = 1;
 
     public Integrator make(Scene scene) {
         return new WhittedIntegrator(scene, recursionDepth);

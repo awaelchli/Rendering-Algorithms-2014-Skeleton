@@ -96,7 +96,7 @@ public class WhittedIntegrator implements Integrator {
         return outgoing;
     }
 
-    private Spectrum integrateLightSource(LightGeometry lightSource, HitRecord hitRecord) {
+    protected Spectrum integrateLightSource(LightGeometry lightSource, HitRecord hitRecord) {
 
         // Make direction from hit point to light source position; this is only supposed to work with point lights
         float dummySample[] = new float[2];
@@ -133,7 +133,7 @@ public class WhittedIntegrator implements Integrator {
         return s;
     }
 
-    private void epsilonTranslation(Ray ray, Vector3f direction) {
+    protected void epsilonTranslation(Ray ray, Vector3f direction) {
         Vector3f d = new Vector3f(direction);
         d.scale(epsilon);
         ray.translate(d);
@@ -148,7 +148,7 @@ public class WhittedIntegrator implements Integrator {
      * @param lightDir Direction pointing to light source with length that corresponds to the distance of the light source to the object
      * @return true, if shadow ray hits a different object between the surface and light source and returns false otherwise
      */
-    private boolean isInShadow(HitRecord hit, Vector3f lightDir) {
+    protected boolean isInShadow(HitRecord hit, Vector3f lightDir) {
 
         Point3f origin = new Point3f();
         origin.scaleAdd(this.epsilon, hit.normal, hit.position);

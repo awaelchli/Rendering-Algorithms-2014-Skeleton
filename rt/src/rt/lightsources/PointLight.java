@@ -55,4 +55,10 @@ public class PointLight implements LightGeometry {
 		return hitRecord;
 	}
 
+	@Override
+	public float area()
+	{
+		return 0;
+	}
+
 }
