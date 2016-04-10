@@ -5,6 +5,7 @@ import java.io.*;
 import javax.vecmath.*;
 
 import rt.*;
+import rt.bsp.BSPAccelerator;
 import rt.intersectables.*;
 import rt.tonemappers.*;
 import rt.integrators.*;
@@ -16,9 +17,9 @@ import rt.films.*;
 
 public class PathtracingBoxCar extends Scene {
 	
-	/*public PathtracingBoxCar()
+	public PathtracingBoxCar()
 	{	
-		outputFilename = new String("../output/testscenes/PathtracingBoxCar");
+		outputFilename = new String("PathtracingBoxCar");
 				
 		// Specify pixel sampler to be used
 		samplerFactory = new RandomSamplerFactory();
@@ -40,26 +41,29 @@ public class PathtracingBoxCar extends Scene {
 		tonemapper = new ClampTonemapper();
 		
 		// Specify integrator to be used
-		integratorFactory = new PathTracingIntegratorFactory();
+        AreaLightIntegratorFactory iF = new AreaLightIntegratorFactory();
+        iF.setLightSamplingDensity(10);
+		integratorFactory = iF;
+
 		
 		// List of objects
 		IntersectableList objects = new IntersectableList();	
 						
-		Rectangle rectangle = new Rectangle(new Vector3f(2.f, -.75f, 2.f), new Vector3f(0.f, 4.f, 0.f), new Vector3f(0.f, 0.f, -4.f));
+		Rectangle rectangle = new Rectangle(new Point3f(2.f, -.75f, 2.f), new Vector3f(0.f, 4.f, 0.f), new Vector3f(0.f, 0.f, -4.f));
 		rectangle.material = new Diffuse(new Spectrum(0.8f, 0.f, 0.f));
 		objects.add(rectangle);
 	
 		// Bottom
-		rectangle = new Rectangle(new Vector3f(-2.f, -.75f, 2.f), new Vector3f(4.f, 0.f, 0.f), new Vector3f(0.f, 0.f, -4.f));
+		rectangle = new Rectangle(new Point3f(-2.f, -.75f, 2.f), new Vector3f(4.f, 0.f, 0.f), new Vector3f(0.f, 0.f, -4.f));
 		rectangle.material = new Diffuse(new Spectrum(0.8f, 0.8f, 0.8f));
 		objects.add(rectangle);
 
 		// Top
-		rectangle = new Rectangle(new Vector3f(-2.f, 3.25f, 2.f), new Vector3f(0.f, 0.f, -4.f), new Vector3f(4.f, 0.f, 0.f));
+		rectangle = new Rectangle(new Point3f(-2.f, 3.25f, 2.f), new Vector3f(0.f, 0.f, -4.f), new Vector3f(4.f, 0.f, 0.f));
 		rectangle.material = new Diffuse(new Spectrum(0.8f, 0.8f, 0.8f));
 		objects.add(rectangle);
 		
-		rectangle = new Rectangle(new Vector3f(-2.f, -.75f, -2.f), new Vector3f(4.f, 0.f, 0.f), new Vector3f(0.f, 4.f, 0.f));
+		rectangle = new Rectangle(new Point3f(-2.f, -.75f, -2.f), new Vector3f(4.f, 0.f, 0.f), new Vector3f(0.f, 4.f, 0.f));
 		rectangle.material = new Diffuse(new Spectrum(0.8f, 0.8f, 0.8f));
 //			rectangle.material = new MirrorMaterial(new Spectrum(0.8f, 0.8f, 0.8f));
 		objects.add(rectangle);
@@ -74,6 +78,7 @@ public class PathtracingBoxCar extends Scene {
 			mesh = ObjReader.read("../obj/Specter_GT3.obj", 1.f);
 			timer.reset();
 			accelerator = new BSPAccelerator(mesh);
+            accelerator.construct();
 			System.out.printf("Accelerator computed in %d ms.\n", timer.timeElapsed());
 			
 			Matrix4f t = new Matrix4f();
@@ -87,9 +92,9 @@ public class PathtracingBoxCar extends Scene {
 			System.out.printf("Could not read .obj file\n");
 		}
 	
-		Vector3f bottomLeft = new Vector3f(-0.75f, 3.f, 1.5f);
-		Vector3f right = new Vector3f(0.f, 0.f, -0.5f);
-		Vector3f top = new Vector3f(0.5f, 0.f, 0.f);
+		Point3f bottomLeft = new Point3f(-0.75f, 3.f, 1.5f);
+		Point3f right = new Point3f(0.f, 0.f, -0.5f);
+        Point3f top = new Point3f(0.5f, 0.f, 0.f);
 		RectangleLight rectangleLight = new RectangleLight(bottomLeft, right, top, new Spectrum(100.f, 100.f, 100.f));
 		objects.add(rectangleLight);
 		
@@ -99,6 +104,6 @@ public class PathtracingBoxCar extends Scene {
 		// List of lights
 		lightList = new LightList();
 		lightList.add(rectangleLight);
-	}*/
+	}
 	
 }
