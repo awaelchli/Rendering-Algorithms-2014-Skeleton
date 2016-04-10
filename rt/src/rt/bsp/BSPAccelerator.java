@@ -20,22 +20,34 @@ public class BSPAccelerator implements Intersectable
 
     private int maxDepth, maxObjectsPerNode;
     private BSPNode root;
+    private Aggregate objects;
 
     /**
      * Initializes an acceleration structure with parameters for the stopping criteria.
+     * @param objects               An aggregate of objects.
      * @param maxObjectsPerNode     If this number is reached in the construction process, the node will not be split again.
      * @param maxDepth              The maximum depth of the tree. If this number is reached, the node will not be further split.
      */
-    public BSPAccelerator(int maxObjectsPerNode, int maxDepth)
+    public BSPAccelerator(Aggregate objects, int maxObjectsPerNode, int maxDepth)
     {
+        this.objects = objects;
         this.maxDepth = maxDepth;
         this.maxObjectsPerNode = maxObjectsPerNode;
     }
 
     /**
-     * Recursively constructs the acceleration structure on the given {@param objects}.
+     * Initialized an acceleration structure with default parameters for the stopping criteria.
+     * @param objects               An aggregate of objects.
      */
-    public void construct(Aggregate objects)
+    public BSPAccelerator(Aggregate objects)
+    {
+        this(objects, 5, (int) Math.round(8 + 1.3 * Math.log(objects.count())));
+    }
+
+    /**
+     * Recursively constructs the acceleration structure.
+     */
+    public void construct()
     {
         root = buildTree(objects, objects.getBoundingBox(), Axis.X, 0);
     }

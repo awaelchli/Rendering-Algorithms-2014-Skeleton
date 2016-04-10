@@ -82,8 +82,8 @@ public class BSPTeapotLand extends Scene {
 		int nTriangles = mesh.count();
 		int maxTeapotDepth = (int) Math.ceil(8 + 1.3 * Math.log(nTriangles));
 
-		BSPAccelerator teapotAccelerator = new BSPAccelerator(5, maxTeapotDepth);
-		teapotAccelerator.construct(mesh);
+		BSPAccelerator teapotAccelerator = new BSPAccelerator(mesh, 5, maxTeapotDepth);
+		teapotAccelerator.construct();
 
 		// Holds all teapots
 		IntersectableList teapots = new IntersectableList();
@@ -121,8 +121,8 @@ public class BSPTeapotLand extends Scene {
 		 * One final accelerator for all teapot instances
 		 */
 		int teapotGridDepth = (int) Math.ceil(8 + 1.3 * Math.log(numX * numY));
-		BSPAccelerator allTeapots = new BSPAccelerator(5, teapotGridDepth);
-		allTeapots.construct(teapots);
+		BSPAccelerator allTeapots = new BSPAccelerator(teapots, 5, teapotGridDepth);
+		allTeapots.construct();
 
 		objects.add(allTeapots);
 		root = objects;

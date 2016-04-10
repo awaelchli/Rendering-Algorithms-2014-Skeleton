@@ -89,8 +89,8 @@ public class BSPTeapotTest extends Scene {
 
 		//int nTriangles = mesh.count();
 		//int maxDepth = (int) Math.ceil(8 + 1.3 * Math.log(nTriangles));
-		BSPAccelerator meshAccelerator = new BSPAccelerator(5, 20);
-		meshAccelerator.construct(mesh);
+		BSPAccelerator meshAccelerator = new BSPAccelerator(mesh, 5, 20);
+		meshAccelerator.construct();
 
 
 		Matrix4f t = new Matrix4f();
