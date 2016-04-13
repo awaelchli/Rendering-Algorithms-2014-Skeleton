@@ -3,6 +3,7 @@ package rt.lightsources;
 import rt.*;
 import rt.bsp.AABoundingBox;
 import rt.intersectables.Rectangle;
+import rt.materials.AreaLightMaterial;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -14,31 +15,21 @@ public class RectangleLight implements LightGeometry
 {
     Rectangle rectangle;
 
-    Vector3f edge1, edge2;
+    Vector3f right, up;
 
-    public RectangleLight(Point3f center, Vector3f edge1, Vector3f edge2, Spectrum emission)
+    public RectangleLight(Point3f anchor, Vector3f right, Vector3f up, Spectrum emission)
     {
-        this.rectangle = new Rectangle(center, edge1, edge2);
-        this.edge1 = edge1;
-        this.edge2 = edge2;
-    }
-
-    public RectangleLight(Point3f bottomLeft, Point3f right, Point3f top, Spectrum emission)
-    {
-        this.edge1 = StaticVecmath.sub(right, bottomLeft);
-        this.edge2 = StaticVecmath.sub(top, bottomLeft);
-        Point3f center = new Point3f(bottomLeft);
-        center.add(edge1);
-        center.add(edge2);
-        center.scale(0.5f);
-        this.rectangle = new Rectangle(center, edge1, edge2);
+        this.rectangle = new Rectangle(anchor, right, up);
+        this.right = right;
+        this.up = up;
+        rectangle.material = new AreaLightMaterial(emission, area());
     }
 
     @Override
     public HitRecord sample(float[] s)
     {
-        Vector3f dir1 = new Vector3f(edge1);
-        Vector3f dir2 = new Vector3f(edge2);
+        Vector3f dir1 = new Vector3f(right);
+        Vector3f dir2 = new Vector3f(up);
 
         dir1.scale(s[0]);
         dir2.scale(s[1]);

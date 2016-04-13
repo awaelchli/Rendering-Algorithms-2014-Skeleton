@@ -50,7 +50,7 @@ public class AreaLightIntegrator extends WhittedIntegrator
         }
 
         // Check if the surface points towards the visible side of the area light
-        if (lightHit.normal != null && lightHit.normal.dot(lightDir) >= 0)
+        if (lightHit.normal != null && lightHit.normal.dot(lightDir) > 0)
         {
             return new Spectrum(0, 0, 0);
         }
@@ -77,7 +77,7 @@ public class AreaLightIntegrator extends WhittedIntegrator
 
     protected Spectrum geometryTerm(HitRecord surfaceHit, HitRecord lightHit, Vector3f lightDir, float distanceSquared)
     {
-        Spectrum geometryTerm = new Spectrum();
+        Spectrum geometryTerm = new Spectrum(1, 1, 1);
 
         // Multiply with cosine of surface normal and incident direction
         float ndotl = surfaceHit.normal.dot(lightDir);
@@ -85,9 +85,12 @@ public class AreaLightIntegrator extends WhittedIntegrator
         geometryTerm.mult(ndotl);
 
         // Multiply with cosine of light normal and incident direction on light source
-        float ndotl2 = -lightHit.normal.dot(lightDir);
-        ndotl2 = Math.max(ndotl2, 0);
-        geometryTerm.mult(ndotl2);
+        if(lightHit.normal != null) // Normal can be null for point lights
+        {
+            float ndotl2 = -lightHit.normal.dot(lightDir);
+            ndotl2 = Math.max(ndotl2, 0);
+            geometryTerm.mult(ndotl2);
+        }
 
         // Divide by squared distance to sample point
         geometryTerm.mult(1 / distanceSquared);

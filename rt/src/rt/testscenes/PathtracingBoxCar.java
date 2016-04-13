@@ -25,7 +25,7 @@ public class PathtracingBoxCar extends Scene {
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 512;
+		SPP = 3;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
@@ -42,7 +42,8 @@ public class PathtracingBoxCar extends Scene {
 		
 		// Specify integrator to be used
         AreaLightIntegratorFactory iF = new AreaLightIntegratorFactory();
-        iF.setLightSamplingDensity(10);
+		//PointLightIntegratorFactory iF = new PointLightIntegratorFactory();
+        iF.setLightSamplingDensity(40);
 		integratorFactory = iF;
 
 		
@@ -75,9 +76,9 @@ public class PathtracingBoxCar extends Scene {
 		try
 		{
 			
-			mesh = ObjReader.read("../obj/Specter_GT3.obj", 1.f);
+			mesh = ObjReader.read("obj/Specter_GT3.obj", 1.f);
 			timer.reset();
-			accelerator = new BSPAccelerator(mesh);
+			accelerator = new BSPAccelerator(mesh, 5, 10);
             accelerator.construct();
 			System.out.printf("Accelerator computed in %d ms.\n", timer.timeElapsed());
 			
@@ -86,16 +87,16 @@ public class PathtracingBoxCar extends Scene {
 			t.setScale(2.f);
 			t.setTranslation(new Vector3f(0.f, -0.2f, 0.f));
 			Instance instance = new Instance(accelerator, t);
-			objects.add(instance); 	
+			objects.add(instance);
 		} catch(IOException e) 
 		{
 			System.out.printf("Could not read .obj file\n");
 		}
 	
 		Point3f bottomLeft = new Point3f(-0.75f, 3.f, 1.5f);
-		Point3f right = new Point3f(0.f, 0.f, -0.5f);
-        Point3f top = new Point3f(0.5f, 0.f, 0.f);
-		RectangleLight rectangleLight = new RectangleLight(bottomLeft, right, top, new Spectrum(100.f, 100.f, 100.f));
+		Vector3f right = new Vector3f(0.f, 0.f, -0.5f);
+		Vector3f top = new Vector3f(0.5f, 0.f, 0.f);
+		RectangleLight rectangleLight = new RectangleLight(bottomLeft, right, top, new Spectrum(100, 100, 100.f));
 		objects.add(rectangleLight);
 		
 		// Connect objects to root

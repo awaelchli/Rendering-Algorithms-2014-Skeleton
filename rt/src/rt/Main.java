@@ -53,22 +53,28 @@ public class Main {
 
 		@Override
 		public void run() {
+
+			boolean debug = true;
+
 			for(int j=bottom; j<top; j++)
 			{
 				for(int i=left; i<right; i++)
-				{											
-					float samples[][] = integrator.makePixelSamples(sampler, scene.getSPP());
-					// For all samples of the pixel
-					for(int k = 0; k < samples.length; k++)
-					{	
-						// Make ray
-						Ray r = scene.getCamera().makeWorldSpaceRay(i, j, samples[k]);
+				{
+					if( !debug || i == 299 && j == 512 - 16)
+					{
+						float samples[][] = integrator.makePixelSamples(sampler, scene.getSPP());
+						// For all samples of the pixel
+						for (int k = 0; k < samples.length; k++)
+						{
+							// Make ray
+							Ray r = scene.getCamera().makeWorldSpaceRay(i, j, samples[k]);
 
-						// Evaluate ray
-						Spectrum s = integrator.integrate(r);							
-						
-						// Write to film
-						scene.getFilm().addSample(i + samples[k][0], j + samples[k][1], s);
+							// Evaluate ray
+							Spectrum s = integrator.integrate(r);
+
+							// Write to film
+							scene.getFilm().addSample(i + samples[k][0], j + samples[k][1], s);
+						}
 					}
 				}
 			}
