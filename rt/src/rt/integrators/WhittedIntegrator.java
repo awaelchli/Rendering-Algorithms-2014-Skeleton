@@ -77,10 +77,8 @@ public class WhittedIntegrator implements Integrator {
             reflection.mult(fresnel);
             refraction.mult(1 - fresnel);
 
-            Spectrum total = new Spectrum();
-            total.add(reflection);
-            total.add(refraction);
-            outgoing.add(total);
+            outgoing.add(reflection);
+            outgoing.add(refraction);
 
         } else if (material.hasSpecularReflection()) {
             // Material is a mirror
