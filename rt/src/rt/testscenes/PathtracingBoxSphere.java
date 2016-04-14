@@ -13,9 +13,9 @@ import rt.films.*;
 
 public class PathtracingBoxSphere extends Scene {
 	
-	/*public PathtracingBoxSphere()
+	public PathtracingBoxSphere()
 	{	
-		outputFilename = new String("../output/testscenes/PathtracingBoxSphere");
+		outputFilename = new String("PathtracingBoxSphere");
 				
 		// Specify pixel sampler to be used
 		samplerFactory = new RandomSamplerFactory();
@@ -37,37 +37,39 @@ public class PathtracingBoxSphere extends Scene {
 		tonemapper = new ClampTonemapper();
 		
 		// Specify integrator to be used
-		integratorFactory = new PathTracingIntegratorFactory();
+        AreaLightIntegratorFactory factory = new AreaLightIntegratorFactory();
+		factory.setLightSamplingDensity(100);
+        integratorFactory = factory;
 		
 		// List of objects
 		IntersectableList objects = new IntersectableList();	
 		
-		Sphere sphere = new Sphere(new Vector3f(-.5f,-.2f,1.f), .5f);
+		Sphere sphere = new Sphere(new Point3f(-.5f,-.2f,1.f), .5f);
 		sphere.material = new Diffuse(new Spectrum(0.8f, 0.8f, 0.8f));
 		objects.add(sphere);
 
 		// Right, red wall
-		Rectangle rectangle = new Rectangle(new Vector3f(2.f, -.75f, 2.f), new Vector3f(0.f, 4.f, 0.f), new Vector3f(0.f, 0.f, -4.f));
+		Rectangle rectangle = new Rectangle(new Point3f(2.f, -.75f, 2.f), new Vector3f(0.f, 4.f, 0.f), new Vector3f(0.f, 0.f, -4.f));
 		rectangle.material = new Diffuse(new Spectrum(0.8f, 0.f, 0.f));
 		objects.add(rectangle);
 	
 		// Bottom
-		rectangle = new Rectangle(new Vector3f(-2.f, -.75f, 2.f), new Vector3f(4.f, 0.f, 0.f), new Vector3f(0.f, 0.f, -4.f));
+		rectangle = new Rectangle(new Point3f(-2.f, -.75f, 2.f), new Vector3f(4.f, 0.f, 0.f), new Vector3f(0.f, 0.f, -4.f));
 		rectangle.material = new Diffuse(new Spectrum(0.8f, 0.8f, 0.8f));
 		objects.add(rectangle);
 
 		// Top
-		rectangle = new Rectangle(new Vector3f(-2.f, 3.25f, 2.f), new Vector3f(0.f, 0.f, -4.f), new Vector3f(4.f, 0.f, 0.f));
+		rectangle = new Rectangle(new Point3f(-2.f, 3.25f, 2.f), new Vector3f(0.f, 0.f, -4.f), new Vector3f(4.f, 0.f, 0.f));
 		rectangle.material = new Diffuse(new Spectrum(0.8f, 0.8f, 0.8f));
 		objects.add(rectangle);
 		
 		// Left
-		rectangle = new Rectangle(new Vector3f(-2.f, -.75f, -2.f), new Vector3f(4.f, 0.f, 0.f), new Vector3f(0.f, 4.f, 0.f));
+		rectangle = new Rectangle(new Point3f(-2.f, -.75f, -2.f), new Vector3f(4.f, 0.f, 0.f), new Vector3f(0.f, 4.f, 0.f));
 		rectangle.material = new Diffuse(new Spectrum(0.8f, 0.8f, 0.8f));
 		objects.add(rectangle);
 		
 		// Light source
-		Vector3f bottomLeft = new Vector3f(-0.25f, 3.f, 0.25f);
+		Point3f bottomLeft = new Point3f(-0.25f, 3.f, 0.25f);
 		Vector3f right = new Vector3f(0.f, 0.f, -0.5f);
 		Vector3f top = new Vector3f(0.5f, 0.f, 0.f);
 		RectangleLight rectangleLight = new RectangleLight(bottomLeft, right, top, new Spectrum(100.f, 100.f, 100.f));
@@ -79,6 +81,6 @@ public class PathtracingBoxSphere extends Scene {
 		// List of lights
 		lightList = new LightList();
 		lightList.add(rectangleLight);
-	}*/
+	}
 	
 }

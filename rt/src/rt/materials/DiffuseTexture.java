@@ -26,7 +26,7 @@ public class DiffuseTexture implements Material {
 
     @Override
     public Spectrum evaluateEmission(HitRecord hitRecord, Vector3f wOut) {
-        return null;
+        return new Spectrum(0, 0, 0);
     }
 
     @Override

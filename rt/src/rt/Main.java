@@ -24,7 +24,7 @@ public class Main {
 	/** 
 	 * The scene to be rendered.
 	 */
-	public static Scene scene = new PathtracingBoxCar();
+	public static Scene scene = new PathtracingBoxSphere();
 	/**
 	 * A render task represents a rectangular image region that is rendered
 	 * by a thread in one chunk.
@@ -54,7 +54,7 @@ public class Main {
 		@Override
 		public void run() {
 
-			boolean debug = true;
+			boolean debug = false;
 
 			for(int j=bottom; j<top; j++)
 			{

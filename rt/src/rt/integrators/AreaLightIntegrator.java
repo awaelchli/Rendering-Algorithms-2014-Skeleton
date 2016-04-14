@@ -27,6 +27,9 @@ public class AreaLightIntegrator extends WhittedIntegrator
 
         Spectrum contribution = new Spectrum();
 
+        // If the surface has emission
+        contribution.add(surfaceHit.material.evaluateEmission(surfaceHit, surfaceHit.w));
+
         for (float[] sample : samples)
         {
             HitRecord lightHit = lightSource.sample(sample);
