@@ -41,12 +41,29 @@ public class Spectrum {
 		g = g*s.g;
 		b = b*s.b;
 	}
+
+	public void div(float d)
+	{
+		div(new Spectrum(d, d, d));
+	}
+
+	public void div(Spectrum d)
+	{
+		r /= d.r;
+		g /= d.g;
+		b /= d.b;
+	}
 	
 	public void add(Spectrum s)
 	{
 		r = r+s.r;
 		g = g+s.g;
 		b = b+s.b;
+	}
+
+	public void add(float t)
+	{
+		add(new Spectrum(t, t, t));
 	}
 	
 	public void clamp(float min, float max)
