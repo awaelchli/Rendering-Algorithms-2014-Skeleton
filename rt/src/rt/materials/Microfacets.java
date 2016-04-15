@@ -41,8 +41,7 @@ public class Microfacets implements Material
 
         // Fresnel term
         // TODO: Find out correct fresnel term
-        ShadingSample s = Refractive.refract_schlick(normal, StaticVecmath.negate(wIn), 0);
-        float f = s.p;
+        float f = 1;
 
         // Cosine terms
         float cosTerms = 4 * nDotOut * nDotIn;
