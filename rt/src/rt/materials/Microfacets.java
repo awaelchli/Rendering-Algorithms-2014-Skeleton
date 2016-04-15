@@ -13,9 +13,19 @@ import javax.vecmath.Vector3f;
 public class Microfacets implements Material
 {
     float smoothness;
+    Spectrum eta;
+    Spectrum k;
 
-    public Microfacets(float smoothness)
+    /**
+     *
+     * @param refractiveIndex       Wavelength dependent refractive index of the conductor
+     * @param absorption            Wavelength dependent absorption coefficient
+     * @param smoothness            Spectral exponent
+     */
+    public Microfacets(Spectrum refractiveIndex, Spectrum absorption, float smoothness)
     {
+        this.eta = refractiveIndex;
+        this.k = absorption;
         this.smoothness = smoothness;
     }
 
@@ -31,7 +41,7 @@ public class Microfacets implements Material
         float nDotIn = wIn.dot(normal);
         float outDotHalf = halfVector.dot(wOut);
 
-        // Blinn Microfacet Distribution (Beckmann Distribution)
+        // Microfacet Distribution (Beckmann Distribution)
         float d = (float) ((e + 2) * Math.pow(nDotHalf, e) / (2 * Math.PI));
 
         // Geometry term
@@ -40,25 +50,18 @@ public class Microfacets implements Material
         float g = Math.min(1, Math.min(g1, g2));
 
         // Fresnel term
-        // TODO: Find out correct fresnel term
-        float f = 1;
+        float f_r = fresnel_reflectance(this.eta.r, this.k.r, nDotIn);
+        float f_g = fresnel_reflectance(this.eta.g, this.k.g, nDotIn);
+        float f_b = fresnel_reflectance(this.eta.b, this.k.b, nDotIn);
 
         // Cosine terms
         float cosTerms = 4 * nDotOut * nDotIn;
 
         // Torrance Sparrow BRDF for Microfacets
-        Spectrum brdf = new Spectrum(1, 1, 1);
-        brdf.mult(d * g * f / cosTerms);
+        Spectrum brdf = new Spectrum(f_r, f_g, f_b);
+        brdf.mult(d * g / cosTerms);
 
         return brdf;
-    }
-
-    private Vector3f computeHalfVector(Vector3f wOut, Vector3f wIn)
-    {
-        Vector3f halfVector = new Vector3f(wIn);
-        halfVector.add(wOut);
-        halfVector.normalize();
-        return halfVector;
     }
 
     @Override
@@ -107,5 +110,33 @@ public class Microfacets implements Material
     public boolean castsShadows()
     {
         return true;
+    }
+
+    private Vector3f computeHalfVector(Vector3f wOut, Vector3f wIn)
+    {
+        Vector3f halfVector = new Vector3f(wIn);
+        halfVector.add(wOut);
+        halfVector.normalize();
+        return halfVector;
+    }
+
+    private float fresnel_reflectance(float eta, float k, float cosi)
+    {
+        return (rParl2(eta, k, cosi) + rPerp2(eta, k, cosi)) / 2;
+    }
+
+    private float rParl2(float eta, float k, float cosi)
+    {
+        float tmp1 = (eta * eta + k * k) * cosi * cosi;
+        float tmp2 = 2 * eta * cosi;
+        return (tmp1 - tmp2 + 1) / (tmp1 + tmp2 + 1);
+    }
+
+    private float rPerp2(float eta, float k, float cosi)
+    {
+        float tmp1 = eta * eta + k * k;
+        float tmp2 = 2 * eta * cosi;
+        float tmp3 = cosi * cosi;
+        return (tmp1 - tmp2 + tmp3) / (tmp1 + tmp2 + tmp3);
     }
 }
