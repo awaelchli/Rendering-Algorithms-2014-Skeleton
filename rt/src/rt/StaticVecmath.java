@@ -75,4 +75,18 @@ public class StaticVecmath {
 		cross.cross(v1, v2);
 		return cross;
 	}
+
+	public static Vector3f reflect(Vector3f direction, Vector3f halfVector)
+	{
+		Vector3f incident = new Vector3f(direction);
+		incident.normalize();
+		incident.negate();
+
+		float s = -2 * incident.dot(halfVector);
+
+		Vector3f r = new Vector3f();
+		r.scaleAdd(s, halfVector, incident);
+
+		return r;
+	}
 }

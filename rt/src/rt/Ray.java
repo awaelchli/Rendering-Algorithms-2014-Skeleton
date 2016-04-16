@@ -30,16 +30,6 @@ public class Ray {
 	}
 
 	public static Ray reflect(HitRecord hitRecord) {
-
-		Vector3f incident = new Vector3f(hitRecord.w);
-		incident.normalize();
-		incident.negate();
-
-		float s = -2 * incident.dot(hitRecord.normal);
-
-		Vector3f r = new Vector3f();
-		r.scaleAdd(s, hitRecord.normal, incident);
-
-		return new Ray(hitRecord.position, r);
+		return new Ray(hitRecord.position, StaticVecmath.reflect(hitRecord.w, hitRecord.normal));
 	}
 }
