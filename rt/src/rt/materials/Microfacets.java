@@ -12,20 +12,24 @@ import javax.vecmath.Vector3f;
  */
 public class Microfacets implements Material
 {
+    Diffuse diffuse;
     float smoothness;
     Spectrum eta;
     Spectrum k;
 
-    /**
-     *
-     * @param refractiveIndex       Wavelength dependent refractive index of the conductor
-     * @param absorption            Wavelength dependent absorption coefficient
-     * @param smoothness            Spectral exponent
-     */
-    public Microfacets(Spectrum refractiveIndex, Spectrum absorption, float smoothness)
+    public Microfacets(Spectrum diffuse, Spectrum refractiveIndex, Spectrum absorption, float smoothness)
     {
+        this.diffuse = new Diffuse(diffuse);
         this.eta = refractiveIndex;
         this.k = absorption;
+        this.smoothness = smoothness;
+    }
+
+    public Microfacets(Spectrum diffuse, float refractiveIndex, float absorption, float smoothness)
+    {
+        this.diffuse = new Diffuse(diffuse);
+        this.eta = new Spectrum(refractiveIndex, refractiveIndex, refractiveIndex);
+        this.k = new Spectrum(absorption, absorption, absorption);
         this.smoothness = smoothness;
     }
 
@@ -60,6 +64,11 @@ public class Microfacets implements Material
         // Torrance Sparrow BRDF for Microfacets
         Spectrum brdf = new Spectrum(f_r, f_g, f_b);
         brdf.mult(d * g / cosTerms);
+
+        // Add diffuse term
+        Spectrum diff = diffuse.evaluateBRDF(hitRecord, wOut, wIn);
+        diff.mult(new Spectrum(1 - f_r, 1 - f_g, 1 - f_b));
+        brdf.add(diff);
 
         return brdf;
     }
