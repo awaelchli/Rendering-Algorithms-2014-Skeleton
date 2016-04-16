@@ -106,7 +106,39 @@ public class Microfacets implements Material
     @Override
     public ShadingSample getShadingSample(HitRecord hitRecord, float[] sample)
     {
-        return null;
+        // Construct a random direction over the hemisphere using the cosine distribution
+        float phi = (float) (2 * Math.PI * sample[1]);
+        float r = (float) Math.pow(sample[0], 1 / (smoothness + 1));
+        Vector3f halfVector = new Vector3f();
+        float tmp = (float) Math.sqrt(sample[0]);
+        halfVector.x = (float) (Math.cos(phi) * tmp);
+        halfVector.y = (float) (Math.sin(phi) * tmp);
+        halfVector.z = (float) (Math.sqrt(1 - sample[0]));
+
+        // Transform the random direction to tangent space
+        hitRecord.toTangentSpace(halfVector);
+
+        // Direction of incident light
+        Vector3f incident = StaticVecmath.reflect(hitRecord.w, halfVector);
+
+        // PDF of sampled half vector
+        float p_h = (float) ((smoothness + 1) * Math.pow(r, smoothness)/ (2 * Math.PI));
+
+        // PDF of the incident direction
+        float p_i = p_h / (4 * halfVector.dot(hitRecord.w));
+
+        // Create the shading sample
+        ShadingSample s = new ShadingSample();
+        s.brdf = new Spectrum();
+        if(incident.dot(hitRecord.normal) > 0)
+        {   // Incident direction is pointing away from the surface
+            s.brdf = evaluateBRDF(hitRecord, hitRecord.w, incident);
+        }
+        s.w = incident;
+        s.p = p_i;
+        s.isSpecular = false;
+        s.emission = new Spectrum(); // No emission
+        return s;
     }
 
     @Override
