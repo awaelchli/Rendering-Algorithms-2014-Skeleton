@@ -124,5 +124,17 @@ public class HitRecord  {
 		inv.invert();
 		transform(t, inv);
 	}
+
+	/**
+	 * Transforms the {@param tuple} to tangent space coordinates.
+     */
+	public void toTangentSpace(Tuple3f tuple)
+	{
+		Matrix3f m = new Matrix3f();
+		m.setColumn(0, t1);
+		m.setColumn(1, t2);
+		m.setColumn(2, normal);
+		m.transform(tuple);
+	}
 	
 }
