@@ -3,20 +3,32 @@ package rt.integrators;
 import rt.Integrator;
 import rt.Sampler;
 import rt.Scene;
+import rt.samplers.RandomSampler;
 
 /**
  * Makes a {@link PointLightIntegrator}.
  */
 public class AreaLightIntegratorFactory extends WhittedIntegratorFactory {
 
-    int numberOfSamples = 1;
+    int numberOfSamples;
     Sampler sampler;
+    private AreaLightIntegrator.SamplingTechnique samplingTechnique;
+
+    public AreaLightIntegratorFactory()
+    {
+        super();
+        this.numberOfSamples = 1;
+        this.sampler = new RandomSampler();
+        this.samplingTechnique = AreaLightIntegrator.SamplingTechnique.MIS;
+    }
 
     public Integrator make(Scene scene)
     {
-        AreaLightIntegrator integrator = new AreaLightIntegrator(scene, recursionDepth);
+        AreaLightIntegrator integrator = new AreaLightIntegrator(scene);
+        integrator.recursionDepth = this.recursionDepth;
         integrator.numberOfSamples = this.numberOfSamples;
         integrator.sampler = this.sampler;
+        integrator.samplingTechnique = this.samplingTechnique;
         return integrator;
     }
 
@@ -30,4 +42,8 @@ public class AreaLightIntegratorFactory extends WhittedIntegratorFactory {
         this.sampler = sampler;
     }
 
+    public void setSamplingTechnique(AreaLightIntegrator.SamplingTechnique samplingTechnique)
+    {
+        this.samplingTechnique = samplingTechnique;
+    }
 }
