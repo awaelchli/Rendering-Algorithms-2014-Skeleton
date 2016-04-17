@@ -10,27 +10,35 @@ import javax.vecmath.Vector3f;
 /**
  * Created by adrian on 14.04.16.
  */
-public class Microfacets implements Material
+public class Glossy implements Material
 {
     Diffuse diffuse;
-    float smoothness;
+    float roughness;
     Spectrum eta;
     Spectrum k;
 
-    public Microfacets(Spectrum diffuse, Spectrum refractiveIndex, Spectrum absorption, float smoothness)
+    public Glossy(float roughness, Spectrum refractiveIndex, Spectrum absorption)
+    {
+        this.diffuse = new Diffuse(new Spectrum(0, 0, 0));
+        this.eta = refractiveIndex;
+        this.k = absorption;
+        this.roughness = roughness;
+    }
+
+    public Glossy(float roughness, Spectrum refractiveIndex, Spectrum absorption, Spectrum diffuse)
     {
         this.diffuse = new Diffuse(diffuse);
         this.eta = refractiveIndex;
         this.k = absorption;
-        this.smoothness = smoothness;
+        this.roughness = roughness;
     }
 
-    public Microfacets(Spectrum diffuse, float refractiveIndex, float absorption, float smoothness)
+    public Glossy(Spectrum diffuse, float refractiveIndex, float absorption, float roughness)
     {
         this.diffuse = new Diffuse(diffuse);
         this.eta = new Spectrum(refractiveIndex, refractiveIndex, refractiveIndex);
         this.k = new Spectrum(absorption, absorption, absorption);
-        this.smoothness = smoothness;
+        this.roughness = roughness;
     }
 
     @Override
@@ -38,7 +46,7 @@ public class Microfacets implements Material
     {
         Vector3f halfVector = computeHalfVector(wOut, wIn);
         Vector3f normal = hitRecord.normal;
-        float e = this.smoothness;
+        float e = this.roughness;
 
         float nDotHalf = halfVector.dot(normal);
         float nDotOut = wOut.dot(normal);
@@ -108,7 +116,7 @@ public class Microfacets implements Material
     {
         // Construct a random direction over the hemisphere using the cosine distribution
         float phi = (float) (2 * Math.PI * sample[1]);
-        float r = (float) Math.pow(sample[0], 1 / (smoothness + 1));
+        float r = (float) Math.pow(sample[0], 1 / (roughness + 1));
         Vector3f halfVector = new Vector3f();
         float tmp = (float) Math.sqrt(sample[0]);
         halfVector.x = (float) (Math.cos(phi) * tmp);
@@ -122,7 +130,7 @@ public class Microfacets implements Material
         Vector3f incident = StaticVecmath.reflect(hitRecord.w, halfVector);
 
         // PDF of sampled half vector
-        float p_h = (float) ((smoothness + 1) * Math.pow(r, smoothness)/ (2 * Math.PI));
+        float p_h = (float) ((roughness + 1) * Math.pow(r, roughness)/ (2 * Math.PI));
 
         // PDF of the incident direction
         float p_i = p_h / (4 * halfVector.dot(hitRecord.w));

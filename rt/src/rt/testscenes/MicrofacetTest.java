@@ -7,7 +7,9 @@ import rt.Spectrum;
 import rt.bsp.BSPAccelerator;
 import rt.cameras.PinholeCamera;
 import rt.films.BoxFilterFilm;
+import rt.integrators.AreaLightIntegrator;
 import rt.integrators.AreaLightIntegratorFactory;
+import rt.integrators.WhittedIntegratorFactory;
 import rt.intersectables.*;
 import rt.lightsources.RectangleLight;
 import rt.materials.*;
@@ -54,16 +56,17 @@ public class MicrofacetTest extends Scene
         factory.setSamplingDensity(20);
         factory.setSampler(new RandomSampler());
         factory.setRecursionDepth(2);
+        factory.setSamplingTechnique(AreaLightIntegrator.SamplingTechnique.Light);
         integratorFactory = factory;
         samplerFactory = new OneSamplerFactory();
 
         // Materials
-        Microfacets microfacets1 = new Microfacets(new Spectrum(0.3f, 0.3f, 0.3f), new Spectrum(0.9f, 0.5f, 1f), new Spectrum(0.1f, 0.2f, 0.2f), 30);
-        Microfacets microfacets2 = new Microfacets(new Spectrum(1, 0.8f, 0), new Spectrum(1.8f, 1, 0.1f), new Spectrum(2, 3, 4), 100);
+        Glossy glossy1 = new Glossy(30, new Spectrum(0.9f, 0.5f, 1f), new Spectrum(0.1f, 0.2f, 0.2f), new Spectrum(0.3f, 0.3f, 0.3f));
+        Glossy glossy2 = new Glossy(100, new Spectrum(1.8f, 1, 0.1f), new Spectrum(2, 3, 4), new Spectrum(1, 0.8f, 0));
 
         // Ground plane
         Plane ground = new Plane(new Vector3f(0.f, 1.f, 0.f), 0);
-        ground.material = microfacets1;
+        ground.material = glossy1;
 
         // Background plane of room
         Plane back = new Plane(new Vector3f(0.f, 0.f, 1f), 7);
@@ -84,7 +87,7 @@ public class MicrofacetTest extends Scene
             System.out.printf("Could not read .obj file\n");
             return;
         }
-        mesh.material = microfacets2;
+        mesh.material = glossy2;
 
         BSPAccelerator meshAccelerator = new BSPAccelerator(mesh, 5, 20);
         meshAccelerator.construct();
