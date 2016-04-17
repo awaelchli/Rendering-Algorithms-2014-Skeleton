@@ -8,16 +8,13 @@ import rt.bsp.BSPAccelerator;
 import rt.cameras.PinholeCamera;
 import rt.films.BoxFilterFilm;
 import rt.integrators.AreaLightIntegratorFactory;
-import rt.integrators.WhittedIntegratorFactory;
 import rt.intersectables.*;
 import rt.lightsources.RectangleLight;
 import rt.materials.*;
 import rt.samplers.OneSamplerFactory;
-import rt.textures.NormalMap;
-import rt.textures.Texture;
+import rt.samplers.RandomSampler;
 import rt.tonemappers.ClampTonemapper;
 
-import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -54,7 +51,9 @@ public class MicrofacetTest extends Scene
 
         // Specify which integrator and sampler to use
         AreaLightIntegratorFactory factory = new AreaLightIntegratorFactory();
-        factory.setLightSamplingDensity(60);
+        factory.setSamplingDensity(20);
+        factory.setSampler(new RandomSampler());
+        factory.setRecursionDepth(2);
         integratorFactory = factory;
         samplerFactory = new OneSamplerFactory();
 

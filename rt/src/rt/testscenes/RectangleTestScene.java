@@ -47,7 +47,7 @@ public class RectangleTestScene extends Scene {
 		
 		// Specify integrator to be used
         PointLightIntegratorFactory iF = new PointLightIntegratorFactory();
-        //iF.setLightSamplingDensity(10);
+        //iF.setSamplingDensity(10);
 		integratorFactory = iF;
 
 		

@@ -43,7 +43,7 @@ public class PathtracingBoxCar extends Scene {
 		// Specify integrator to be used
         AreaLightIntegratorFactory iF = new AreaLightIntegratorFactory();
 		//PointLightIntegratorFactory iF = new PointLightIntegratorFactory();
-        iF.setLightSamplingDensity(40);
+        iF.setSamplingDensity(40);
 		integratorFactory = iF;
 
 		
