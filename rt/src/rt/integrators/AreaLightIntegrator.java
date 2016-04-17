@@ -10,36 +10,53 @@ import javax.vecmath.Vector3f;
  */
 public class AreaLightIntegrator extends WhittedIntegrator
 {
+    public enum SamplingTechnique
+    {
+        Light, BRDF, MIS
+    }
+
     int numberOfSamples;
     Sampler sampler;
+    SamplingTechnique samplingTechnique;
 
-    public AreaLightIntegrator(Scene scene, int recursionDepth)
+    public AreaLightIntegrator(Scene scene)
     {
-        super(scene, recursionDepth);
+        super(scene);
         this.numberOfSamples = 1;
         this.sampler = new RandomSampler();
+        this.samplingTechnique = SamplingTechnique.MIS;
     }
 
     @Override
     protected void integrateHemisphere(HitRecord surfaceHit, Spectrum outgoing, int depth)
     {
-        float[][] samples = sampler.makeSamples(numberOfSamples, 2);
-
         // If the surface has emission
         outgoing.add(surfaceHit.material.evaluateEmission(surfaceHit, surfaceHit.w));
 
+        Spectrum hemisphere = new Spectrum();
+
+        // Iterate over samples
+        float[][] samples = sampler.makeSamples(numberOfSamples, 2);
         for (float[] sample : samples)
         {
-            Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, sample);
+            Spectrum s1 = new Spectrum();
+            Spectrum s2 = new Spectrum();
+            float p1 = 0, p2 = 0;
 
-            LightGeometry lightSource = getRandomLight();
-            HitRecord lightHit = lightSource.sample(sample);
-
-            Spectrum s1 = sampleBRDF(surfaceHit, shadingSample, depth);
-            Spectrum s2 = sampleLightSource(lightHit, surfaceHit);
-
-            float p1 = shadingSample.p;
-            float p2 = lightHit.p;
+            if(samplingTechnique == SamplingTechnique.BRDF || samplingTechnique == SamplingTechnique.MIS)
+            {
+                Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, sample);
+                s1 = sampleBRDF(surfaceHit, shadingSample, depth);
+                p1 = shadingSample.p;
+            }
+            if(samplingTechnique == SamplingTechnique.Light || samplingTechnique == SamplingTechnique.MIS)
+            {
+                // Randomly select a light source
+                LightGeometry lightSource = getRandomLight();
+                HitRecord lightHit = lightSource.sample(sample);
+                s2 = sampleLightSource(lightHit, surfaceHit);
+                p2 = lightHit.p;
+            }
 
             // Apply heuristics for multiple importance sampling
             float weight1 = p1 / (p1 + p2);
@@ -48,10 +65,11 @@ public class AreaLightIntegrator extends WhittedIntegrator
             s1.mult(weight1);
             s2.mult(weight2);
 
-            outgoing.add(s1);
-            outgoing.add(s2);
+            hemisphere.add(s1);
+            hemisphere.add(s2);
         }
-        outgoing.mult(1f / numberOfSamples);
+        hemisphere.mult(1f / numberOfSamples);
+        outgoing.add(hemisphere);
     }
 
     protected Spectrum sampleBRDF(HitRecord surfaceHit, Material.ShadingSample shadingSample, int depth)
@@ -72,7 +90,6 @@ public class AreaLightIntegrator extends WhittedIntegrator
 
     protected Spectrum sampleLightSource(HitRecord lightHit, HitRecord surfaceHit)
     {
-        // Randomly select a light source
         Vector3f lightDir = StaticVecmath.sub(lightHit.position, surfaceHit.position);
 
         // Check if point on surface lies in shadow of current light source sample
