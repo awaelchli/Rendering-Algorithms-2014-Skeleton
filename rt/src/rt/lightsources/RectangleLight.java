@@ -20,8 +20,8 @@ public class RectangleLight implements LightGeometry
     public RectangleLight(Point3f anchor, Vector3f right, Vector3f up, Spectrum emission)
     {
         this.rectangle = new Rectangle(anchor, right, up);
-        this.right = right;
-        this.up = up;
+        this.right = new Vector3f(right);
+        this.up = new Vector3f(up);
         rectangle.material = new AreaLightMaterial(emission, area());
     }
 

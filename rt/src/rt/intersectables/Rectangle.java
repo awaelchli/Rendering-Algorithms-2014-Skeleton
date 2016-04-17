@@ -23,9 +23,9 @@ public class Rectangle extends Plane
     public Rectangle(Point3f anchor, Vector3f right, Vector3f up)
     {
         super(computeNormal(right, up), computeDistance(anchor, right, up));
-        this.anchor = anchor;
-        this.right = right;
-        this.up = up;
+        this.anchor = new Point3f(anchor);
+        this.right = new Vector3f(right);
+        this.up = new Vector3f(up);
         length1 = right.length();
         length2 = up.length();
     }
