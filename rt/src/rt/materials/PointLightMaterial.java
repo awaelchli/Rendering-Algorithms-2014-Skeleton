@@ -39,7 +39,7 @@ public class PointLightMaterial implements Material {
 	 * Shouldn't be called on a point light
 	 */
 	public ShadingSample getShadingSample(HitRecord hitRecord, float[] sample) {
-		return null;
+		return new ShadingSample(new Spectrum(), new Spectrum(), new Vector3f(), false, 0);
 	}
 
 	/** 

@@ -51,7 +51,7 @@ public class DiffuseTexture implements Material {
 
     @Override
     public ShadingSample getShadingSample(HitRecord hitRecord, float[] sample) {
-        return null;
+        return new ShadingSample(new Spectrum(), new Spectrum(), new Vector3f(), false, 0);
     }
 
     @Override
