@@ -9,10 +9,17 @@ import rt.Scene;
  */
 public class WhittedIntegratorFactory implements IntegratorFactory {
 
-    int recursionDepth = 1;
+    int recursionDepth;
+
+    public WhittedIntegratorFactory()
+    {
+        this.recursionDepth = 1;
+    }
 
     public Integrator make(Scene scene) {
-        return new WhittedIntegrator(scene, recursionDepth);
+        WhittedIntegrator integrator = new WhittedIntegrator(scene);
+        integrator.recursionDepth = this.recursionDepth;
+        return integrator;
     }
 
     public void setRecursionDepth(int depth) {

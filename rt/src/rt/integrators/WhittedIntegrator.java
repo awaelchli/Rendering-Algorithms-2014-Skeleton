@@ -17,12 +17,11 @@ public class WhittedIntegrator implements Integrator {
     float epsilon;
     int recursionDepth;
 
-    public WhittedIntegrator(Scene scene, int recursionDepth)
+    public WhittedIntegrator(Scene scene)
     {
         this.lightList = scene.getLightList();
         this.root = scene.getIntersectable();
         this.epsilon = scene.getEpsilon();
-        this.recursionDepth = recursionDepth;
     }
 
     public Spectrum integrate(Ray r) {
