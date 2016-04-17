@@ -10,39 +10,69 @@ import javax.vecmath.Vector3f;
  */
 public class AreaLightIntegrator extends WhittedIntegrator
 {
-    float areaLightSamplesPerUnitArea = 1;
+    int numberOfSamples;
+    Sampler sampler;
 
     public AreaLightIntegrator(Scene scene, int recursionDepth)
     {
         super(scene, recursionDepth);
+        this.numberOfSamples = 1;
+        this.sampler = new RandomSampler();
     }
 
     @Override
-    protected Spectrum integrateLightSource(LightGeometry lightSource, HitRecord surfaceHit)
+    protected void integrateHemisphere(HitRecord surfaceHit, Spectrum outgoing, int depth)
     {
-        int numSamples = Math.round(areaLightSamplesPerUnitArea * lightSource.area());
-        // At least one sample is required
-        numSamples = Math.max(numSamples, 1);
-        float[][] samples = this.makePixelSamples(new RandomSampler(), numSamples);
-
-        Spectrum contribution = new Spectrum();
+        float[][] samples = sampler.makeSamples(numberOfSamples, 2);
 
         // If the surface has emission
-        contribution.add(surfaceHit.material.evaluateEmission(surfaceHit, surfaceHit.w));
+        outgoing.add(surfaceHit.material.evaluateEmission(surfaceHit, surfaceHit.w));
 
         for (float[] sample : samples)
         {
-            HitRecord lightHit = lightSource.sample(sample);
-            Spectrum s = evaluateLightSample(lightHit, surfaceHit);
-            contribution.add(s);
-        }
-        contribution.mult(1f / numSamples);
+            Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, sample);
 
-        return contribution;
+            LightGeometry lightSource = getRandomLight();
+            HitRecord lightHit = lightSource.sample(sample);
+
+            Spectrum s1 = sampleBRDF(surfaceHit, shadingSample, depth);
+            Spectrum s2 = sampleLightSource(lightHit, surfaceHit);
+
+            float p1 = shadingSample.p;
+            float p2 = lightHit.p;
+
+            // Apply heuristics for multiple importance sampling
+            float weight1 = p1 / (p1 + p2);
+            float weight2 = p2 / (p1 + p2);
+
+            s1.mult(weight1);
+            s2.mult(weight2);
+
+            outgoing.add(s1);
+            outgoing.add(s2);
+        }
+        outgoing.mult(1f / numberOfSamples);
     }
 
-    protected Spectrum evaluateLightSample(HitRecord lightHit, HitRecord surfaceHit)
+    protected Spectrum sampleBRDF(HitRecord surfaceHit, Material.ShadingSample shadingSample, int depth)
     {
+        if(shadingSample.p == 0)
+        {
+            return new Spectrum(0, 0, 0);
+        }
+
+        Vector3f direction = shadingSample.w;
+        Ray sampleRay = new Ray(surfaceHit.position, direction);
+
+        Spectrum s = integrate(sampleRay, depth + 1);
+        s.mult(1 / shadingSample.p);
+
+        return s;
+    }
+
+    protected Spectrum sampleLightSource(HitRecord lightHit, HitRecord surfaceHit)
+    {
+        // Randomly select a light source
         Vector3f lightDir = StaticVecmath.sub(lightHit.position, surfaceHit.position);
 
         // Check if point on surface lies in shadow of current light source sample
@@ -72,8 +102,12 @@ public class AreaLightIntegrator extends WhittedIntegrator
         // Multiply with geometry term
         s.mult(geometryTerm(surfaceHit, lightHit, lightDir, d2));
 
+        // Express pdf in solid angle
+        lightHit.p *= lightList.size();
+        lightHit.p *= d2 / lightHit.normal.dot(StaticVecmath.negate(lightDir));
+
         // Divide by probability density function
-        s.mult(1 / lightHit.p);
+        s.mult(1 / lightHit.p);;
 
         return s;
     }
@@ -99,5 +133,12 @@ public class AreaLightIntegrator extends WhittedIntegrator
         geometryTerm.mult(1 / distanceSquared);
 
         return geometryTerm;
+    }
+
+    private LightGeometry getRandomLight()
+    {
+        float[][] rnd = (new RandomSampler()).makeSamples(1, 1);
+        int index = (int) Math.floor(rnd[0][0] * lightList.size());
+        return lightList.get(index);
     }
 }

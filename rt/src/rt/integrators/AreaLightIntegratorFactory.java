@@ -1,7 +1,7 @@
 package rt.integrators;
 
 import rt.Integrator;
-import rt.IntegratorFactory;
+import rt.Sampler;
 import rt.Scene;
 
 /**
@@ -9,18 +9,25 @@ import rt.Scene;
  */
 public class AreaLightIntegratorFactory extends WhittedIntegratorFactory {
 
-    float samplesPerUnitArea = 1;
+    int numberOfSamples = 1;
+    Sampler sampler;
 
     public Integrator make(Scene scene)
     {
         AreaLightIntegrator integrator = new AreaLightIntegrator(scene, recursionDepth);
-        integrator.areaLightSamplesPerUnitArea = samplesPerUnitArea;
+        integrator.numberOfSamples = this.numberOfSamples;
+        integrator.sampler = this.sampler;
         return integrator;
     }
 
-    public void setLightSamplingDensity(float samplesPerUnitArea)
+    public void setSamplingDensity(int numberOfSamples)
     {
-        this.samplesPerUnitArea = samplesPerUnitArea;
+        this.numberOfSamples = numberOfSamples;
+    }
+
+    public void setSampler(Sampler sampler)
+    {
+        this.sampler = sampler;
     }
 
 }
