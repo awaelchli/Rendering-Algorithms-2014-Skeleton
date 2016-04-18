@@ -12,7 +12,9 @@ public class AreaLightIntegrator extends WhittedIntegrator
 {
     public enum SamplingTechnique
     {
-        Light, BRDF, MIS
+        Light,  // Samples the light directly on the light sources
+        BRDF,   // Samples the BRDF directly with the directional form
+        MIS     // Multiple importance sampling, both techniques are applied and combined via a weighted sum
     }
 
     int numberOfSamples;
@@ -46,7 +48,7 @@ public class AreaLightIntegrator extends WhittedIntegrator
             if(samplingTechnique == SamplingTechnique.BRDF || samplingTechnique == SamplingTechnique.MIS)
             {
                 Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, sample);
-                s1 = sampleBRDF(surfaceHit, shadingSample, depth);
+                s1 = sampleBRDF(surfaceHit, shadingSample);
                 p1 = shadingSample.p;
             }
             if(samplingTechnique == SamplingTechnique.Light || samplingTechnique == SamplingTechnique.MIS)
@@ -73,7 +75,7 @@ public class AreaLightIntegrator extends WhittedIntegrator
         outgoing.add(hemisphere);
     }
 
-    protected Spectrum sampleBRDF(HitRecord surfaceHit, Material.ShadingSample shadingSample, int depth)
+    protected Spectrum sampleBRDF(HitRecord surfaceHit, Material.ShadingSample shadingSample)
     {
         if(shadingSample.p == 0)
         {
@@ -85,8 +87,25 @@ public class AreaLightIntegrator extends WhittedIntegrator
 
         epsilonTranslation(sampleRay, sampleRay.direction);
 
-        Spectrum s = integrate(sampleRay, depth + 1);
-        s.mult(1 / shadingSample.p);
+//        Spectrum s = integrate(sampleRay, depth + 1);
+//        s.mult(1 / shadingSample.p);
+
+        HitRecord hitRecord = root.intersect(sampleRay);
+        if(hitRecord == null)
+        {   // No object hit in the sampled direction
+            return new Spectrum(0, 0, 0);
+        }
+
+        if(hitRecord.normal.dot(hitRecord.w) <= 0)
+        {   // Light source is hit from the back
+            return new Spectrum(0, 0, 0);
+        }
+
+
+        Spectrum s = hitRecord.material.evaluateEmission(hitRecord, hitRecord.w);
+        s.mult(shadingSample.brdf);
+
+        float p_area = ;
 
         return s;
     }
