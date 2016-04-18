@@ -54,6 +54,7 @@ public class AreaLightIntegrator extends WhittedIntegrator
                 // Randomly select a light source
                 LightGeometry lightSource = getRandomLight();
                 HitRecord lightHit = lightSource.sample(sample);
+                lightHit.p = 1f / lightList.size();
                 s2 = sampleLightSource(lightHit, surfaceHit);
                 p2 = lightHit.p;
             }
@@ -120,7 +121,6 @@ public class AreaLightIntegrator extends WhittedIntegrator
         s.mult(geometryTerm(surfaceHit, lightHit, lightDir, d2));
 
         // Express pdf in solid angle
-        lightHit.p *= lightList.size();
         lightHit.p *= d2 / lightHit.normal.dot(StaticVecmath.negate(lightDir));
 
         // Divide by probability density function
