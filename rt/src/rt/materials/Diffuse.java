@@ -63,11 +63,32 @@ public class Diffuse implements Material {
 	{
 		return null;
 	}
-	
-	// To be implemented for path tracer!
+
 	public ShadingSample getShadingSample(HitRecord hitRecord, float[] sample)
 	{
-		return new ShadingSample(new Spectrum(), new Spectrum(), new Vector3f(), false, 0);
+		// Construct random direction over hemisphere
+		float phi = (float) (2 * Math.PI * sample[1]);
+		Vector3f direction = new Vector3f();
+		float tmp = (float) Math.sqrt(sample[0]);
+		direction.x = (float) (Math.cos(phi) * tmp);
+		direction.y = (float) (Math.sin(phi) * tmp);
+		direction.z = (float) (Math.sqrt(1 - sample[0]));
+
+		// Convert the sampled direction to tangent space coordinates
+		hitRecord.toTangentSpace(direction);
+
+		// Probability according to the cosine distribution
+		float p = (float) (hitRecord.normal.dot(direction) / Math.PI);
+
+		// Create the shading sample
+		ShadingSample shadingSample = new ShadingSample();
+		shadingSample.w = direction;
+		shadingSample.p = p;
+		shadingSample.brdf = evaluateBRDF(hitRecord, direction, hitRecord.w);
+		shadingSample.isSpecular = false;
+		shadingSample.emission = new Spectrum(0, 0, 0);
+
+		return shadingSample;
 	}
 		
 	public boolean castsShadows()
