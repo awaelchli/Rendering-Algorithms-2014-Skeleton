@@ -48,10 +48,10 @@ public class ImportanceSampling extends Scene {
 		// Area light integrator for direct illumination from area lights
 		// Supports three sampling techniques: AreaLightIntegrator.SamplingTechnique.MIS, 
 		// AreaLightIntegrator.SamplingTechnique.BRDF, AreaLightIntegrator.SamplingTechnique.Light
-		AreaLightIntegrator.SamplingTechnique technique = AreaLightIntegrator.SamplingTechnique.Light;
+		AreaLightIntegrator.SamplingTechnique technique = AreaLightIntegrator.SamplingTechnique.BRDF;
 		AreaLightIntegratorFactory factory = new AreaLightIntegratorFactory();
 		factory.setRecursionDepth(2);
-		factory.setSamplingDensity(100);
+		factory.setSamplingDensity(50);
 		factory.setSamplingTechnique(technique);
 		integratorFactory = factory;
 		outputFilename = outputFilename + " " + width + "x" + height + " " + technique;

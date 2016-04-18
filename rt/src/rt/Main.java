@@ -54,13 +54,13 @@ public class Main {
 		@Override
 		public void run() {
 
-			boolean debug = false;
+			boolean debug = true;
 
 			for(int j=bottom; j<top; j++)
 			{
 				for(int i=left; i<right; i++)
 				{
-					if( !debug || i == 299 && j == 512 - 16)
+					if( !debug || i == 148 && j == 256 - 241)
 					{
 						float samples[][] = integrator.makePixelSamples(sampler, scene.getSPP());
 						// For all samples of the pixel
