@@ -1,6 +1,10 @@
 package rt.integrators;
 
 import rt.*;
+import rt.importanceSampling.Heuristic;
+import rt.importanceSampling.ImportanceSample;
+import rt.importanceSampling.PowerHeuristic;
+import rt.importanceSampling.SamplingTechnique;
 import rt.samplers.RandomSampler;
 
 import javax.vecmath.Vector3f;
@@ -10,16 +14,11 @@ import javax.vecmath.Vector3f;
  */
 public class AreaLightIntegrator extends WhittedIntegrator
 {
-    public enum SamplingTechnique
-    {
-        Light,  // Samples the light directly on the light sources
-        BRDF,   // Samples the BRDF directly with the directional form
-        MIS     // Multiple importance sampling, both techniques are applied and combined via a weighted sum
-    }
 
     int numberOfSamples;
     Sampler sampler;
     SamplingTechnique samplingTechnique;
+    Heuristic heuristic;
 
     public AreaLightIntegrator(Scene scene)
     {
@@ -27,6 +26,7 @@ public class AreaLightIntegrator extends WhittedIntegrator
         this.numberOfSamples = 1;
         this.sampler = new RandomSampler();
         this.samplingTechnique = SamplingTechnique.MIS;
+        this.heuristic = new PowerHeuristic();
     }
 
     @Override
@@ -41,15 +41,13 @@ public class AreaLightIntegrator extends WhittedIntegrator
         float[][] samples = sampler.makeSamples(numberOfSamples, 2);
         for (float[] sample : samples)
         {
-            Spectrum s1 = new Spectrum();
-            Spectrum s2 = new Spectrum();
-            float p_solidAngle = 0;
-            float p_Area = 0;
+            ImportanceSample brdfSample = new ImportanceSample();
+            ImportanceSample lightSample = new ImportanceSample();
 
             if(samplingTechnique == SamplingTechnique.BRDF || samplingTechnique == SamplingTechnique.MIS)
             {
                 Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, sample);
-                s1 = sampleBRDF(surfaceHit, shadingSample);
+                brdfSample = sampleBRDF(surfaceHit, shadingSample);
             }
             if(samplingTechnique == SamplingTechnique.Light || samplingTechnique == SamplingTechnique.MIS)
             {
@@ -59,8 +57,17 @@ public class AreaLightIntegrator extends WhittedIntegrator
                 lightHit.p /= lightList.size();
                 lightHit.w = StaticVecmath.sub(surfaceHit.position, lightHit.position);
                 lightHit.w.normalize();
-                s2 = sampleLightSource(lightHit, surfaceHit);
+                lightSample = sampleLightSource(lightHit, surfaceHit);
             }
+
+            // Apply heuristics for multiple importance sampling
+            float weight1 = heuristic.evaluate(brdfSample.directionalProbability, lightSample.directionalProbability);
+            float weight2 = heuristic.evaluate(lightSample.areaProbability, brdfSample.areaProbability);
+
+            Spectrum s1 = new Spectrum(brdfSample.spectrum);
+            Spectrum s2 = new Spectrum(lightSample.spectrum);
+            s1.mult(weight1);
+            s2.mult(weight2);
 
             hemisphere.add(s1);
             hemisphere.add(s2);
@@ -69,11 +76,11 @@ public class AreaLightIntegrator extends WhittedIntegrator
         outgoing.add(hemisphere);
     }
 
-    protected Spectrum sampleBRDF(HitRecord surfaceHit, Material.ShadingSample shadingSample)
+    protected ImportanceSample sampleBRDF(HitRecord surfaceHit, Material.ShadingSample shadingSample)
     {
         if(shadingSample.p == 0)
         {
-            return new Spectrum(0, 0, 0);
+            return new ImportanceSample();
         }
 
         Vector3f direction = shadingSample.w;
@@ -84,12 +91,12 @@ public class AreaLightIntegrator extends WhittedIntegrator
         HitRecord lightHit = root.intersect(sampleRay);
         if(lightHit == null)
         {   // No object hit in the sampled direction
-            return new Spectrum(0, 0, 0);
+            return new ImportanceSample();
         }
 
         if(lightHit.normal.dot(lightHit.w) <= 0)
         {   // Light source is hit from the back
-            return new Spectrum(0, 0, 0);
+            return new ImportanceSample();
         }
 
         Vector3f lightDir = StaticVecmath.sub(lightHit.position, surfaceHit.position);
@@ -106,15 +113,16 @@ public class AreaLightIntegrator extends WhittedIntegrator
         // Divide by probability density function
         s.mult(1 / shadingSample.p);
 
-        // Apply heuristics for multiple importance sampling
-        float p1 = shadingSample.p;
-        float p2 = shadingSample.p * lightHit.w.dot(lightHit.normal) / d2;
-        s.mult(p1 / (p1 + p2));
+        // Return probabilities and spectrum for multiple importance sampling
+        ImportanceSample importanceSample = new ImportanceSample();
+        importanceSample.areaProbability = shadingSample.p * d2 / lightHit.w.dot(lightHit.normal);
+        importanceSample.directionalProbability = shadingSample.p;;
+        importanceSample.spectrum = s;
 
-        return s;
+        return importanceSample;
     }
 
-    protected Spectrum sampleLightSource(HitRecord lightHit, HitRecord surfaceHit)
+    protected ImportanceSample sampleLightSource(HitRecord lightHit, HitRecord surfaceHit)
     {
         Vector3f lightDir = StaticVecmath.sub(lightHit.position, surfaceHit.position);
 
@@ -122,13 +130,13 @@ public class AreaLightIntegrator extends WhittedIntegrator
         if (isInShadow(surfaceHit, lightDir))
         {
             // Shadow ray hit another occluding surface
-            return new Spectrum(0, 0, 0);
+            return new ImportanceSample();
         }
 
         // Check if the surface points towards the visible side of the area light
         if (lightHit.normal != null && lightHit.normal.dot(lightDir) > 0)
         {
-            return new Spectrum(0, 0, 0);
+            return new ImportanceSample();
         }
 
         float d2 = lightDir.lengthSquared();
@@ -148,12 +156,13 @@ public class AreaLightIntegrator extends WhittedIntegrator
         // Divide by probability density function
         s.mult(1 / lightHit.p);
 
-        // Apply heuristics for multiple importance sampling
-        float p1 = lightHit.p * d2 / lightHit.w.dot(lightHit.normal);
-        float p2 = lightHit.p;
-        s.mult(p2 / (p1 + p2));
+        // Return probabilities and spectrum for multiple importance sampling
+        ImportanceSample importanceSample = new ImportanceSample();
+        importanceSample.areaProbability = lightHit.p;
+        importanceSample.directionalProbability = lightHit.p * lightHit.w.dot(lightHit.normal) / d2;
+        importanceSample.spectrum = s;
 
-        return s;
+        return importanceSample;
     }
 
     protected Spectrum geometryTerm(HitRecord surfaceHit, HitRecord lightHit, Vector3f lightDir, float distanceSquared)
