@@ -43,13 +43,13 @@ public class AreaLightIntegrator extends WhittedIntegrator
         {
             Spectrum s1 = new Spectrum();
             Spectrum s2 = new Spectrum();
-            float p1 = 0, p2 = 0;
+            float p_solidAngle = 0;
+            float p_Area = 0;
 
             if(samplingTechnique == SamplingTechnique.BRDF || samplingTechnique == SamplingTechnique.MIS)
             {
                 Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, sample);
                 s1 = sampleBRDF(surfaceHit, shadingSample);
-                p1 = shadingSample.p;
             }
             if(samplingTechnique == SamplingTechnique.Light || samplingTechnique == SamplingTechnique.MIS)
             {
@@ -57,16 +57,10 @@ public class AreaLightIntegrator extends WhittedIntegrator
                 LightGeometry lightSource = getRandomLight();
                 HitRecord lightHit = lightSource.sample(sample);
                 lightHit.p /= lightList.size();
+                lightHit.w = StaticVecmath.sub(surfaceHit.position, lightHit.position);
+                lightHit.w.normalize();
                 s2 = sampleLightSource(lightHit, surfaceHit);
-                p2 = lightHit.p;
             }
-
-            // Apply heuristics for multiple importance sampling
-            float weight1 = p1 / (p1 + p2);
-            float weight2 = p2 / (p1 + p2);
-
-            s1.mult(weight1);
-            s2.mult(weight2);
 
             hemisphere.add(s1);
             hemisphere.add(s2);
@@ -99,6 +93,7 @@ public class AreaLightIntegrator extends WhittedIntegrator
         }
 
         Vector3f lightDir = StaticVecmath.sub(lightHit.position, surfaceHit.position);
+        float d2 = lightDir.lengthSquared();
         lightDir.normalize();
 
         Spectrum s = lightHit.material.evaluateEmission(lightHit, lightHit.w);
@@ -110,6 +105,11 @@ public class AreaLightIntegrator extends WhittedIntegrator
 
         // Divide by probability density function
         s.mult(1 / shadingSample.p);
+
+        // Apply heuristics for multiple importance sampling
+        float p1 = shadingSample.p;
+        float p2 = shadingSample.p * lightHit.w.dot(lightHit.normal) / d2;
+        s.mult(p1 / (p1 + p2));
 
         return s;
     }
@@ -147,6 +147,11 @@ public class AreaLightIntegrator extends WhittedIntegrator
 
         // Divide by probability density function
         s.mult(1 / lightHit.p);
+
+        // Apply heuristics for multiple importance sampling
+        float p1 = lightHit.p * d2 / lightHit.w.dot(lightHit.normal);
+        float p2 = lightHit.p;
+        s.mult(p2 / (p1 + p2));
 
         return s;
     }
