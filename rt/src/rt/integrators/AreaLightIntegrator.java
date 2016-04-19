@@ -87,25 +87,29 @@ public class AreaLightIntegrator extends WhittedIntegrator
 
         epsilonTranslation(sampleRay, sampleRay.direction);
 
-//        Spectrum s = integrate(sampleRay, depth + 1);
-//        s.mult(1 / shadingSample.p);
-
-        HitRecord hitRecord = root.intersect(sampleRay);
-        if(hitRecord == null)
+        HitRecord lightHit = root.intersect(sampleRay);
+        if(lightHit == null)
         {   // No object hit in the sampled direction
             return new Spectrum(0, 0, 0);
         }
 
-        if(hitRecord.normal.dot(hitRecord.w) <= 0)
+        if(lightHit.normal.dot(lightHit.w) <= 0)
         {   // Light source is hit from the back
             return new Spectrum(0, 0, 0);
         }
 
+        Vector3f lightDir = StaticVecmath.sub(lightHit.position, surfaceHit.position);
+        lightDir.normalize();
 
-        Spectrum s = hitRecord.material.evaluateEmission(hitRecord, hitRecord.w);
+        Spectrum s = lightHit.material.evaluateEmission(lightHit, lightHit.w);
         s.mult(shadingSample.brdf);
 
-        float p_area = ;
+        // Multiply with cosine of angle between light direction and surface normal
+        float ndotl = surfaceHit.normal.dot(lightDir);
+        s.mult(ndotl);
+
+        // Divide by probability density function
+        s.mult(1 / shadingSample.p);
 
         return s;
     }
