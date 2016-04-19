@@ -3,6 +3,8 @@ package rt.integrators;
 import rt.Integrator;
 import rt.Sampler;
 import rt.Scene;
+import rt.importanceSampling.Heuristic;
+import rt.importanceSampling.SamplingTechnique;
 import rt.samplers.RandomSampler;
 
 /**
@@ -12,14 +14,15 @@ public class AreaLightIntegratorFactory extends WhittedIntegratorFactory {
 
     int numberOfSamples;
     Sampler sampler;
-    private AreaLightIntegrator.SamplingTechnique samplingTechnique;
+    SamplingTechnique samplingTechnique;
+    Heuristic heuristic;
 
     public AreaLightIntegratorFactory()
     {
         super();
         this.numberOfSamples = 1;
         this.sampler = new RandomSampler();
-        this.samplingTechnique = AreaLightIntegrator.SamplingTechnique.MIS;
+        this.samplingTechnique = SamplingTechnique.MIS;
     }
 
     public Integrator make(Scene scene)
@@ -29,6 +32,7 @@ public class AreaLightIntegratorFactory extends WhittedIntegratorFactory {
         integrator.numberOfSamples = this.numberOfSamples;
         integrator.sampler = this.sampler;
         integrator.samplingTechnique = this.samplingTechnique;
+        integrator.heuristic = heuristic;
         return integrator;
     }
 
@@ -42,8 +46,13 @@ public class AreaLightIntegratorFactory extends WhittedIntegratorFactory {
         this.sampler = sampler;
     }
 
-    public void setSamplingTechnique(AreaLightIntegrator.SamplingTechnique samplingTechnique)
+    public void setSamplingTechnique(SamplingTechnique samplingTechnique)
     {
         this.samplingTechnique = samplingTechnique;
+    }
+
+    public void setHeuristic(Heuristic h)
+    {
+        this.heuristic = h;
     }
 }
