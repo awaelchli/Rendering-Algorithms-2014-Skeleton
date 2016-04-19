@@ -7,9 +7,8 @@ import rt.Spectrum;
 import rt.bsp.BSPAccelerator;
 import rt.cameras.PinholeCamera;
 import rt.films.BoxFilterFilm;
-import rt.integrators.AreaLightIntegrator;
+import rt.importanceSampling.SamplingTechnique;
 import rt.integrators.AreaLightIntegratorFactory;
-import rt.integrators.WhittedIntegratorFactory;
 import rt.intersectables.*;
 import rt.lightsources.RectangleLight;
 import rt.materials.*;
@@ -56,7 +55,7 @@ public class MicrofacetTest extends Scene
         factory.setSamplingDensity(20);
         factory.setSampler(new RandomSampler());
         factory.setRecursionDepth(2);
-        factory.setSamplingTechnique(AreaLightIntegrator.SamplingTechnique.Light);
+        factory.setSamplingTechnique(SamplingTechnique.Light);
         integratorFactory = factory;
         samplerFactory = new OneSamplerFactory();
 
