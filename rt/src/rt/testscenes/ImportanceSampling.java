@@ -3,6 +3,8 @@ package rt.testscenes;
 import javax.vecmath.*;
 
 import rt.*;
+import rt.importanceSampling.PowerHeuristic;
+import rt.importanceSampling.SamplingTechnique;
 import rt.intersectables.*;
 import rt.intersectables.Rectangle;
 import rt.tonemappers.*;
@@ -12,8 +14,6 @@ import rt.materials.*;
 import rt.samplers.*;
 import rt.cameras.*;
 import rt.films.*;
-
-import java.awt.*;
 
 /**
  * Demonstrates an AreaLightIntegrator with multiple importance sampling 
@@ -46,13 +46,13 @@ public class ImportanceSampling extends Scene {
 		
 		// Specify integrator to be used
 		// Area light integrator for direct illumination from area lights
-		// Supports three sampling techniques: AreaLightIntegrator.SamplingTechnique.MIS, 
-		// AreaLightIntegrator.SamplingTechnique.BRDF, AreaLightIntegrator.SamplingTechnique.Light
-		AreaLightIntegrator.SamplingTechnique technique = AreaLightIntegrator.SamplingTechnique.BRDF;
+		// Supports three sampling techniques: SamplingTechnique.MIS, SamplingTechnique.BRDF, SamplingTechnique.Light
+		SamplingTechnique technique = SamplingTechnique.MIS;
 		AreaLightIntegratorFactory factory = new AreaLightIntegratorFactory();
-		factory.setRecursionDepth(2);
-		factory.setSamplingDensity(50);
+		factory.setRecursionDepth(1);
+		factory.setSamplingDensity(200);
 		factory.setSamplingTechnique(technique);
+		factory.setHeuristic(new PowerHeuristic());
 		integratorFactory = factory;
 		outputFilename = outputFilename + " " + width + "x" + height + " " + technique;
 		
