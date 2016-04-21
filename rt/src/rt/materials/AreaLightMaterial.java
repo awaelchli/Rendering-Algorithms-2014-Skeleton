@@ -32,6 +32,9 @@ public class AreaLightMaterial implements Material
         Spectrum emission = new Spectrum(power);
         emission.mult(1 / area);
         emission.mult((float) (1 / Math.PI));
+        // Multiply with cosine of light normal and incident direction on light source
+        float ndotOut = Math.max(0, hitRecord.normal.dot(wOut));
+        emission.mult(ndotOut);
         return emission;
     }
 
