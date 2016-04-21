@@ -116,12 +116,12 @@ public class Glossy implements Material
     {
         // Construct a random direction over the hemisphere using the cosine distribution
         float phi = (float) (2 * Math.PI * sample[1]);
-        float r = (float) Math.pow(sample[0], 1 / (roughness + 1));
+        float cosTheta = (float) Math.pow(sample[0], 1 / (roughness + 1));
+        float sinTheta = (float) Math.sqrt(1 - cosTheta * cosTheta);
         Vector3f halfVector = new Vector3f();
-        float tmp = (float) Math.sqrt(sample[0]);
-        halfVector.x = (float) (Math.cos(phi) * tmp);
-        halfVector.y = (float) (Math.sin(phi) * tmp);
-        halfVector.z = (float) (Math.sqrt(1 - sample[0]));
+        halfVector.x = (float) (Math.cos(phi) * sinTheta);
+        halfVector.y = (float) (Math.sin(phi) * sinTheta);
+        halfVector.z = cosTheta;
 
         // Transform the random direction to tangent space
         hitRecord.toTangentSpace(halfVector);
@@ -130,7 +130,7 @@ public class Glossy implements Material
         Vector3f incident = StaticVecmath.reflect(hitRecord.w, halfVector);
 
         // PDF of sampled half vector
-        float p_h = (float) ((roughness + 1) * Math.pow(r, roughness)/ (2 * Math.PI));
+        float p_h = (float) ((roughness + 1) * Math.pow(cosTheta, roughness)/ (2 * Math.PI));
 
         // PDF of the incident direction
         float p_i = p_h / (4 * halfVector.dot(hitRecord.w));
