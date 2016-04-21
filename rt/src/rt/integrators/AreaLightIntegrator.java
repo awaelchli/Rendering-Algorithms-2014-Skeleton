@@ -15,7 +15,6 @@ import javax.vecmath.Vector3f;
 public class AreaLightIntegrator extends WhittedIntegrator
 {
 
-    int numberOfSamples;
     Sampler sampler;
     SamplingTechnique samplingTechnique;
     Heuristic heuristic;
@@ -23,6 +22,7 @@ public class AreaLightIntegrator extends WhittedIntegrator
     public AreaLightIntegrator(Scene scene)
     {
         super(scene);
+        this.sampler = scene.getSamplerFactory().make();
     }
 
     @Override
@@ -31,51 +31,41 @@ public class AreaLightIntegrator extends WhittedIntegrator
         // If the surface has emission
         outgoing.add(surfaceHit.material.evaluateEmission(surfaceHit, surfaceHit.w));
 
-        // TODO: Try to find a better way than testing with instanceof
-        if(surfaceHit.intersectable instanceof LightGeometry)
+        if(lightList.contains(surfaceHit.intersectable))
         {   // The surface point is on a light source
             return;
         }
 
-        Spectrum hemisphere = new Spectrum();
+        ImportanceSample brdfSample = new ImportanceSample();
+        ImportanceSample lightSample = new ImportanceSample();
 
-        // Iterate over samples
-        float[][] samples = sampler.makeSamples(numberOfSamples, 2);
-        for (float[] sample : samples)
+        if(samplingTechnique == SamplingTechnique.BRDF || samplingTechnique == SamplingTechnique.MIS)
         {
-            ImportanceSample brdfSample = new ImportanceSample();
-            ImportanceSample lightSample = new ImportanceSample();
-
-            if(samplingTechnique == SamplingTechnique.BRDF || samplingTechnique == SamplingTechnique.MIS)
-            {
-                Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, sample);
-                brdfSample = sampleBRDF(surfaceHit, shadingSample);
-            }
-            if(samplingTechnique == SamplingTechnique.Light || samplingTechnique == SamplingTechnique.MIS)
-            {
-                // Randomly select a light source
-                LightGeometry lightSource = getRandomLight();
-                HitRecord lightHit = lightSource.sample(sample);
-                lightHit.p /= lightList.size();
-                lightHit.w = StaticVecmath.sub(surfaceHit.position, lightHit.position);
-                lightHit.w.normalize();
-                lightSample = sampleLightSource(lightHit, surfaceHit);
-            }
-
-            // Apply heuristics for multiple importance sampling
-            float weight1 = heuristic.evaluate(brdfSample.directionalProbability, lightSample.directionalProbability);
-            float weight2 = heuristic.evaluate(lightSample.areaProbability, brdfSample.areaProbability);
-
-            Spectrum s1 = new Spectrum(brdfSample.spectrum);
-            Spectrum s2 = new Spectrum(lightSample.spectrum);
-            s1.mult(weight1);
-            s2.mult(weight2);
-
-            hemisphere.add(s1);
-            hemisphere.add(s2);
+            Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, sampler.makeSamples(1, 2)[0]);
+            brdfSample = sampleBRDF(surfaceHit, shadingSample);
         }
-        hemisphere.mult(1f / numberOfSamples);
-        outgoing.add(hemisphere);
+        if(samplingTechnique == SamplingTechnique.Light || samplingTechnique == SamplingTechnique.MIS)
+        {
+            // Randomly select a light source
+            LightGeometry lightSource = getRandomLight();
+            HitRecord lightHit = lightSource.sample(sampler.makeSamples(1, 2)[0]);
+            lightHit.p /= lightList.size();
+            lightHit.w = StaticVecmath.sub(surfaceHit.position, lightHit.position);
+            lightHit.w.normalize();
+            lightSample = sampleLightSource(lightHit, surfaceHit);
+        }
+
+        // Apply heuristics for multiple importance sampling
+        float weight1 = heuristic.evaluate(brdfSample.directionalProbability, lightSample.directionalProbability);
+        float weight2 = heuristic.evaluate(lightSample.areaProbability, brdfSample.areaProbability);
+
+        Spectrum s1 = new Spectrum(brdfSample.spectrum);
+        Spectrum s2 = new Spectrum(lightSample.spectrum);
+        s1.mult(weight1);
+        s2.mult(weight2);
+
+        outgoing.add(s1);
+        outgoing.add(s2);
     }
 
     protected ImportanceSample sampleBRDF(HitRecord surfaceHit, Material.ShadingSample shadingSample)
@@ -153,7 +143,8 @@ public class AreaLightIntegrator extends WhittedIntegrator
         s.mult(lightHit.material.evaluateEmission(lightHit, StaticVecmath.negate(lightDir)));
 
         // Multiply with geometry term
-        s.mult(geometryTerm(surfaceHit, lightHit, lightDir, d2));
+        float ndotl = Math.max(0, surfaceHit.normal.dot(lightDir));
+        s.mult(ndotl / d2);
 
         // Divide by probability density function
         s.mult(1 / lightHit.p);
@@ -165,29 +156,6 @@ public class AreaLightIntegrator extends WhittedIntegrator
         importanceSample.spectrum = s;
 
         return importanceSample;
-    }
-
-    protected Spectrum geometryTerm(HitRecord surfaceHit, HitRecord lightHit, Vector3f lightDir, float distanceSquared)
-    {
-        Spectrum geometryTerm = new Spectrum(1, 1, 1);
-
-        // Multiply with cosine of surface normal and incident direction
-        float ndotl = surfaceHit.normal.dot(lightDir);
-        ndotl = Math.max(ndotl, 0);
-        geometryTerm.mult(ndotl);
-
-        // Multiply with cosine of light normal and incident direction on light source
-        if(lightHit.normal != null) // Normal can be null for point lights
-        {
-            float ndotl2 = -lightHit.normal.dot(lightDir);
-            ndotl2 = Math.max(ndotl2, 0);
-            geometryTerm.mult(ndotl2);
-        }
-
-        // Divide by squared distance to sample point
-        geometryTerm.mult(1 / distanceSquared);
-
-        return geometryTerm;
     }
 
     private LightGeometry getRandomLight()

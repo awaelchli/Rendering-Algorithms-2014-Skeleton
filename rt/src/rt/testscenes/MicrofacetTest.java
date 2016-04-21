@@ -14,6 +14,7 @@ import rt.lightsources.RectangleLight;
 import rt.materials.*;
 import rt.samplers.OneSamplerFactory;
 import rt.samplers.RandomSampler;
+import rt.samplers.RandomSamplerFactory;
 import rt.tonemappers.ClampTonemapper;
 
 import javax.vecmath.Matrix4f;
@@ -52,12 +53,10 @@ public class MicrofacetTest extends Scene
 
         // Specify which integrator and sampler to use
         AreaLightIntegratorFactory factory = new AreaLightIntegratorFactory();
-        factory.setSamplingDensity(100);
-        factory.setSampler(new RandomSampler());
         SamplingTechnique technique = SamplingTechnique.Light;
         factory.setSamplingTechnique(technique);
         integratorFactory = factory;
-        samplerFactory = new OneSamplerFactory();
+        samplerFactory = new RandomSamplerFactory();
 
         outputFilename = outputFilename + " " + width + "x" + height + " " + technique;
 

@@ -38,7 +38,6 @@ public class PathtracingBoxSphere extends Scene {
 		
 		// Specify integrator to be used
         AreaLightIntegratorFactory factory = new AreaLightIntegratorFactory();
-		factory.setSamplingDensity(100);
         integratorFactory = factory;
 		
 		// List of objects

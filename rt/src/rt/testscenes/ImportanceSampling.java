@@ -29,7 +29,7 @@ public class ImportanceSampling extends Scene {
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 128;//128;
+		SPP = 128;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
@@ -47,10 +47,9 @@ public class ImportanceSampling extends Scene {
 		// Specify integrator to be used
 		// Area light integrator for direct illumination from area lights
 		// Supports three sampling techniques: SamplingTechnique.MIS, SamplingTechnique.BRDF, SamplingTechnique.Light
-		SamplingTechnique technique = SamplingTechnique.MIS;
+		SamplingTechnique technique = SamplingTechnique.Light;
 		AreaLightIntegratorFactory factory = new AreaLightIntegratorFactory();
 		factory.setRecursionDepth(1);
-		factory.setSamplingDensity(50);
 		factory.setSamplingTechnique(technique);
 		factory.setHeuristic(new PowerHeuristic());
 		integratorFactory = factory;

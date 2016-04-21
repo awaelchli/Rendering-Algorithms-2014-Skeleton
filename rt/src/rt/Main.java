@@ -21,13 +21,16 @@ import java.io.*;
  */
 public class Main {
 
+	/**
+	 * Only for debugging a single pixel
+	 */
 	public static boolean DEBUG_ON = false;
 	public static float[] DEBUG_PIXEL = {210, 256 - 30};
 
 	/** 
 	 * The scene to be rendered.
 	 */
-	public static Scene scene = new MicrofacetTest();
+	public static Scene scene = new ImportanceSampling();
 	/**
 	 * A render task represents a rectangular image region that is rendered
 	 * by a thread in one chunk.
