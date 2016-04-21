@@ -25,7 +25,7 @@ public class Main {
 	 * Only for debugging a single pixel
 	 */
 	public static boolean DEBUG_ON = false;
-	public static float[] DEBUG_PIXEL = {210, 256 - 30};
+	public static float[] DEBUG_PIXEL = {256, 256};
 
 	/** 
 	 * The scene to be rendered.
@@ -59,8 +59,6 @@ public class Main {
 
 		@Override
 		public void run() {
-
-			boolean debug = false;
 
 			for(int j=bottom; j<top; j++)
 			{
