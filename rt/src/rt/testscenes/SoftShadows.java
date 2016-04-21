@@ -28,7 +28,7 @@ public class SoftShadows extends Scene {
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 20;
+		SPP = 128;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
@@ -46,7 +46,7 @@ public class SoftShadows extends Scene {
 		// Specify integrator to be used
         AreaLightIntegratorFactory iF = new AreaLightIntegratorFactory();
 		//PointLightIntegratorFactory iF = new PointLightIntegratorFactory();
-		SamplingTechnique technique = SamplingTechnique.MIS;
+		SamplingTechnique technique = SamplingTechnique.BRDF;
 		iF.setRecursionDepth(2);
 		iF.setSamplingTechnique(technique);
 		integratorFactory = iF;
