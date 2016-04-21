@@ -86,7 +86,7 @@ public class Diffuse implements Material {
 		shadingSample.p = p;
 		shadingSample.brdf = evaluateBRDF(hitRecord, direction, hitRecord.w);
 		shadingSample.isSpecular = false;
-		shadingSample.emission = new Spectrum(0, 0, 0);
+		shadingSample.emission = evaluateEmission(hitRecord, hitRecord.w);
 
 		return shadingSample;
 	}
