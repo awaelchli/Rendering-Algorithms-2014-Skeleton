@@ -41,18 +41,11 @@ public class AreaLightIntegrator extends WhittedIntegrator
 
         if(samplingTechnique == SamplingTechnique.BRDF || samplingTechnique == SamplingTechnique.MIS)
         {
-            Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, sampler.makeSamples(1, 2)[0]);
-            brdfSample = sampleBRDF(surfaceHit, shadingSample);
+            brdfSample = sampleBRDF(surfaceHit);
         }
         if(samplingTechnique == SamplingTechnique.Light || samplingTechnique == SamplingTechnique.MIS)
         {
-            // Randomly select a light source
-            LightGeometry lightSource = getRandomLight();
-            HitRecord lightHit = lightSource.sample(sampler.makeSamples(1, 2)[0]);
-            lightHit.p /= lightList.size();
-            lightHit.w = StaticVecmath.sub(surfaceHit.position, lightHit.position);
-            lightHit.w.normalize();
-            lightSample = sampleLightSource(lightHit, surfaceHit);
+            lightSample = sampleLightSource(surfaceHit);
         }
 
         // Apply heuristics for multiple importance sampling
@@ -68,8 +61,10 @@ public class AreaLightIntegrator extends WhittedIntegrator
         outgoing.add(s2);
     }
 
-    protected ImportanceSample sampleBRDF(HitRecord surfaceHit, Material.ShadingSample shadingSample)
+    protected ImportanceSample sampleBRDF(HitRecord surfaceHit)
     {
+        Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, sampler.makeSamples(1, 2)[0]);
+
         if(shadingSample.p == 0)
         {
             return new ImportanceSample();
@@ -114,8 +109,13 @@ public class AreaLightIntegrator extends WhittedIntegrator
         return importanceSample;
     }
 
-    protected ImportanceSample sampleLightSource(HitRecord lightHit, HitRecord surfaceHit)
+    protected ImportanceSample sampleLightSource(HitRecord surfaceHit)
     {
+        // Randomly select a light source
+        LightGeometry lightSource = getRandomLight();
+        HitRecord lightHit = lightSource.sample(sampler.makeSamples(1, 2)[0]);
+        lightHit.p /= lightList.size();
+
         Vector3f lightDir = StaticVecmath.sub(lightHit.position, surfaceHit.position);
 
         // Check if point on surface lies in shadow of current light source sample
@@ -133,6 +133,7 @@ public class AreaLightIntegrator extends WhittedIntegrator
 
         float d2 = lightDir.lengthSquared();
         lightDir.normalize();
+        lightHit.w = lightDir;
 
         /*
          *  Multiply together factors relevant for shading, that is, brdf * emission * geometry term / pdf
