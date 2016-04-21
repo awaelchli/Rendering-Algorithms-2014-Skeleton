@@ -24,7 +24,7 @@ public class Main {
 	/** 
 	 * The scene to be rendered.
 	 */
-	public static Scene scene = new ImportanceSampling();
+	public static Scene scene = new SoftShadows();
 	/**
 	 * A render task represents a rectangular image region that is rendered
 	 * by a thread in one chunk.
@@ -54,13 +54,13 @@ public class Main {
 		@Override
 		public void run() {
 
-			boolean debug = true;
+			boolean debug = false;
 
 			for(int j=bottom; j<top; j++)
 			{
 				for(int i=left; i<right; i++)
 				{
-					if( !debug || i == 148 && j == 256 - 241)
+					if( !debug || i == 210 && j == 256 - 30)
 					{
 						float samples[][] = integrator.makePixelSamples(sampler, scene.getSPP());
 						// For all samples of the pixel

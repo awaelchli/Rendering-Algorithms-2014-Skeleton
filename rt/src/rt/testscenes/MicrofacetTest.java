@@ -52,9 +52,8 @@ public class MicrofacetTest extends Scene
 
         // Specify which integrator and sampler to use
         AreaLightIntegratorFactory factory = new AreaLightIntegratorFactory();
-        factory.setSamplingDensity(20);
+        factory.setSamplingDensity(100);
         factory.setSampler(new RandomSampler());
-        factory.setRecursionDepth(2);
         factory.setSamplingTechnique(SamplingTechnique.Light);
         integratorFactory = factory;
         samplerFactory = new OneSamplerFactory();
@@ -80,7 +79,7 @@ public class MicrofacetTest extends Scene
         try
         {
 
-            mesh = ObjReader.read("obj/wt_teapot.obj", 1f);
+            mesh = ObjReader.read("obj/teapot.obj", 1f);
         } catch(IOException e)
         {
             System.out.printf("Could not read .obj file\n");

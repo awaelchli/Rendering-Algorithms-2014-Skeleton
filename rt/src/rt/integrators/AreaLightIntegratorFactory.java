@@ -4,6 +4,7 @@ import rt.Integrator;
 import rt.Sampler;
 import rt.Scene;
 import rt.importanceSampling.Heuristic;
+import rt.importanceSampling.PowerHeuristic;
 import rt.importanceSampling.SamplingTechnique;
 import rt.samplers.RandomSampler;
 
@@ -23,6 +24,7 @@ public class AreaLightIntegratorFactory extends WhittedIntegratorFactory {
         this.numberOfSamples = 1;
         this.sampler = new RandomSampler();
         this.samplingTechnique = SamplingTechnique.MIS;
+        this.heuristic = new PowerHeuristic();
     }
 
     public Integrator make(Scene scene)

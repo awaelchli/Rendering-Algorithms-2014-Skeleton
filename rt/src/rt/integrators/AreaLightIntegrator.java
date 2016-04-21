@@ -23,10 +23,6 @@ public class AreaLightIntegrator extends WhittedIntegrator
     public AreaLightIntegrator(Scene scene)
     {
         super(scene);
-        this.numberOfSamples = 1;
-        this.sampler = new RandomSampler();
-        this.samplingTechnique = SamplingTechnique.MIS;
-        this.heuristic = new PowerHeuristic();
     }
 
     @Override
@@ -34,6 +30,12 @@ public class AreaLightIntegrator extends WhittedIntegrator
     {
         // If the surface has emission
         outgoing.add(surfaceHit.material.evaluateEmission(surfaceHit, surfaceHit.w));
+
+        // TODO: Try to find a better way than testing with instanceof
+        if(surfaceHit.intersectable instanceof LightGeometry)
+        {   // The surface point is on a light source
+            return;
+        }
 
         Spectrum hemisphere = new Spectrum();
 
