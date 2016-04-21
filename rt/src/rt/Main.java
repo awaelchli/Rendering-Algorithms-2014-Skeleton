@@ -21,6 +21,9 @@ import java.io.*;
  */
 public class Main {
 
+	public static boolean DEBUG_ON = false;
+	public static float[] DEBUG_PIXEL = {210, 256 - 30};
+
 	/** 
 	 * The scene to be rendered.
 	 */
@@ -60,7 +63,7 @@ public class Main {
 			{
 				for(int i=left; i<right; i++)
 				{
-					if( !debug || i == 210 && j == 256 - 30)
+					if( !DEBUG_ON || i == DEBUG_PIXEL[0] && j == DEBUG_PIXEL[1])
 					{
 						float samples[][] = integrator.makePixelSamples(sampler, scene.getSPP());
 						// For all samples of the pixel
