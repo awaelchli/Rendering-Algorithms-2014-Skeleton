@@ -46,7 +46,7 @@ public class SoftShadows extends Scene {
 		// Specify integrator to be used
         AreaLightIntegratorFactory iF = new AreaLightIntegratorFactory();
 		//PointLightIntegratorFactory iF = new PointLightIntegratorFactory();
-		SamplingTechnique technique = SamplingTechnique.BRDF;
+		SamplingTechnique technique = SamplingTechnique.MIS;
 		iF.setRecursionDepth(2);
 		iF.setSamplingTechnique(technique);
 		integratorFactory = iF;
