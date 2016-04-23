@@ -5,6 +5,8 @@ import rt.cameras.PinholeCamera;
 import rt.films.BoxFilterFilm;
 import rt.importanceSampling.SamplingTechnique;
 import rt.integrators.AreaLightIntegratorFactory;
+import rt.integrators.PathTracingIntegrator;
+import rt.integrators.PathTracingIntegratorFactory;
 import rt.intersectables.IntersectableList;
 import rt.intersectables.Mesh;
 import rt.intersectables.Rectangle;
@@ -39,8 +41,10 @@ public class CornellBox extends Scene
         tonemapper = new ClampTonemapper();
 
         // Specify integrator to be used
-        AreaLightIntegratorFactory iF = new AreaLightIntegratorFactory();
-        iF.setSamplingTechnique(SamplingTechnique.Light);
+//        AreaLightIntegratorFactory iF = new AreaLightIntegratorFactory();
+//        iF.setSamplingTechnique(SamplingTechnique.Light);
+        PathTracingIntegratorFactory iF = new PathTracingIntegratorFactory();
+        iF.setMaxDepth(5);
         integratorFactory = iF;
 
         build();
