@@ -85,7 +85,11 @@ public class PathTracingIntegrator extends AbstractIntegrator
 
     protected Spectrum shade(HitRecord surfaceHit, HitRecord lightHit)
     {
-        // TODO: Check for shadows
+        Vector3f lightDir = StaticVecmath.sub(lightHit.position, surfaceHit.position);
+        if(isInShadow(surfaceHit, lightDir))
+        {   // Point on surface is in shadow of light source
+            return new Spectrum();
+        }
         Spectrum s = lightHit.material.evaluateEmission(lightHit, lightHit.w);
         Vector3f wIn = StaticVecmath.negate(lightHit.w);
         s.mult(surfaceHit.material.evaluateBRDF(surfaceHit, surfaceHit.w, wIn));
