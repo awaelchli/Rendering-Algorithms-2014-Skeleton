@@ -11,14 +11,20 @@ import javax.vecmath.Vector3f;
  */
 public class PathTracingIntegrator extends AbstractIntegrator
 {
-    public static final int DEFAULT_MAX_DEPTH = 3;
+    public static final int DEFAULT_MAX_DEPTH = 5;
+    public static final int DEFAULT_MIN_DEPTH = 2;
+    public static final float DEFAULT_TERMINATION_PROBABILITY = 0.5f;
 
     int maxDepth;
+    int minDepth;
+    float terminationProbability;
 
     public PathTracingIntegrator(Scene scene)
     {
         super(scene);
         maxDepth = DEFAULT_MAX_DEPTH;
+        minDepth = DEFAULT_MIN_DEPTH;
+        terminationProbability = DEFAULT_TERMINATION_PROBABILITY;
     }
 
     @Override
@@ -45,8 +51,8 @@ public class PathTracingIntegrator extends AbstractIntegrator
 
             Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, (new RandomSampler().makeSamples(1, 2)[0]));
             alpha.mult(shadingSample.brdf);
-            alpha.mult(surfaceHit.normal.dot(shadingSample.w));
-            alpha.mult(1 / (shadingSample.p * (1 - 0.5f)));
+            alpha.mult(Math.max(0, surfaceHit.normal.dot(shadingSample.w)));
+            alpha.mult(1 / (shadingSample.p * (1 - terminationProbability)));
 
             // Go to next path segment
             Ray nextRay = new Ray(surfaceHit.position, shadingSample.w);
@@ -54,7 +60,6 @@ public class PathTracingIntegrator extends AbstractIntegrator
             surfaceHit = root.intersect(nextRay);
             k++;
         }
-
 
         return color;
     }
@@ -84,7 +89,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
         Spectrum s = lightHit.material.evaluateEmission(lightHit, lightHit.w);
         Vector3f wIn = StaticVecmath.negate(lightHit.w);
         s.mult(surfaceHit.material.evaluateBRDF(surfaceHit, surfaceHit.w, wIn));
-        s.mult(surfaceHit.normal.dot(wIn));
+        s.mult(Math.max(0, surfaceHit.normal.dot(wIn)));
         return s;
     }
 
@@ -95,10 +100,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
         RandomSampler sampler = new RandomSampler();
         float p =  sampler.makeSamples(1, 1)[0][0];
 
-        // Terminate with probability 0.5
-        // TODO: Generalize
-        return p < 0.5f;
+        // Terminate with given probability above a certain path length
+        return depth > minDepth && p < terminationProbability;
     }
-
-
 }

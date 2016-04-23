@@ -3,13 +3,9 @@ package rt.testscenes;
 import rt.*;
 import rt.cameras.PinholeCamera;
 import rt.films.BoxFilterFilm;
-import rt.importanceSampling.SamplingTechnique;
-import rt.integrators.AreaLightIntegratorFactory;
-import rt.integrators.PathTracingIntegrator;
 import rt.integrators.PathTracingIntegratorFactory;
 import rt.intersectables.IntersectableList;
 import rt.intersectables.Mesh;
-import rt.intersectables.Rectangle;
 import rt.lightsources.RectangleLight;
 import rt.materials.Diffuse;
 import rt.samplers.RandomSamplerFactory;
@@ -25,7 +21,7 @@ public class CornellBox extends Scene
     {
         outputFilename = new String("CornellBox");
         samplerFactory = new RandomSamplerFactory();
-        SPP = 20;
+        SPP = 128;
         outputFilename += " " + String.format("%d", SPP) + "SPP";
 
         // Make camera and film
@@ -44,7 +40,9 @@ public class CornellBox extends Scene
 //        AreaLightIntegratorFactory iF = new AreaLightIntegratorFactory();
 //        iF.setSamplingTechnique(SamplingTechnique.Light);
         PathTracingIntegratorFactory iF = new PathTracingIntegratorFactory();
-        iF.setMaxDepth(5);
+        iF.setMaxDepth(10);
+        iF.setMinDepth(2);
+        iF.setTerminationProbability(0.5f);
         integratorFactory = iF;
 
         build();

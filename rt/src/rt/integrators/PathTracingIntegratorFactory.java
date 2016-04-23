@@ -10,6 +10,8 @@ import rt.Scene;
 public class PathTracingIntegratorFactory implements IntegratorFactory
 {
     int maxDepth = PathTracingIntegrator.DEFAULT_MAX_DEPTH;
+    int minDepth = PathTracingIntegrator.DEFAULT_MIN_DEPTH;
+    float terminationProbability = PathTracingIntegrator.DEFAULT_TERMINATION_PROBABILITY;
 
     @Override
     public Integrator make(Scene scene)
@@ -17,6 +19,8 @@ public class PathTracingIntegratorFactory implements IntegratorFactory
     {
         PathTracingIntegrator integrator = new PathTracingIntegrator(scene);
         integrator.maxDepth = this.maxDepth;
+        integrator.minDepth = this.minDepth;
+        integrator.terminationProbability = this.terminationProbability;
         return integrator;
     }
 
@@ -29,5 +33,15 @@ public class PathTracingIntegratorFactory implements IntegratorFactory
     public void setMaxDepth(int maxDepth)
     {
         this.maxDepth = maxDepth;
+    }
+
+    public void setMinDepth(int minDepth)
+    {
+        this.minDepth = minDepth;
+    }
+
+    public void setTerminationProbability(float terminationProbability)
+    {
+        this.terminationProbability = terminationProbability;
     }
 }
