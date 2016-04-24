@@ -21,7 +21,7 @@ public class CornellBox extends Scene
     {
         outputFilename = new String("CornellBox");
         samplerFactory = new RandomSamplerFactory();
-        SPP = 32;
+        SPP = 128;
         outputFilename += " " + String.format("%d", SPP) + "SPP";
 
         // Make camera and film
