@@ -40,8 +40,14 @@ public class PathTracingIntegrator extends AbstractIntegrator
         {
             if(surfaceHit == null) break;
 
-            HitRecord lightHit = sampleLight(surfaceHit);
+            if(lightList.contains(surfaceHit.intersectable))
+            {   // The ray 'accidentally' hit the light source, do not further trace the ray
+                if(k == 0) // Eye ray directly hit the light source
+                    color.add(surfaceHit.material.evaluateEmission(surfaceHit, surfaceHit.w));
+                break;
+            }
 
+            HitRecord lightHit = sampleLight(surfaceHit);
             Spectrum lightSourceContribution = new Spectrum(alpha);
             lightSourceContribution.mult(shade(surfaceHit, lightHit));
             lightSourceContribution.mult(1 / lightHit.p);
