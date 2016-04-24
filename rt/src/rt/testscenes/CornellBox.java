@@ -21,7 +21,7 @@ public class CornellBox extends Scene
     {
         outputFilename = new String("CornellBox");
         samplerFactory = new RandomSamplerFactory();
-        SPP = 128;
+        SPP = 32;
         outputFilename += " " + String.format("%d", SPP) + "SPP";
 
         // Make camera and film
@@ -29,8 +29,8 @@ public class CornellBox extends Scene
         Vector3f lookAt = new Vector3f(278, 273, 0);
         Vector3f up = new Vector3f(0, 1, 0);
         float fov = 40;
-        int width = 512;
-        int height = 512;
+        int width = 256;
+        int height = 256;
         float aspect = (float) width / (float) height;
         camera = new PinholeCamera(eye, lookAt, up, fov, aspect, width, height);
         film = new BoxFilterFilm(width, height);
@@ -53,12 +53,17 @@ public class CornellBox extends Scene
         // List of objects
         IntersectableList objects = new IntersectableList();
 
+        // Materials
+        Diffuse white = new Diffuse(new Spectrum(0.73f, 0.739f, 0.729f));
+        Diffuse green = new Diffuse(new Spectrum(0.117f, 0.435f, 0.115f));
+        Diffuse red = new Diffuse(new Spectrum(0.61f, 0.056f, 0.062f));
+
         // Floor
         float[] floor_vertices = {552.8f, 0, 0, 0, 0, 0, 0, 0, 559.2f, 549.6f, 0, 559.2f};
         float[] floor_normals = {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0};
         int[] floor_indices = {0, 1, 2, 0, 2, 3};
         Mesh floor = new Mesh(floor_vertices, floor_normals, null, floor_indices);
-        floor.material = new Diffuse(new Spectrum(1, 1, 1));
+        floor.material = white;
         objects.add(floor);
 
         // Ceiling
@@ -66,7 +71,7 @@ public class CornellBox extends Scene
         float[] ceiling_normals = {0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0};
         int[] ceiling_indices = {0, 1, 2, 0, 2, 3};
         Mesh ceiling = new Mesh(ceiling_vertices, ceiling_normals, null, ceiling_indices);
-        ceiling.material = new Diffuse(new Spectrum(1, 1, 1));
+        ceiling.material = white;
         objects.add(ceiling);
 
         // Back wall
@@ -74,7 +79,7 @@ public class CornellBox extends Scene
         float[] back_wall_normals = {0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1};
         int[] back_wall_indices = {0, 1, 2, 0, 2, 3};
         Mesh back_wall = new Mesh(back_wall_vertices, back_wall_normals, null, back_wall_indices);
-        back_wall.material = new Diffuse(new Spectrum(1, 1, 1));
+        back_wall.material = white;
         objects.add(back_wall);
 
         // Right wall
@@ -82,7 +87,7 @@ public class CornellBox extends Scene
         float[] right_wall_normals = {1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0};
         int[] right_wall_indices = {0, 1, 2, 0, 2, 3};
         Mesh right_wall = new Mesh(right_wall_vertices, right_wall_normals, null, right_wall_indices);
-        right_wall.material = new Diffuse(new Spectrum(0, 1, 0));
+        right_wall.material = green;
         objects.add(right_wall);
 
         // Left wall
@@ -90,7 +95,7 @@ public class CornellBox extends Scene
         float[] left_wall_normals = {-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0};
         int[] left_wall_indices = {0, 2, 3, 0, 1, 2};
         Mesh left_wall = new Mesh(left_wall_vertices, left_wall_normals, null, left_wall_indices);
-        left_wall.material = new Diffuse(new Spectrum(1, 0, 0));
+        left_wall.material = red;
         objects.add(left_wall);
 
         // Short block
@@ -106,7 +111,7 @@ public class CornellBox extends Scene
                                         12, 13, 14, 12, 14, 15, // right
                                         16, 18, 17, 16, 19, 18}; // back
         Mesh short_block = new Mesh(short_block_vertices, short_block_normals, null, short_block_indices);
-        short_block.material = new Diffuse(new Spectrum(1, 1, 1));
+        short_block.material = white;
         objects.add(short_block);
 
         // Tall block
@@ -122,7 +127,7 @@ public class CornellBox extends Scene
                                         12, 14, 13, 12, 15, 14, // right
                                         16, 17, 18, 16, 18, 19}; // front
         Mesh tall_block = new Mesh(tall_block_vertices, tall_block_normals, null, tall_block_indices);
-        tall_block.material = new Diffuse(new Spectrum(1, 1, 1));
+        tall_block.material = white;
         objects.add(tall_block);
 
         // Light source
