@@ -1,8 +1,10 @@
 package rt.materials;
 
 import rt.*;
+import sun.security.provider.SHA;
 
 import javax.vecmath.Vector3f;
+import java.util.Random;
 
 /**
  * Created by Adrian on 11.03.2016.
@@ -41,9 +43,10 @@ public class Refractive implements Material {
         Ray reflectedRay = Ray.reflect(hitRecord);
 
         ShadingSample s = new ShadingSample();
-        s.brdf = new Spectrum(1, 1, 1);
+        s.brdf = evaluateBRDF(hitRecord, hitRecord.w, reflectedRay.direction);
         s.w = reflectedRay.direction;
         s.p = 1;
+        s.isSpecular = true;
         return s;
     }
 
@@ -67,13 +70,30 @@ public class Refractive implements Material {
         }
 
         s.brdf = new Spectrum(1, 1, 1);
+        s.isSpecular = true;
 
         return s;
     }
 
     @Override
-    public ShadingSample getShadingSample(HitRecord hitRecord, float[] sample) {
-        return new ShadingSample(new Spectrum(), new Spectrum(), new Vector3f(), false, 0);
+    public ShadingSample getShadingSample(HitRecord hitRecord, float[] sample)
+    {
+        float s = sample[0];
+
+        ShadingSample shadingSample = evaluateSpecularRefraction(hitRecord);
+        shadingSample.brdf = evaluateBRDF(hitRecord, hitRecord.w, shadingSample.w);
+
+        if(s < shadingSample.p)
+        {
+            return shadingSample;
+        }
+        else
+        {
+            ShadingSample ss = evaluateSpecularReflection(hitRecord);
+            ss.p = 1 - shadingSample.p;
+            return ss;
+        }
+
     }
 
     @Override
@@ -136,5 +156,17 @@ public class Refractive implements Material {
         s.p = r0 + (1 - r0) * x * x * x * x * x;
 
         return s;
+    }
+
+    class RefractionData
+    {
+        float fresnel;
+        Vector3f refractionDir;
+        Vector3f reflectionDir;
+
+        RefractionData()
+        {
+
+        }
     }
 }

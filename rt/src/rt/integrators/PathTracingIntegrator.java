@@ -1,6 +1,5 @@
 package rt.integrators;
 
-import javafx.scene.effect.Light;
 import rt.*;
 import rt.samplers.RandomSampler;
 
@@ -47,15 +46,19 @@ public class PathTracingIntegrator extends AbstractIntegrator
                 break;
             }
 
-            HitRecord lightHit = sampleLight(surfaceHit);
-            Spectrum lightSourceContribution = new Spectrum(alpha);
-            lightSourceContribution.mult(shade(surfaceHit, lightHit));
-            lightSourceContribution.mult(1 / lightHit.p);
-            color.add(lightSourceContribution);
+            Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, (new RandomSampler().makeSamples(1, 2)[0]));
+
+            if(!shadingSample.isSpecular)
+            {   // Do not add light source contribution on specular surfaces (mirrors, refractive materials)
+                HitRecord lightHit = sampleLight(surfaceHit);
+                Spectrum lightSourceContribution = new Spectrum(alpha);
+                lightSourceContribution.mult(shade(surfaceHit, lightHit));
+                lightSourceContribution.mult(1 / lightHit.p);
+                color.add(lightSourceContribution);
+            }
 
             if(terminatePath(k)) break;
 
-            Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, (new RandomSampler().makeSamples(1, 2)[0]));
             alpha.mult(shadingSample.brdf);
             alpha.mult(Math.max(0, surfaceHit.normal.dot(shadingSample.w)));
             alpha.mult(1 / (shadingSample.p * (1 - terminationProbability)));
@@ -72,7 +75,6 @@ public class PathTracingIntegrator extends AbstractIntegrator
 
     protected HitRecord sampleLight(HitRecord surfaceHit)
     {
-        // TODO: Randomly select a light source among VISIBLE light sources
         LightGeometry light = getRandomLight();
         RandomSampler sampler = new RandomSampler();
         HitRecord lightHit = light.sample(sampler.makeSamples(1, 2)[0]);

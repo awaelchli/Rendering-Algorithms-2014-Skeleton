@@ -48,7 +48,7 @@ public class CornellBox extends Scene
         build();
     }
 
-    private void build()
+    protected void build()
     {
         // List of objects
         IntersectableList objects = new IntersectableList();
