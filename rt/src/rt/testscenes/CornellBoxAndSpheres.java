@@ -18,12 +18,12 @@ public class CornellBoxAndSpheres extends CornellBox
     {
         super();
         outputFilename = new String("CornellBoxAndSpheres");
-        SPP = 64;
+        SPP = 128;
         outputFilename += " " + SPP + "SPP";
 
         PathTracingIntegratorFactory iF = new PathTracingIntegratorFactory();
-        iF.setMaxDepth(1);
-        iF.setMinDepth(1);
+        iF.setMaxDepth(10);
+        iF.setMinDepth(2);
         iF.setTerminationProbability(0.5f);
         integratorFactory = iF;
     }
@@ -38,7 +38,7 @@ public class CornellBoxAndSpheres extends CornellBox
         // Sphere on top of short block
         float radius = 50;
         Sphere sphere1 = new Sphere(new Point3f(150, 165 + radius, 100), radius);
-        sphere1.material = new Refractive(1.1f);
+        sphere1.material = new Refractive(1f);
         objects.add(sphere1);
 
         // Sphere on top of tall block
