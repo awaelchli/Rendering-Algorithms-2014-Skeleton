@@ -108,11 +108,12 @@ public class PathTracingIntegrator extends AbstractIntegrator
     private boolean terminatePath(int depth)
     {
         if(depth >= maxDepth) return true;
+        if(depth <= minDepth) return false;
 
         RandomSampler sampler = new RandomSampler();
         float p =  sampler.makeSamples(1, 1)[0][0];
 
         // Terminate with given probability above a certain path length
-        return depth > minDepth && p < terminationProbability;
+        return p < terminationProbability;
     }
 }

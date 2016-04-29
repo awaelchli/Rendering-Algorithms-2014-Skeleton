@@ -21,7 +21,7 @@ public class PathtracingBoxSphere extends Scene {
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 1024;
+		SPP = 128;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
@@ -37,7 +37,10 @@ public class PathtracingBoxSphere extends Scene {
 		tonemapper = new ClampTonemapper();
 		
 		// Specify integrator to be used
-        AreaLightIntegratorFactory factory = new AreaLightIntegratorFactory();
+        PathTracingIntegratorFactory factory = new PathTracingIntegratorFactory();
+		factory.setMaxDepth(20);
+		factory.setMinDepth(10);
+		factory.setTerminationProbability(0.5f);
         integratorFactory = factory;
 		
 		// List of objects
