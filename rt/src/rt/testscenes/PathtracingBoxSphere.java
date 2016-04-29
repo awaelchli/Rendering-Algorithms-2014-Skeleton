@@ -38,8 +38,8 @@ public class PathtracingBoxSphere extends Scene {
 		
 		// Specify integrator to be used
         PathTracingIntegratorFactory factory = new PathTracingIntegratorFactory();
-		factory.setMaxDepth(20);
-		factory.setMinDepth(10);
+		factory.setMaxDepth(10);
+		factory.setMinDepth(4);
 		factory.setTerminationProbability(0.5f);
         integratorFactory = factory;
 		

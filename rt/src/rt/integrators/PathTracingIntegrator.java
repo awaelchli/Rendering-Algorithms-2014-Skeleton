@@ -59,9 +59,10 @@ public class PathTracingIntegrator extends AbstractIntegrator
 
             if(terminatePath(k)) break;
 
+            float q = getTerminationProbability(k);
             alpha.mult(shadingSample.brdf);
             alpha.mult(Math.max(0, surfaceHit.normal.dot(shadingSample.w)));
-            alpha.mult(1 / (shadingSample.p * (1 - terminationProbability)));
+            alpha.mult(1 / (shadingSample.p * (1 - q)));
 
             // Go to next path segment
             Ray nextRay = new Ray(surfaceHit.position, shadingSample.w);
@@ -105,7 +106,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
         return s;
     }
 
-    private boolean terminatePath(int depth)
+    protected boolean terminatePath(int depth)
     {
         if(depth >= maxDepth) return true;
         if(depth <= minDepth) return false;
@@ -115,5 +116,13 @@ public class PathTracingIntegrator extends AbstractIntegrator
 
         // Terminate with given probability above a certain path length
         return p < terminationProbability;
+    }
+
+    protected float getTerminationProbability(int k)
+    {
+        float q = terminationProbability;
+        if(k <= minDepth) q = 0;
+        if(k >= maxDepth) q = 1;
+        return q;
     }
 }
