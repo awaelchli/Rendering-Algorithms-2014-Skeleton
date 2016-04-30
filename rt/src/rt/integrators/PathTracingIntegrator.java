@@ -50,10 +50,8 @@ public class PathTracingIntegrator extends AbstractIntegrator
 
             if(!shadingSample.isSpecular)
             {   // Do not add light source contribution on specular surfaces (mirrors, refractive materials)
-                HitRecord lightHit = sampleLight(surfaceHit);
-                Spectrum lightSourceContribution = new Spectrum(alpha);
-                lightSourceContribution.mult(shade(surfaceHit, lightHit));
-                lightSourceContribution.mult(1 / lightHit.p);
+                Spectrum lightSourceContribution = lightSourceContribution(surfaceHit);
+                lightSourceContribution.mult(alpha);
                 color.add(lightSourceContribution);
             }
 
@@ -74,7 +72,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
         return color;
     }
 
-    protected HitRecord sampleLight(HitRecord surfaceHit)
+    protected Spectrum lightSourceContribution(HitRecord surfaceHit)
     {
         LightGeometry light = getRandomLight();
         RandomSampler sampler = new RandomSampler();
@@ -83,13 +81,20 @@ public class PathTracingIntegrator extends AbstractIntegrator
 
         // Calculate direction of outgoing radiance relative to light source
         lightHit.w = StaticVecmath.sub(surfaceHit.position, lightHit.position);
+
         float d2 = lightHit.w.lengthSquared();
         lightHit.w.normalize();
 
         // Conversion to pdf over direction
-        lightHit.p *= d2 / lightHit.w.dot(lightHit.normal);
+        float cos = Math.max(0, lightHit.w.dot(lightHit.normal));
+        float conversionFactor = cos / d2;
 
-        return lightHit;
+        Spectrum contribution = new Spectrum(1, 1, 1);
+        contribution.mult(shade(surfaceHit, lightHit));
+        contribution.mult(1 / lightHit.p);
+        contribution.mult(conversionFactor);
+
+        return contribution;
     }
 
     protected Spectrum shade(HitRecord surfaceHit, HitRecord lightHit)
