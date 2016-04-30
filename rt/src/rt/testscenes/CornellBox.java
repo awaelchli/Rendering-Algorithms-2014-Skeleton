@@ -19,9 +19,9 @@ public class CornellBox extends Scene
 
     public CornellBox()
     {
-        outputFilename = new String("CornellBox");
+        outputFilename = new String("output/testscenes/assignment5/CornellBox");
         samplerFactory = new RandomSamplerFactory();
-        SPP = 128;
+        SPP = 1024;
         outputFilename += " " + String.format("%d", SPP) + "SPP";
 
         // Make camera and film
@@ -36,14 +36,18 @@ public class CornellBox extends Scene
         film = new BoxFilterFilm(width, height);
         tonemapper = new ClampTonemapper();
 
+        int minDepth = 2;
+        int maxDepth = 10;
+        float rrProbability = 0.5f;
+
+        outputFilename += String.format(" minDepth=%d maxDepth=%d rr=%.2f", minDepth, maxDepth, rrProbability);
+
         // Specify integrator to be used
-//        AreaLightIntegratorFactory iF = new AreaLightIntegratorFactory();
-//        iF.setSamplingTechnique(SamplingTechnique.Light);
-        PathTracingIntegratorFactory iF = new PathTracingIntegratorFactory();
-        iF.setMaxDepth(10);
-        iF.setMinDepth(2);
-        iF.setTerminationProbability(0.5f);
-        integratorFactory = iF;
+        PathTracingIntegratorFactory factory = new PathTracingIntegratorFactory();
+        factory.setMaxDepth(maxDepth);
+        factory.setMinDepth(minDepth);
+        factory.setTerminationProbability(rrProbability);
+        integratorFactory = factory;
 
         build();
     }
