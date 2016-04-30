@@ -6,6 +6,7 @@ import rt.intersectables.IntersectableList;
 import rt.intersectables.Sphere;
 import rt.materials.Mirror;
 import rt.materials.Refractive;
+import rt.materials.Refractive2;
 
 import javax.vecmath.Point3f;
 
@@ -17,15 +18,22 @@ public class CornellBoxAndSpheres extends CornellBox
     public CornellBoxAndSpheres()
     {
         super();
-        outputFilename = new String("CornellBoxAndSpheres");
-        SPP = 128;
+        outputFilename = new String("output/testscenes/assignment5/CornellBoxAndSpheres");
+        SPP = 24;
         outputFilename += " " + SPP + "SPP";
 
-        PathTracingIntegratorFactory iF = new PathTracingIntegratorFactory();
-        iF.setMaxDepth(10);
-        iF.setMinDepth(2);
-        iF.setTerminationProbability(0.5f);
-        integratorFactory = iF;
+        int minDepth = 4;
+        int maxDepth = 10;
+        float rrProbability = 0.5f;
+
+        outputFilename += String.format(" minDepth=%d maxDepth=%d rr=%.2f", minDepth, maxDepth, rrProbability);
+
+        // Specify integrator to be used
+        PathTracingIntegratorFactory factory = new PathTracingIntegratorFactory();
+        factory.setMaxDepth(maxDepth);
+        factory.setMinDepth(minDepth);
+        factory.setTerminationProbability(rrProbability);
+        integratorFactory = factory;
     }
 
     @Override
@@ -38,7 +46,7 @@ public class CornellBoxAndSpheres extends CornellBox
         // Sphere on top of short block
         float radius = 50;
         Sphere sphere1 = new Sphere(new Point3f(150, 165 + radius, 100), radius);
-        sphere1.material = new Refractive(1f);
+        sphere1.material = new Refractive(1.2f);
         objects.add(sphere1);
 
         // Sphere on top of tall block
