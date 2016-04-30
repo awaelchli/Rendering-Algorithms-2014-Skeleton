@@ -137,7 +137,7 @@ public class Main {
 		BufferedImage image = scene.getTonemapper().process(scene.getFilm());
 		try
 		{
-			ImageIO.write(image, "png", new File(scene.getOutputFilename()+".png"));
+			ImageIO.write(image, "png", new File(scene.getOutputFilename()+ " time=" + time_s + " sec" + ".png"));
 		} catch (IOException e) {}
 	}
 	
