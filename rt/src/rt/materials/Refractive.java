@@ -49,9 +49,10 @@ public class Refractive implements Material {
         Ray reflectedRay = Ray.reflect(data.hitRecord);
         s.w = reflectedRay.direction;
         s.brdf = evaluateBRDF(data.hitRecord, data.hitRecord.w, s.w);
+        s.brdf.mult(data.fresnelTerm);
         s.emission = evaluateEmission(data.hitRecord, data.hitRecord.w);
         s.isSpecular = true;
-        s.p = 1 - data.fresnelTerm;
+        s.p = data.fresnelTerm;
         return s;
     }
 
@@ -78,11 +79,12 @@ public class Refractive implements Material {
         else
         {
             s.brdf = evaluateBRDF(data.hitRecord, data.hitRecord.w, s.w);
+            s.brdf.mult(1 - data.fresnelTerm);
         }
 
         s.emission = evaluateEmission(data.hitRecord, data.hitRecord.w);
         s.isSpecular = true;
-        s.p = data.fresnelTerm;
+        s.p = 1 - data.fresnelTerm;
         return s;
     }
 
@@ -93,11 +95,11 @@ public class Refractive implements Material {
 
         if(sample[0] < rData.fresnelTerm)
         {
-            return evaluateSpecularRefraction(rData);
+            return evaluateSpecularReflection(rData);
         }
         else
         {
-            return evaluateSpecularReflection(rData);
+            return evaluateSpecularRefraction(rData);
         }
     }
 
@@ -143,7 +145,7 @@ public class Refractive implements Material {
         private float computeFresnelTerm()
         {
             if(hasTotalInternalReflection())
-                return 0;
+                return 1;
 
             float x = (n > 1) ? (1 - cosT) : (1 - cosI);
             float r0 = (n - 1) / (n + 1);
