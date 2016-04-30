@@ -25,7 +25,7 @@ public class Main {
 	 * Only for debugging a single pixel
 	 */
 	public static boolean DEBUG_ON = false;
-	public static float[] DEBUG_PIXEL = {256, 256};
+	public static float[] DEBUG_PIXEL = {64, 81};
 
 	/** 
 	 * The scene to be rendered.
@@ -64,7 +64,7 @@ public class Main {
 			{
 				for(int i=left; i<right; i++)
 				{
-					if( !DEBUG_ON || i == DEBUG_PIXEL[0] && j == DEBUG_PIXEL[1])
+					if(!DEBUG_ON || i == DEBUG_PIXEL[0] && j == scene.getFilm().getHeight() - DEBUG_PIXEL[1])
 					{
 						float samples[][] = integrator.makePixelSamples(sampler, scene.getSPP());
 						// For all samples of the pixel
