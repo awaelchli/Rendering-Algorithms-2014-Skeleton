@@ -14,14 +14,14 @@ import rt.films.*;
 public class PathtracingBoxSphere extends Scene {
 	
 	public PathtracingBoxSphere()
-	{	
-		outputFilename = new String("PathtracingBoxSphere");
+	{
+		outputFilename = new String("output/testscenes/assignment5/PathtracingBoxSphere");
 				
 		// Specify pixel sampler to be used
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 128;
+		SPP = 1024;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
@@ -35,12 +35,18 @@ public class PathtracingBoxSphere extends Scene {
 		camera = new PinholeCamera(eye, lookAt, up, fov, aspect, width, height);
 		film = new BoxFilterFilm(width, height);						
 		tonemapper = new ClampTonemapper();
+
+		int minDepth = 2;
+		int maxDepth = 10;
+		float rrProbability = 0.5f;
+
+		outputFilename += String.format(" minDepth=%d maxDepth=%d rr=%.2f", minDepth, maxDepth, rrProbability);
 		
 		// Specify integrator to be used
         PathTracingIntegratorFactory factory = new PathTracingIntegratorFactory();
-		factory.setMaxDepth(10);
-		factory.setMinDepth(4);
-		factory.setTerminationProbability(0.5f);
+		factory.setMaxDepth(maxDepth);
+		factory.setMinDepth(minDepth);
+		factory.setTerminationProbability(rrProbability);
         integratorFactory = factory;
 		
 		// List of objects
