@@ -32,6 +32,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
         Spectrum color = new Spectrum();
         Spectrum alpha = new Spectrum(1, 1, 1);
         int k = 0;
+        boolean previousMaterialWasSpecular = false;
 
         HitRecord surfaceHit = root.intersect(r);
 
@@ -41,7 +42,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
 
             if(lightList.contains(surfaceHit.intersectable))
             {   // The ray 'accidentally' hit the light source, do not further trace the ray
-                if(k == 0) // Eye ray directly hit the light source
+                if(k == 0 || previousMaterialWasSpecular) // Eye ray directly hit the light source
                     color.add(surfaceHit.material.evaluateEmission(surfaceHit, surfaceHit.w));
                 break;
             }
@@ -59,7 +60,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
 
             float q = getTerminationProbability(k);
             alpha.mult(shadingSample.brdf);
-            alpha.mult(Math.max(0, surfaceHit.normal.dot(shadingSample.w)));
+            alpha.mult(Math.abs(surfaceHit.normal.dot(shadingSample.w)));
             alpha.mult(1 / (shadingSample.p * (1 - q)));
 
             // Go to next path segment
@@ -67,6 +68,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
             epsilonTranslation(nextRay, nextRay.direction);
             surfaceHit = root.intersect(nextRay);
             k++;
+            previousMaterialWasSpecular = shadingSample.isSpecular;
         }
 
         return color;
