@@ -6,7 +6,6 @@ import rt.intersectables.IntersectableList;
 import rt.intersectables.Sphere;
 import rt.materials.Mirror;
 import rt.materials.Refractive;
-import rt.materials.Refractive2;
 
 import javax.vecmath.Point3f;
 
