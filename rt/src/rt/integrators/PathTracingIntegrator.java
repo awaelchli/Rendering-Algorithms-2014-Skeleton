@@ -81,6 +81,9 @@ public class PathTracingIntegrator extends AbstractIntegrator
         HitRecord lightHit = light.sample(sampler.makeSamples(1, 2)[0]);
         lightHit.p /= lightList.size();
 
+        // Point lights have undefined normal
+        boolean isPointLight = lightHit.normal == null;
+
         // Calculate direction of outgoing radiance relative to light source
         lightHit.w = StaticVecmath.sub(surfaceHit.position, lightHit.position);
 
@@ -88,12 +91,13 @@ public class PathTracingIntegrator extends AbstractIntegrator
         lightHit.w.normalize();
 
         // Conversion to pdf over direction
-        float cos = Math.max(0, lightHit.w.dot(lightHit.normal));
+        float cos = 1;
+        if(!isPointLight) cos = Math.max(0, lightHit.w.dot(lightHit.normal));
         float conversionFactor = cos / d2;
 
         Spectrum contribution = new Spectrum(1, 1, 1);
         contribution.mult(shade(surfaceHit, lightHit));
-        contribution.mult(1 / lightHit.p);
+        if(!isPointLight) contribution.mult(1 / lightHit.p);
         contribution.mult(conversionFactor);
 
         return contribution;
