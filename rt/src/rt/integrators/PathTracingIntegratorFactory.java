@@ -15,7 +15,6 @@ public class PathTracingIntegratorFactory implements IntegratorFactory
 
     @Override
     public Integrator make(Scene scene)
-
     {
         PathTracingIntegrator integrator = new PathTracingIntegrator(scene);
         integrator.maxDepth = this.maxDepth;
