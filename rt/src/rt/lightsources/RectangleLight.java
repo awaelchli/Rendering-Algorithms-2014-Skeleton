@@ -44,6 +44,10 @@ public class RectangleLight implements LightGeometry
         sample.p = 1 / rectangle.area();
         sample.intersectable = this;
         sample.material = rectangle.material;
+        sample.t1 = new Vector3f(right);
+        sample.t2 = new Vector3f(up);
+        sample.t1.normalize();
+        sample.t2.normalize();
 
         return sample;
     }
