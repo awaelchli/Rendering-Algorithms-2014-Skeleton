@@ -1,27 +1,34 @@
 package rt.testscenes;
 
-import javax.vecmath.*;
-import rt.*;
-import rt.intersectables.*;
-import rt.tonemappers.*;
-import rt.integrators.*;
-import rt.lightsources.*;
-import rt.materials.*;
-import rt.samplers.*;
-import rt.cameras.*;
-import rt.films.*;
+import rt.LightList;
+import rt.Scene;
+import rt.Spectrum;
+import rt.cameras.PinholeCamera;
+import rt.films.BoxFilterFilm;
+import rt.integrators.BDPathTracingIntegratorFactory;
+import rt.integrators.PathTracingIntegratorFactory;
+import rt.intersectables.IntersectableList;
+import rt.intersectables.Rectangle;
+import rt.intersectables.Sphere;
+import rt.lightsources.RectangleLight;
+import rt.materials.Diffuse;
+import rt.samplers.RandomSamplerFactory;
+import rt.tonemappers.ClampTonemapper;
 
-public class BDPathtracingBoxSphereGlass extends Scene {
-	
-	public BDPathtracingBoxSphereGlass()
-	{	
-		outputFilename = new String("output/testscenes/assignment5/BDPathtracingBoxSphereGlass");
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
+
+public class BDPathtracingBoxSphere extends Scene {
+
+	public BDPathtracingBoxSphere()
+	{
+		outputFilename = new String("output/testscenes/assignment5/BDPathtracingBoxSphere");
 				
 		// Specify pixel sampler to be used
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 128;
+		SPP = 1024;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
@@ -36,29 +43,29 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		film = new BoxFilterFilm(width, height);						
 		tonemapper = new ClampTonemapper();
 
-        int minEyeDepth = 2;
-        int maxEyeDepth = 10;
-        int minLightDepth = 2;
-        int maxLightDepth = 10;
-        float rrProbability = 0.5f;
+		int minEyeDepth = 2;
+		int maxEyeDepth = 10;
+		int minLightDepth = 2;
+		int maxLightDepth = 10;
+		float rrProbability = 0.5f;
 
-        outputFilename += String.format(" minDepth=%d maxDepth=%d rr=%.2f", minEyeDepth, maxEyeDepth, rrProbability);
-
-        // Specify integrator to be used
+		outputFilename += String.format(" minDepth=%d maxDepth=%d rr=%.2f", minEyeDepth, maxEyeDepth, rrProbability);
+		
+		// Specify integrator to be used
         BDPathTracingIntegratorFactory factory = new BDPathTracingIntegratorFactory();
-        factory.setMinEyePathLength(minEyeDepth);
-        factory.setMaxEyePathLength(maxEyeDepth);
-        factory.setMinLightPathLength(minLightDepth);
-        factory.setMaxLightPathLength(maxLightDepth);
-        factory.setEyePathTerminationProbability(rrProbability);
-        factory.setLightPathTerminationProbability(rrProbability);
+		factory.setMinEyePathLength(minEyeDepth);
+		factory.setMaxEyePathLength(maxEyeDepth);
+		factory.setMinLightPathLength(minLightDepth);
+		factory.setMaxLightPathLength(maxLightDepth);
+		factory.setEyePathTerminationProbability(rrProbability);
+		factory.setLightPathTerminationProbability(rrProbability);
         integratorFactory = factory;
 		
 		// List of objects
 		IntersectableList objects = new IntersectableList();	
 		
-		Sphere sphere = new Sphere(new Point3f(-.5f,-0.2f,1.f), .5f);
-		sphere.material = new Refractive(1.3f);
+		Sphere sphere = new Sphere(new Point3f(-.5f,-.2f,1.f), .5f);
+		sphere.material = new Diffuse(new Spectrum(0.8f, 0.8f, 0.8f));
 		objects.add(sphere);
 
 		// Right, red wall
@@ -96,12 +103,4 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		lightList.add(rectangleLight);
 	}
 	
-	public void finish()
-	{
-		if(integratorFactory instanceof BDPathTracingIntegratorFactory)
-		{
-//			((BDPathTracingIntegratorFactory)integratorFactory).writeLightImage("../output/testscenes/lightimage");
-//			((BDPathTracingIntegratorFactory)integratorFactory).addLightImage(film);
-		}
-	}
 }
