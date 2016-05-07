@@ -7,7 +7,30 @@ import java.util.Iterator;
  */
 public class Path implements Iterable<PathVertex>
 {
-    PathVertex root;
+    private PathVertex root;
+
+    public Path(PathVertex root)
+    {
+        this.root = root;
+        int k = 0;
+        for(PathVertex v : this)
+        {
+            v.index = k;
+            k++;
+        }
+    }
+
+    public PathVertex getLast()
+    {
+        PathVertex last = null;
+        for(PathVertex v : this) { last = v; }
+        return last;
+    }
+
+    public void add(PathVertex vertex)
+    {
+        getLast().next = vertex;
+    }
 
     @Override
     public Iterator<PathVertex> iterator()
@@ -27,7 +50,7 @@ public class Path implements Iterable<PathVertex>
         @Override
         public boolean hasNext()
         {
-            return current.next != null;
+            return current != null && current.next != null;
         }
 
         @Override

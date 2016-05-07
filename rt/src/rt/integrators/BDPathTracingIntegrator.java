@@ -38,7 +38,104 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         Path lightPath = createLightPath();
 
         Spectrum outgoing = new Spectrum();
+        Spectrum alpha = new Spectrum(1, 1, 1);
+        boolean previousMaterialWasSpecular = false;
+
+        // Traverse eye path and connect to the vertices of the light path
+        for(PathVertex eyeVertex : eyePath)
+        {
+            if(lightList.contains(eyeVertex.hitRecord.intersectable))
+            {   // Do not trace eye path further if a light source is hit
+                if(eyeVertex.index == 0 || previousMaterialWasSpecular)
+                {   // Exception 1: Add the material emission if it is the first bounce (direct light hit).
+                    // Exception 2: Add the emission if the path travels through a refractive material or mirror.
+                    Spectrum emission = eyeVertex.hitRecord.material.evaluateEmission(eyeVertex.hitRecord, eyeVertex.hitRecord.w);
+                    outgoing.add(emission);
+                }
+                break;
+            }
+
+
+            // Connect the current eye vertex with every vertex in the ligth path
+            Spectrum beta = new Spectrum(1, 1, 1);
+            for(PathVertex lightVertex : lightPath)
+            {
+                Spectrum eyeToLightConnection = evaluateEyeToLightConnection(eyeVertex, lightVertex);
+                eyeToLightConnection.mult(alpha);
+                eyeToLightConnection.mult(beta);
+
+                // Update beta
+                if(lightVertex.isRoot())
+                {   // The first light vertex has emission
+                    beta.mult(lightVertex.shadingSample.emission);
+                } else {
+                    beta.mult(lightVertex.shadingSample.brdf);
+                }
+                beta.mult(1 / lightVertex.hitRecord.p);
+
+                // Divide by probability of choosing this connection
+                int s = eyeVertex.index;
+                int t = lightVertex.index;
+                eyeToLightConnection.mult(1f / (s + t + 1));
+
+                outgoing.add(eyeToLightConnection);
+            }
+
+            previousMaterialWasSpecular = eyeVertex.shadingSample.isSpecular;
+
+            // Update alpha
+            float q = getEyeTerminationProbability(eyeVertex.index);
+            alpha.mult(eyeVertex.shadingSample.brdf);
+            alpha.mult(Math.abs(eyeVertex.hitRecord.normal.dot(eyeVertex.shadingSample.w)));
+            alpha.mult(1 / (eyeVertex.shadingSample.p * (1 - q)));
+        }
+
         return outgoing;
+    }
+
+    protected Spectrum evaluateEyeToLightConnection(PathVertex eyeVertex, PathVertex lightVertex)
+    {
+        Vector3f eyeToLight = StaticVecmath.sub(lightVertex.hitRecord.position, eyeVertex.hitRecord.position);
+        Vector3f lightToEye = StaticVecmath.negate(eyeToLight);
+        float d2 = eyeToLight.lengthSquared();
+
+        // Check if eye vertex is in shadow of light vertex
+        if(isInShadow(eyeVertex.hitRecord, eyeToLight)) return new Spectrum(0, 0, 0);
+
+        // Normalized connection vectors
+        Vector3f eyeToLightNorm = new Vector3f(eyeToLight);
+        eyeToLightNorm.normalize();
+        Vector3f lightToEyeNorm = new Vector3f(lightToEye);
+        lightToEyeNorm.normalize();
+
+        // BRDF at the eye vertex
+        Spectrum brdfEye = eyeVertex.hitRecord.material.evaluateBRDF(eyeVertex.hitRecord, eyeVertex.hitRecord.w, eyeToLightNorm);
+
+        // Contribution from light vertex
+        Spectrum lightContribution;
+        if(lightVertex.isRoot())
+        {   // Light vertex is the first in the light path, need to evaluate emission
+            lightContribution = lightVertex.hitRecord.material.evaluateEmission(lightVertex.hitRecord, lightToEyeNorm);
+            lightContribution.mult(1 / lightVertex.hitRecord.p);
+        } else {
+            lightContribution = lightVertex.hitRecord.material.evaluateBRDF(lightVertex.hitRecord, lightVertex.hitRecord.w, lightToEyeNorm);
+        }
+
+        // Cosine term for eye vertex
+        float cosEye = eyeVertex.hitRecord.normal.dot(eyeToLightNorm);
+
+        // Cosine term for light vertex
+        float cosLight = 1; // In case it is a point light
+        if(lightVertex.hitRecord.normal != null)
+        {   // In case the path connects to the back of the surface, the cos is set to zero
+            cosLight = Math.max(0, lightVertex.hitRecord.normal.dot(lightToEyeNorm));
+        }
+
+        Spectrum s = new Spectrum(brdfEye);
+        s.mult(lightContribution);
+        s.mult(cosEye);
+        s.mult(cosLight / d2);
+        return s;
     }
 
     protected Path createEyePath(Ray r)
@@ -46,7 +143,6 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         HitRecord surfaceHit = root.intersect(r);
 
         PathVertex start = new PathVertex();
-
         PathVertex current = start;
         int k = 0;
         while(true)
@@ -68,9 +164,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             k++;
         }
 
-        Path path = new Path();
-        path.root = start;
-        return path;
+        return new Path(start);
     }
 
     protected Path createLightPath()
@@ -105,9 +199,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             k++;
         }
 
-        Path path = new Path();
-        path.root = start;
-        return path;
+        return new Path(start);
     }
 
     protected boolean terminateLightPath(int depth)
@@ -130,5 +222,23 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
 
         // Terminate with given probability above a certain path length
         return p < terminationProbability;
+    }
+
+    private float getLightTerminationProbability(int k)
+    {
+        return getTerminationProbability(k, lightTerminationProbability, minLightDepth, maxLightDepth);
+    }
+
+    private float getEyeTerminationProbability(int k)
+    {
+        return getTerminationProbability(k, eyeTerminationProbability, minEyeDepth, maxEyeDepth);
+    }
+
+    private float getTerminationProbability(int k, float terminationProbability, int minDepth, int maxDepth)
+    {
+        float q = terminationProbability;
+        if(k <= minDepth) q = 0;
+        if(k >= maxDepth) q = 1;
+        return q;
     }
 }
