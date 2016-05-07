@@ -36,13 +36,16 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		film = new BoxFilterFilm(width, height);						
 		tonemapper = new ClampTonemapper();
 
-        int minEyeDepth = 2;
-        int maxEyeDepth = 10;
-        int minLightDepth = 2;
-        int maxLightDepth = 10;
-        float rrProbability = 0.5f;
+		int s = 2;
+		int t = 2;
 
-        outputFilename += String.format(" minDepth=%d maxDepth=%d rr=%.2f", minEyeDepth, maxEyeDepth, rrProbability);
+        int minEyeDepth = t;
+        int maxEyeDepth = t;
+        int minLightDepth = s;
+        int maxLightDepth = s;
+        float rrProbability = 0f;
+
+        outputFilename += String.format(" s=%d t=%d rr=%.2f", s, t, rrProbability);
 
         // Specify integrator to be used
         BDPathTracingIntegratorFactory factory = new BDPathTracingIntegratorFactory();
