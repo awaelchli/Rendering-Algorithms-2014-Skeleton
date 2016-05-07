@@ -8,10 +8,9 @@ import rt.Material;
  */
 public class PathVertex
 {
-    PathVertex next;
     HitRecord hitRecord;
     Material.ShadingSample shadingSample;
-    int index;
+    public int index;
 
     public boolean isRoot()
     {

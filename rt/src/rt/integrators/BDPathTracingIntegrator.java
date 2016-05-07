@@ -55,7 +55,6 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
                 break;
             }
 
-
             // Connect the current eye vertex with every vertex in the ligth path
             Spectrum beta = new Spectrum(1, 1, 1);
             for(PathVertex lightVertex : lightPath)
@@ -140,46 +139,54 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
 
     protected Path createEyePath(Ray r)
     {
-        HitRecord surfaceHit = root.intersect(r);
+        Path path = new Path();
 
-        PathVertex start = new PathVertex();
-        PathVertex current = start;
+        Ray nextRay = r;
         int k = 0;
         while(true)
         {
+            HitRecord surfaceHit = root.intersect(nextRay);
+
             if(surfaceHit == null) break;
             if(lightList.contains(surfaceHit.intersectable)) break;
             if(terminateEyePath(k)) break;
 
             // Make the current vertex
+            PathVertex current = new PathVertex();
             current.hitRecord = surfaceHit;
             current.shadingSample = surfaceHit.material.getShadingSample(surfaceHit, (new RandomSampler().makeSamples(1, 2)[0]));
+            current.index = k;
+            path.add(current);
 
             // Prepare the intersection for the next vertex
-            Ray nextRay = new Ray(surfaceHit.position, current.shadingSample.w);
+            nextRay = new Ray(surfaceHit.position, current.shadingSample.w);
             epsilonTranslation(nextRay, nextRay.direction);
-            surfaceHit = root.intersect(nextRay);
-            current.next = new PathVertex();
-            current = current.next;
             k++;
         }
 
-        return new Path(start);
+        return path;
     }
 
     protected Path createLightPath()
     {
-        LightGeometry light = getRandomLight();
+        Path lightPath = new Path();
+
+        // Sample the light source
+        LightGeometry lightSource = getRandomLight();
         RandomSampler sampler = new RandomSampler();
-        HitRecord lightHit = light.sample(sampler.makeSamples(1, 2)[0]);
+        HitRecord lightHit = lightSource.sample(sampler.makeSamples(1, 2)[0]);
         lightHit.p /= lightList.size();
 
+        // The first vertex in the light path is the sample on the light source
         PathVertex start = new PathVertex();
         start.hitRecord = lightHit;
         start.shadingSample = lightHit.material.getEmissionSample(lightHit, sampler.makeSamples(1, 2)[0]);
+        start.index = 0;
+        lightPath.add(start);
 
+        // Trace ray from light source and create path
         PathVertex current = start;
-        int k = 0;
+        int k = 1;
         while(true)
         {
             Point3f currentPos = new Point3f(current.hitRecord.position);
@@ -192,14 +199,15 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             if(lightList.contains(hit.intersectable)) break;
             if(terminateLightPath(k)) break;
 
-            current.next = new PathVertex();
-            current = current.next;
+            current = new PathVertex();
             current.hitRecord = hit;
             current.shadingSample = hit.material.getShadingSample(hit, sampler.makeSamples(1, 2)[0]);
+            current.index = k;
+            lightPath.add(current);
             k++;
         }
 
-        return new Path(start);
+        return lightPath;
     }
 
     protected boolean terminateLightPath(int depth)

@@ -1,69 +1,56 @@
 package rt.integrators;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by adrian on 06.05.16.
  */
 public class Path implements Iterable<PathVertex>
 {
-    private PathVertex root;
+    private List<PathVertex> vertices;
 
-    public Path(PathVertex root)
+    public Path()
     {
-        this.root = root;
-        int k = 0;
-        for(PathVertex v : this)
-        {
-            v.index = k;
-            k++;
-        }
+       vertices = new ArrayList<PathVertex>();
     }
 
     public PathVertex getLast()
     {
-        PathVertex last = null;
-        for(PathVertex v : this) { last = v; }
-        return last;
+        return vertices.get(vertices.size() - 1);
+    }
+
+    public PathVertex getFirst()
+    {
+        return vertices.get(0);
     }
 
     public void add(PathVertex vertex)
     {
-        getLast().next = vertex;
+        vertices.add(vertex);
+    }
+
+    public int indexOf(PathVertex vertex)
+    {
+        return vertices.indexOf(vertex);
     }
 
     @Override
     public Iterator<PathVertex> iterator()
     {
-        return new PathIterator<PathVertex>(root);
+        return vertices.iterator();
     }
 
-    class PathIterator<P> implements Iterator
+    @Override
+    public String toString()
     {
-        PathVertex current;
-
-        PathIterator(PathVertex start)
+        String s = "";
+        String arrow = " --> ";
+        for(PathVertex v : this)
         {
-            this.current = start;
+            s += arrow + v.hitRecord.position.toString();
         }
-
-        @Override
-        public boolean hasNext()
-        {
-            return current != null && current.next != null;
-        }
-
-        @Override
-        public PathVertex next()
-        {
-            this.current = this.current.next;
-            return current;
-        }
-
-        @Override
-        public void remove()
-        {
-            throw new UnsupportedOperationException();
-        }
+        return s;
     }
 }
