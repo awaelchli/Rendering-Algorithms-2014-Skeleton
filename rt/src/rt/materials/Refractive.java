@@ -133,7 +133,8 @@ public class Refractive implements Material {
 
             cosI = -hitRecord.normal.dot(incident);
 
-            if(isRayEntering())
+            n = refractiveIndex;
+            if (isRayEntering())
                 n = 1 / refractiveIndex;
 
             sinT2 = n * n * (1 - cosI * cosI);
