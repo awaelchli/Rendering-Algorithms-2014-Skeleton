@@ -44,9 +44,13 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         // Traverse eye path and connect to the vertices of the light path
         for(PathVertex eyeVertex : eyePath)
         {
+            // Skip the camera vertex
+            if(eyeVertex.isRoot())
+                continue;
+
             if(lightList.contains(eyeVertex.hitRecord.intersectable))
             {   // Do not trace eye path further if a light source is hit
-                if(eyeVertex.index == 0 || previousMaterialWasSpecular)
+                if(eyeVertex.index == 1 || previousMaterialWasSpecular)
                 {   // Exception 1: Add the material emission if it is the first bounce (direct light hit).
                     // Exception 2: Add the emission if the path travels through a refractive material or mirror.
                     Spectrum emission = eyeVertex.hitRecord.material.evaluateEmission(eyeVertex.hitRecord, eyeVertex.hitRecord.w);
@@ -141,15 +145,18 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
     {
         Path path = new Path();
 
+        // The first vertex in the eye path is the camera
+        PathVertex cameraVertex = new PathVertex();
+        cameraVertex.index = 0;
+        path.add(cameraVertex);
+
         Ray nextRay = r;
-        int k = 0;
+        int k = 1;
         while(true)
         {
             HitRecord surfaceHit = root.intersect(nextRay);
 
             if(surfaceHit == null) break;
-            if(lightList.contains(surfaceHit.intersectable)) break;
-            if(terminateEyePath(k)) break;
 
             // Make the current vertex
             PathVertex current = new PathVertex();
@@ -157,6 +164,9 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             current.shadingSample = surfaceHit.material.getShadingSample(surfaceHit, (new RandomSampler().makeSamples(1, 2)[0]));
             current.index = k;
             path.add(current);
+
+            if(lightList.contains(surfaceHit.intersectable)) break;
+            if(terminateEyePath(k)) break;
 
             // Prepare the intersection for the next vertex
             nextRay = new Ray(surfaceHit.position, current.shadingSample.w);
