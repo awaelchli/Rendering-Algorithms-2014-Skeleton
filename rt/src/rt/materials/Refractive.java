@@ -24,7 +24,9 @@ public class Refractive implements Material {
 
     @Override
     public Spectrum evaluateBRDF(HitRecord hitRecord, Vector3f wOut, Vector3f wIn) {
-        return new Spectrum(1, 1, 1);
+        Spectrum s = new Spectrum(1, 1, 1);
+        s.mult(1 / Math.abs(hitRecord.normal.dot(wOut)));
+        return s;
     }
 
     @Override
