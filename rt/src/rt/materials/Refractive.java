@@ -23,19 +23,20 @@ public class Refractive implements Material {
     }
 
     @Override
-    public Spectrum evaluateBRDF(HitRecord hitRecord, Vector3f wOut, Vector3f wIn) {
-        Spectrum s = new Spectrum(1, 1, 1);
-        s.mult(1 / Math.abs(hitRecord.normal.dot(wOut)));
-        return s;
-    }
-
-    @Override
-    public Spectrum evaluateEmission(HitRecord hitRecord, Vector3f wOut) {
+    public Spectrum evaluateBRDF(HitRecord hitRecord, Vector3f wOut, Vector3f wIn)
+    {
         return new Spectrum(0, 0, 0);
     }
 
     @Override
-    public boolean hasSpecularReflection() {
+    public Spectrum evaluateEmission(HitRecord hitRecord, Vector3f wOut)
+    {
+        return new Spectrum(0, 0, 0);
+    }
+
+    @Override
+    public boolean hasSpecularReflection()
+    {
         return true;
     }
 
@@ -50,7 +51,8 @@ public class Refractive implements Material {
         ShadingSample s = new ShadingSample();
         Ray reflectedRay = Ray.reflect(data.hitRecord);
         s.w = reflectedRay.direction;
-        s.brdf = evaluateBRDF(data.hitRecord, data.hitRecord.w, s.w);
+        s.brdf = new Spectrum(1, 1, 1);
+        s.brdf.mult(1 / Math.abs(data.hitRecord.normal.dot(s.w)));
         s.brdf.mult(data.fresnelTerm);
         s.emission = evaluateEmission(data.hitRecord, data.hitRecord.w);
         s.isSpecular = true;
@@ -59,7 +61,8 @@ public class Refractive implements Material {
     }
 
     @Override
-    public boolean hasSpecularRefraction() {
+    public boolean hasSpecularRefraction()
+    {
         return true;
     }
 
@@ -80,7 +83,8 @@ public class Refractive implements Material {
         }
         else
         {
-            s.brdf = evaluateBRDF(data.hitRecord, data.hitRecord.w, s.w);
+            s.brdf = new Spectrum(1, 1, 1);
+            s.brdf.mult(1 / Math.abs(data.hitRecord.normal.dot(s.w)));
             s.brdf.mult(1 - data.fresnelTerm);
         }
 
