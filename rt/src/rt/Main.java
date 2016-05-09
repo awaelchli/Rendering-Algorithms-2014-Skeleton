@@ -25,7 +25,7 @@ public class Main {
 	 * Only for debugging a single pixel
 	 */
 	public static boolean DEBUG_ON = false;
-	public static float[] DEBUG_PIXEL = {63, 18};
+	public static float[] DEBUG_PIXEL = {57, 64};
 
 	/** 
 	 * The scene to be rendered.

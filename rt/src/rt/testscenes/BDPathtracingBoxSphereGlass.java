@@ -21,7 +21,7 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 128;
+		SPP = 512;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
@@ -36,8 +36,8 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		film = new BoxFilterFilm(width, height);						
 		tonemapper = new ClampTonemapper();
 
-		int s = 2;
-		int t = 2;
+		int s = 10;
+		int t = 10;
 
         int minEyeDepth = t;
         int maxEyeDepth = t;
