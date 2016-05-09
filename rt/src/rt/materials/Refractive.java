@@ -118,7 +118,7 @@ public class Refractive implements Material {
     @Override
     public boolean castsShadows()
     {
-        return false;
+        return true;
     }
 
     /**
