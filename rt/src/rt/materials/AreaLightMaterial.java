@@ -68,7 +68,10 @@ public class AreaLightMaterial implements Material
     @Override
     public ShadingSample getEmissionSample(HitRecord hitRecord, float[] sample)
     {
-        return (new Diffuse(power)).getShadingSample(hitRecord, sample);
+        ShadingSample s = (new Diffuse(power)).getShadingSample(hitRecord, sample);
+        s.emission = evaluateEmission(hitRecord, s.w);
+        s.brdf = new Spectrum();
+        return s;
     }
 
     @Override
