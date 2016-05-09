@@ -36,6 +36,22 @@ public class Path implements Iterable<PathVertex>
         return vertices.indexOf(vertex);
     }
 
+    /**
+     * Returns the number of segments in this path.
+     */
+    public int length()
+    {
+        return vertices.size() - 1;
+    }
+
+    /**
+     * Returns the number of vertices in this path.
+     */
+    public int numberOfVertices()
+    {
+        return vertices.size();
+    }
+
     @Override
     public Iterator<PathVertex> iterator()
     {
