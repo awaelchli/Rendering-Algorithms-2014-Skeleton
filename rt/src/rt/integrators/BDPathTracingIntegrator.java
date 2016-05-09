@@ -77,9 +77,10 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
                 beta.mult(1 / lightVertex.hitRecord.p);
 
                 // Divide by probability of choosing this connection
+                // TODO: MIS
                 int s = eyeVertex.index;
                 int t = lightVertex.index;
-                eyeToLightConnection.mult(1f / (s + t + 1));
+                eyeToLightConnection.mult(1f / (s + t));
 
                 outgoing.add(eyeToLightConnection);
             }
@@ -146,8 +147,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         Path path = new Path();
 
         // The first vertex in the eye path is the camera
-        PathVertex cameraVertex = new PathVertex();
-        cameraVertex.index = 0;
+        PathVertex cameraVertex = makeCameraVertex(r);
         path.add(cameraVertex);
 
         Ray nextRay = r;
@@ -258,5 +258,14 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         if(k <= minDepth) q = 0;
         if(k >= maxDepth) q = 1;
         return q;
+    }
+
+    private PathVertex makeCameraVertex(Ray cameraRay)
+    {
+        PathVertex cameraVertex = new PathVertex();
+        cameraVertex.index = 0;
+        cameraVertex.hitRecord = new HitRecord();
+        cameraVertex.hitRecord.position = new Point3f(cameraRay.origin);
+        return cameraVertex;
     }
 }
