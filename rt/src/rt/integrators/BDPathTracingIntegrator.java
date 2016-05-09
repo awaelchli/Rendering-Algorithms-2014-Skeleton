@@ -74,7 +74,8 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
                 } else {
                     beta.mult(lightVertex.shadingSample.brdf);
                 }
-                beta.mult(1 / lightVertex.hitRecord.p);
+                beta.mult(1 / lightVertex.shadingSample.p);
+                beta.mult(lightVertex.hitRecord.normal.dot(lightVertex.shadingSample.w));
 
                 // Divide by probability of choosing this connection
                 // TODO: MIS
