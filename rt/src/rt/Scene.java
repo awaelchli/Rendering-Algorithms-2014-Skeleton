@@ -17,7 +17,6 @@ public abstract class Scene {
 	protected Intersectable root;
 	protected LightList lightList;
 	protected float epsilon = 0.001f;
-	protected int recursionDepth;
 	
 	public IntegratorFactory getIntegratorFactory() {
 		return integratorFactory;
@@ -63,4 +62,7 @@ public abstract class Scene {
 	{
 	}
 
+	public void finish()
+	{
+	}
 }

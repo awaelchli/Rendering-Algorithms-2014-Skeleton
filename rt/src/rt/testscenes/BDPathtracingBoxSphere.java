@@ -6,7 +6,6 @@ import rt.Spectrum;
 import rt.cameras.PinholeCamera;
 import rt.films.BoxFilterFilm;
 import rt.integrators.BDPathTracingIntegratorFactory;
-import rt.integrators.PathTracingIntegratorFactory;
 import rt.intersectables.IntersectableList;
 import rt.intersectables.Rectangle;
 import rt.intersectables.Sphere;
@@ -53,10 +52,10 @@ public class BDPathtracingBoxSphere extends Scene {
 		
 		// Specify integrator to be used
         BDPathTracingIntegratorFactory factory = new BDPathTracingIntegratorFactory();
-		factory.setMinEyePathLength(minEyeDepth);
-		factory.setMaxEyePathLength(maxEyeDepth);
-		factory.setMinLightPathLength(minLightDepth);
-		factory.setMaxLightPathLength(maxLightDepth);
+		factory.setMinEyeVertices(minEyeDepth);
+		factory.setMaxEyeVertices(maxEyeDepth);
+		factory.setMinLightVertices(minLightDepth);
+		factory.setMaxLightVertices(maxLightDepth);
 		factory.setEyePathTerminationProbability(rrProbability);
 		factory.setLightPathTerminationProbability(rrProbability);
         integratorFactory = factory;

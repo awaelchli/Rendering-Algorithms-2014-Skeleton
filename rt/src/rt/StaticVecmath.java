@@ -89,4 +89,11 @@ public class StaticVecmath {
 
 		return r;
 	}
+
+	public static Vector3f normalize(Vector3f v)
+	{
+		Vector3f normalized = new Vector3f(v);
+		normalized.normalize();
+		return normalized;
+	}
 }

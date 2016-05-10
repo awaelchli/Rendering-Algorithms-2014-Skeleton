@@ -41,7 +41,7 @@ public class Path implements Iterable<PathVertex>
      */
     public int length()
     {
-        return vertices.size() - 1;
+        return Math.max(0, vertices.size() - 1);
     }
 
     /**

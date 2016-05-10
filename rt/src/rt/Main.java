@@ -125,6 +125,8 @@ public class Main {
 				System.out.print("*");
 			}
 		}
+		scene.finish();
+
 		System.out.println();
 		
 		long time_ms = timer.timeElapsed();

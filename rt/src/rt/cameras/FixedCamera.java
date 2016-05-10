@@ -1,9 +1,6 @@
 package rt.cameras;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-import javax.vecmath.Vector4f;
+import javax.vecmath.*;
 
 import rt.Camera;
 import rt.Ray;
@@ -89,6 +86,12 @@ public class FixedCamera implements Camera {
 		dir.sub(new Vector3f(d.x, d.y, d.z), eye);
 		Ray r = new Ray(new Point3f(eye), dir);
 		return r;
+	}
+
+	@Override
+	public Point2f getImagePixel(Ray ray)
+	{
+		throw new UnsupportedOperationException();
 	}
 
 }

@@ -30,4 +30,10 @@ public class DummyCamera implements Camera {
 		return new Ray(new Point3f(0.f,0.f,0.f), new Vector3f(x, y, 1.f));
 	}
 
+	@Override
+	public Point2f getImagePixel(Ray ray)
+	{
+		throw new UnsupportedOperationException();
+	}
+
 }

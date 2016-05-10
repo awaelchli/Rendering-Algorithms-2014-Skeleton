@@ -36,10 +36,8 @@ public abstract class AbstractIntegrator implements Integrator
      */
     protected boolean isInShadow(HitRecord hit, Vector3f lightDir)
     {
-        Point3f origin = new Point3f();
-        origin.scaleAdd(this.epsilon, hit.normal, hit.position);
-
-        Ray shadowRay = new Ray(origin, lightDir);
+        Ray shadowRay = new Ray(hit.position, lightDir);
+        epsilonTranslation(shadowRay, lightDir);
 
         HitRecord shadowRayHit = root.intersect(shadowRay);
 

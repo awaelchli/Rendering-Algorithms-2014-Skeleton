@@ -21,7 +21,7 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 512;
+		SPP = 128;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
@@ -36,8 +36,8 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		film = new BoxFilterFilm(width, height);						
 		tonemapper = new ClampTonemapper();
 
-		int s = 10;
-		int t = 10;
+		int s = 5;
+		int t = 1;
 
         int minEyeDepth = t;
         int maxEyeDepth = t;
@@ -49,10 +49,10 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 
         // Specify integrator to be used
         BDPathTracingIntegratorFactory factory = new BDPathTracingIntegratorFactory();
-        factory.setMinEyePathLength(minEyeDepth);
-        factory.setMaxEyePathLength(maxEyeDepth);
-        factory.setMinLightPathLength(minLightDepth);
-        factory.setMaxLightPathLength(maxLightDepth);
+        factory.setMinEyeVertices(minEyeDepth);
+        factory.setMaxEyeVertices(maxEyeDepth);
+        factory.setMinLightVertices(minLightDepth);
+        factory.setMaxLightVertices(maxLightDepth);
         factory.setEyePathTerminationProbability(rrProbability);
         factory.setLightPathTerminationProbability(rrProbability);
         integratorFactory = factory;
@@ -103,8 +103,8 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 	{
 		if(integratorFactory instanceof BDPathTracingIntegratorFactory)
 		{
-//			((BDPathTracingIntegratorFactory)integratorFactory).writeLightImage("../output/testscenes/lightimage");
-//			((BDPathTracingIntegratorFactory)integratorFactory).addLightImage(film);
+			((BDPathTracingIntegratorFactory) integratorFactory).writeLightImage("output/testscenes/assignment5/lightimageBoxSphereGlass");
+			((BDPathTracingIntegratorFactory) integratorFactory).addLightImage(film);
 		}
 	}
 }

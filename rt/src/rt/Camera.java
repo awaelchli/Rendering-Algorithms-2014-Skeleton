@@ -1,5 +1,7 @@
 package rt;
 
+import javax.vecmath.Point2f;
+
 /**
  * Given the specification of a ray in image space, a camera constructs 
  * a corresponding ray in world space. 
@@ -20,4 +22,6 @@ public interface Camera {
 	 * @return the ray in world coordinates
 	 */
 	public Ray makeWorldSpaceRay(int i, int j, float sample[]);
+
+	public Point2f getImagePixel(Ray ray);
 }

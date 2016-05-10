@@ -56,6 +56,11 @@ public class PinholeCamera implements Camera {
     private Matrix4f m;
 
     /**
+     * Transformation from world to viewport
+     */
+    private Matrix4f m_inv;
+
+    /**
      * Creates a pinhole camera.
      *
      * @param position Camera position in world coordinates
@@ -90,6 +95,8 @@ public class PinholeCamera implements Camera {
         p.mul(v);
         c.mul(p);
         m = c;
+        m_inv = new Matrix4f(m);
+        m_inv.invert();
     }
 
     /**
@@ -173,5 +180,23 @@ public class PinholeCamera implements Camera {
         dir.sub(new Vector3f(d.x, d.y, d.z), this.position);
         Ray r = new Ray(new Point3f(this.position), dir);
         return r;
+    }
+
+    @Override
+    public Point2f getImagePixel(Ray ray)
+    {
+        Point4f origin = new Point4f(ray.origin.x, ray.origin.y, ray.origin.z, 1);
+        Vector3f dir = new Vector3f(ray.direction);
+
+        m_inv.transform(origin);
+        m_inv.transform(dir);
+
+        Vector3f result = new Vector3f(origin.x, origin.y, origin.z);
+        result.add(dir);
+
+        // Homogeneous division
+        result.scale(1 / result.z);
+
+        return new Point2f(result.x, result.y);
     }
 }
