@@ -183,20 +183,15 @@ public class PinholeCamera implements Camera {
     }
 
     @Override
-    public Point2f getImagePixel(Ray ray)
+    public Point2f getImagePixel(Point3f point3D)
     {
-        Point4f origin = new Point4f(ray.origin.x, ray.origin.y, ray.origin.z, 1);
-        Vector3f dir = new Vector3f(ray.direction);
+        Vector4f p = new Vector4f(point3D.x, point3D.y, point3D.z, 1);
 
-        m_inv.transform(origin);
-        m_inv.transform(dir);
-
-        Vector3f result = new Vector3f(origin.x, origin.y, origin.z);
-        result.add(dir);
+        m_inv.transform(p);
 
         // Homogeneous division
-        result.scale(1 / result.z);
+        p.scale(1 / p.z);
 
-        return new Point2f(result.x, result.y);
+        return new Point2f(p.x, p.y);
     }
 }
