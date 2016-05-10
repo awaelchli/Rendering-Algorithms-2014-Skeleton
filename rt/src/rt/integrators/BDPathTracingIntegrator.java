@@ -20,7 +20,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
     public static final float DEFAULT_TERMINATION_PROBABILITY = 0.5f;
 
     int minEyeVertices, maxEyeVertices;
-    int minLightVertices, maxLightVerices;
+    int minLightVertices, maxLightVertices;
     float eyeTerminationProbability, lightTerminationProbability;
 
     Scene scene;
@@ -32,7 +32,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         this.scene = scene;
         this.lightImage = new HashMap<>();
         maxEyeVertices = DEFAULT_MAX_VERTICES;
-        maxLightVerices = DEFAULT_MAX_VERTICES;
+        maxLightVertices = DEFAULT_MAX_VERTICES;
         minEyeVertices = DEFAULT_MIN_VERTICES;
         minLightVertices = DEFAULT_MIN_VERTICES;
         eyeTerminationProbability = DEFAULT_TERMINATION_PROBABILITY;
@@ -79,8 +79,8 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
 
                 // Divide by probability of choosing this connection
                 // TODO: MIS
-                int s = eyeVertex.index;
-                int t = lightVertex.index;
+                int s = lightVertex.index;
+                int t = eyeVertex.index;
                 eyeToLightConnection.mult(1f / (s + t));
 
                 outgoing.add(eyeToLightConnection);
@@ -178,6 +178,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             epsilonTranslation(nextRay, nextRay.direction);
         }
 
+        assert path.numberOfVertices() <= maxEyeVertices;
         return path;
     }
 
@@ -220,12 +221,13 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             path.add(current);
         }
 
+        assert path.numberOfVertices() <= maxLightVertices;
         return path;
     }
 
     protected boolean terminateLightPath(int length)
     {
-        return terminatePath(length, minLightVertices - 1, maxLightVerices - 1, lightTerminationProbability);
+        return terminatePath(length, minLightVertices - 1, maxLightVertices - 1, lightTerminationProbability);
     }
 
     protected boolean terminateEyePath(int length)
@@ -247,7 +249,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
 
     private float getLightTerminationProbability(int length)
     {
-        return getTerminationProbability(length, lightTerminationProbability, minLightVertices - 1, maxLightVerices - 1);
+        return getTerminationProbability(length, lightTerminationProbability, minLightVertices - 1, maxLightVertices - 1);
     }
 
     private float getEyeTerminationProbability(int length)
@@ -304,8 +306,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         if(isInShadow(cameraVertex.hitRecord, cameraToLight))
             return;
 
-        Ray cameraRay = new Ray(lightVertex.hitRecord.position, lightToCameraNorm);
-        Point2f pixel = this.scene.getCamera().getImagePixel(cameraRay);
+        Point2f pixel = this.scene.getCamera().getImagePixel(lightVertex.hitRecord.position);
         boolean validPixel = pixel.x >= 0 && pixel.y >= 0 && pixel.x <= scene.getFilm().getWidth() && pixel.y <= scene.getFilm().getHeight();
 
         // Check if the connection contributes to the camera image

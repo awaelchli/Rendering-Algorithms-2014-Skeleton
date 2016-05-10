@@ -37,7 +37,7 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
         integrator.minEyeVertices = minEyeVertices;
         integrator.maxEyeVertices = maxEyeVertices;
         integrator.minLightVertices = minLightVertices;
-        integrator.maxLightVerices = maxLightVertices;
+        integrator.maxLightVertices = maxLightVertices;
         integrator.eyeTerminationProbability = eyePathTerminationProbability;
         integrator.lightTerminationProbability = lightPathTerminationProbability;
         integrators.add(integrator);
