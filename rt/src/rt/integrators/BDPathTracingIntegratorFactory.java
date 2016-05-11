@@ -8,8 +8,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by adrian on 04.05.16.
@@ -23,13 +21,7 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
     float eyePathTerminationProbability = BDPathTracingIntegrator.DEFAULT_TERMINATION_PROBABILITY;
     float lightPathTerminationProbability = BDPathTracingIntegrator.DEFAULT_TERMINATION_PROBABILITY;
 
-    //private List<BDPathTracingIntegrator> integrators;
     private BoxFilterFilm lightImage;
-
-    public BDPathTracingIntegratorFactory()
-    {
-        //integrators = new ArrayList<>();
-    }
 
     @Override
     public Integrator make(Scene scene)
@@ -41,7 +33,6 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
         integrator.maxLightVertices = maxLightVertices;
         integrator.eyeTerminationProbability = eyePathTerminationProbability;
         integrator.lightTerminationProbability = lightPathTerminationProbability;
-        //integrators.add(integrator);
         integrator.lightImage = this.lightImage;
         return integrator;
     }
@@ -99,10 +90,6 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
         assert lightImage.getWidth() == film.getWidth();
 
         Spectrum[][] img = lightImage.getImage();
-
-        float max = Float.MIN_VALUE;
-        float min = Float.MAX_VALUE;
-        int nancount = 0;
 
         for(int i = 0; i < lightImage.getWidth(); i++)
         {
