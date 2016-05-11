@@ -17,12 +17,12 @@ public class CornellBoxAndSpheres extends CornellBox
     public CornellBoxAndSpheres()
     {
         super();
-        outputFilename = new String("output/testscenes/assignment5/CornellBoxAndSpheres");
-        SPP = 128;
+        outputFilename = new String("output/testscenes/assignment5/PathTracing/CornellBoxAndSpheres");
+        SPP = 512;
         outputFilename += " " + SPP + "SPP";
 
-        int minDepth = 4;
-        int maxDepth = 10;
+        int minDepth = 3;
+        int maxDepth = 50;
         float rrProbability = 0.5f;
 
         outputFilename += String.format(" minDepth=%d maxDepth=%d rr=%.2f", minDepth, maxDepth, rrProbability);

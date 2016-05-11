@@ -15,7 +15,7 @@ public class PathtracingBoxSphere extends Scene {
 	
 	public PathtracingBoxSphere()
 	{
-		outputFilename = new String("output/testscenes/assignment5/PathtracingBoxSphere");
+		outputFilename = new String("output/testscenes/assignment5/PathTracing/PathtracingBoxSphere");
 				
 		// Specify pixel sampler to be used
 		samplerFactory = new RandomSamplerFactory();

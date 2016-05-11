@@ -65,7 +65,7 @@ public class Path implements Iterable<PathVertex>
         String arrow = " --> ";
         for(PathVertex v : this)
         {
-            s += arrow + v.hitRecord.position.toString();
+            s += arrow + v.index + ":" + v.hitRecord.position.toString();
         }
         return s;
     }

@@ -19,9 +19,9 @@ public class CornellBox extends Scene
 
     public CornellBox()
     {
-        outputFilename = new String("output/testscenes/assignment5/CornellBox");
+        outputFilename = new String("output/testscenes/assignment5/PathTracing/CornellBox");
         samplerFactory = new RandomSamplerFactory();
-        SPP = 1024;
+        SPP = 512;
         outputFilename += " " + String.format("%d", SPP) + "SPP";
 
         // Make camera and film
@@ -37,7 +37,7 @@ public class CornellBox extends Scene
         tonemapper = new ClampTonemapper();
 
         int minDepth = 2;
-        int maxDepth = 10;
+        int maxDepth = 50;
         float rrProbability = 0.5f;
 
         outputFilename += String.format(" minDepth=%d maxDepth=%d rr=%.2f", minDepth, maxDepth, rrProbability);
@@ -139,7 +139,7 @@ public class CornellBox extends Scene
         Vector3f right = new Vector3f(0, 0, 332 - 227);
         Vector3f top = new Vector3f(213 - 343, 0, 0);
         Spectrum emission = new Spectrum(100, 100, 100);
-        emission.mult(10000);
+        emission.mult(30000);
         RectangleLight light = new RectangleLight(bottomLeft, right, top, emission);
 
         lightList = new LightList();

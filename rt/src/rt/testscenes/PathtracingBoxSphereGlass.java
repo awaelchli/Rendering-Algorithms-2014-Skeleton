@@ -22,7 +22,7 @@ public class PathtracingBoxSphereGlass extends Scene {
 
 	public PathtracingBoxSphereGlass()
 	{
-		outputFilename = new String("output/testscenes/assignment5/PathtracingBoxSphereGlass");
+		outputFilename = new String("output/testscenes/assignment5/PathTracing/PathtracingBoxSphereGlass");
 				
 		// Specify pixel sampler to be used
 		samplerFactory = new RandomSamplerFactory();
@@ -36,15 +36,15 @@ public class PathtracingBoxSphereGlass extends Scene {
 		Vector3f lookAt = new Vector3f(0.f,1.f,0.f);
 		Vector3f up = new Vector3f(0.f,1.f,0.f);
 		float fov = 60.f;
-		int width = 128;
-		int height = 128;
+		int width = 512;
+		int height = 512;
 		float aspect = (float)width/(float)height;
 		camera = new PinholeCamera(eye, lookAt, up, fov, aspect, width, height);
 		film = new BoxFilterFilm(width, height);						
 		tonemapper = new ClampTonemapper();
 
-		int minDepth = 10;
-		int maxDepth = 10;
+		int minDepth = 3;
+		int maxDepth = 50;
 		float rrProbability = 0.5f;
 
 		outputFilename += String.format(" minDepth=%d maxDepth=%d rr=%.2f", minDepth, maxDepth, rrProbability);

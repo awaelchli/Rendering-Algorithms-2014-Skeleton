@@ -15,7 +15,7 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 	
 	public BDPathtracingBoxSphereGlass()
 	{	
-		outputFilename = new String("output/testscenes/assignment5/BDPathtracingBoxSphereGlass");
+		outputFilename = new String("output/testscenes/assignment5/BDPathTracing/BDPathtracingBoxSphereGlass");
 				
 		// Specify pixel sampler to be used
 		samplerFactory = new RandomSamplerFactory();
