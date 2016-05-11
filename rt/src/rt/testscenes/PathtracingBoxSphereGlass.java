@@ -60,7 +60,7 @@ public class PathtracingBoxSphereGlass extends Scene {
 		IntersectableList objects = new IntersectableList();	
 		
 		Sphere sphere = new Sphere(new Point3f(-.5f,-.2f,1.f), .5f);
-		sphere.material = new Refractive(1);
+		sphere.material = new Refractive(1.8f);
 		objects.add(sphere);
 
 		// Right, red wall

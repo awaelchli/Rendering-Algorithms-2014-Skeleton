@@ -60,6 +60,7 @@ public class BoxFilterFilm implements Film {
 		{
 			for(int j=0; j<height; j++)
 			{
+				if(nSamples[i][j] == 0) continue;
 				image[i][j].r = unnormalized[i][j].r/nSamples[i][j];
 				image[i][j].g = unnormalized[i][j].g/nSamples[i][j];
 				image[i][j].b = unnormalized[i][j].b/nSamples[i][j];

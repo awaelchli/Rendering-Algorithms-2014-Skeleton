@@ -23,11 +23,12 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
     float eyePathTerminationProbability = BDPathTracingIntegrator.DEFAULT_TERMINATION_PROBABILITY;
     float lightPathTerminationProbability = BDPathTracingIntegrator.DEFAULT_TERMINATION_PROBABILITY;
 
-    private List<BDPathTracingIntegrator> integrators;
+    //private List<BDPathTracingIntegrator> integrators;
+    private BoxFilterFilm lightImage;
 
     public BDPathTracingIntegratorFactory()
     {
-        integrators = new ArrayList<>();
+        //integrators = new ArrayList<>();
     }
 
     @Override
@@ -40,7 +41,8 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
         integrator.maxLightVertices = maxLightVertices;
         integrator.eyeTerminationProbability = eyePathTerminationProbability;
         integrator.lightTerminationProbability = lightPathTerminationProbability;
-        integrators.add(integrator);
+        //integrators.add(integrator);
+        integrator.lightImage = this.lightImage;
         return integrator;
     }
 
@@ -77,29 +79,12 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
     @Override
     public void prepareScene(Scene scene)
     {
-
+        lightImage = new BoxFilterFilm(scene.getFilm().getWidth(), scene.getFilm().getHeight());
     }
 
     public void writeLightImage(String s)
     {
-        BoxFilterFilm film = null;
-        for(BDPathTracingIntegrator integrator : integrators)
-        {
-            if(film == null)
-            {
-                film = integrator.getLightImage();
-                continue;
-            }
-
-            Spectrum[][] im = integrator.getLightImage().getImage();
-            for(int i = 0; i < im.length; i++) {
-                for(int j = 0; j < im[i].length; j++) {
-                    film.addSample(i, j, im[i][j]);
-                }
-            }
-        }
-
-        BufferedImage img = new ClampTonemapper().process(film);
+        BufferedImage img = new ClampTonemapper().process(lightImage);
         try
         {
             ImageIO.write(img, "png", new File(s + ".png"));
@@ -110,9 +95,21 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
 
     public void addLightImage(Film film)
     {
-        for(BDPathTracingIntegrator integrator : integrators)
+        assert lightImage.getHeight() == film.getHeight();
+        assert lightImage.getWidth() == film.getWidth();
+
+        Spectrum[][] img = lightImage.getImage();
+
+        float max = Float.MIN_VALUE;
+        float min = Float.MAX_VALUE;
+        int nancount = 0;
+
+        for(int i = 0; i < lightImage.getWidth(); i++)
         {
-            integrator.addLightImage(film);
+            for(int j = 0; j < lightImage.getHeight(); j++)
+            {
+                film.addSample(i,j, img[i][j]);
+            }
         }
     }
 }

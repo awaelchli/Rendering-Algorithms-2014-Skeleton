@@ -1,13 +1,11 @@
 package rt.integrators;
 
 import rt.*;
-import rt.films.BoxFilterFilm;
 import rt.samplers.RandomSampler;
 
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
-import java.util.HashMap;
 
 /**
  * Created by adrian on 04.05.16.
@@ -23,14 +21,14 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
     int minLightVertices, maxLightVertices;
     float eyeTerminationProbability, lightTerminationProbability;
 
-    Scene scene;
-    private HashMap<Point2f, Spectrum> lightImage;
+    Film lightImage;
+
+    private Scene scene;
 
     public BDPathTracingIntegrator(Scene scene)
     {
         super(scene);
         this.scene = scene;
-        this.lightImage = new HashMap<>();
         maxEyeVertices = DEFAULT_MAX_VERTICES;
         maxLightVertices = DEFAULT_MAX_VERTICES;
         minEyeVertices = DEFAULT_MIN_VERTICES;
@@ -54,9 +52,8 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         {
             if(lightList.contains(eyeVertex.hitRecord.intersectable))
             {   // Do not trace eye path further if a light source is hit
-                if(eyeVertex.index == 1 || previousMaterialWasSpecular)
-                {   // Exception 1: Add the material emission if it is the first bounce (direct light hit).
-                    // Exception 2: Add the emission if the path travels through a refractive material or mirror.
+                if(eyeVertex.index == 1)
+                {   // Exception: Add the material emission if it is the first bounce (direct light hit).
                     Spectrum emission = eyeVertex.hitRecord.material.evaluateEmission(eyeVertex.hitRecord, eyeVertex.hitRecord.w);
                     outgoing.add(emission);
                 }
@@ -77,11 +74,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
                 eyeToLightConnection.mult(eyeVertex.alpha);
                 eyeToLightConnection.mult(lightVertex.alpha);
 
-                // Divide by probability of choosing this connection
                 // TODO: MIS
-                int s = lightVertex.index;
-                int t = eyeVertex.index;
-                eyeToLightConnection.mult(1f / (s + t));
 
                 outgoing.add(eyeToLightConnection);
             }
@@ -192,7 +185,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
 
         // Trace ray from light source and create path
         PathVertex current = start;
-        Spectrum alpha = new Spectrum(start.shadingSample.emission);
+        Spectrum alpha = new Spectrum(start.alpha);
         while(true)
         {
             if(terminateLightPath(path.length())) break;
@@ -206,10 +199,11 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             if(hit == null) break;
             if(lightList.contains(hit.intersectable)) break;
 
-            // Update beta
-            if(path.length() > 1) alpha.mult(current.shadingSample.brdf);
+            // Update alpha
+            if(path.length() == 0) alpha.mult(current.shadingSample.emission);
+            if(path.length() >= 1) alpha.mult(current.shadingSample.brdf);
             alpha.mult(1 / current.shadingSample.p);
-            alpha.mult(current.hitRecord.normal.dot(current.shadingSample.w));
+            alpha.mult(Math.abs(current.hitRecord.normal.dot(current.shadingSample.w)));
 
             // Create the new vertex
             current = new PathVertex();
@@ -303,29 +297,30 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         Vector3f cameraToLightNorm = StaticVecmath.normalize(cameraToLight);
 
         // If the camera vertex is in shadow of the light vertex, nothing has to be done
-        if(isInShadow(cameraVertex.hitRecord, cameraToLight))
+        if (isInShadow(cameraVertex.hitRecord, cameraToLight))
             return;
 
         Point2f pixel = this.scene.getCamera().project(lightVertex.hitRecord.position);
         boolean validPixel = pixel.x >= 0 && pixel.y >= 0 && pixel.x <= scene.getFilm().getWidth() && pixel.y <= scene.getFilm().getHeight();
 
         // Check if the connection contributes to the camera image
-        if(!validPixel)
+        if (!validPixel)
             return;
 
         // Contribution from light vertex
         Spectrum lightContribution;
-        if(lightVertex.isRoot())
+        if (lightVertex.isRoot())
         {   // Light vertex is the first in the light path, need to evaluate emission
             lightContribution = lightVertex.hitRecord.material.evaluateEmission(lightVertex.hitRecord, lightToCameraNorm);
             lightContribution.mult(1 / lightVertex.hitRecord.p);
-        } else {
-            lightContribution = lightVertex.hitRecord.material.evaluateBRDF(lightVertex.hitRecord, lightVertex.hitRecord.w, lightToCameraNorm);
+        } else
+        {
+            lightContribution = lightVertex.hitRecord.material.evaluateBRDF(lightVertex.hitRecord, lightToCameraNorm, lightVertex.hitRecord.w);
         }
 
         // Cosine term for light vertex
         float cosLight = 1; // In case it is a point light
-        if(lightVertex.hitRecord.normal != null)
+        if (lightVertex.hitRecord.normal != null)
         {   // In case the path connects to the back of the surface, the cos is set to zero
             cosLight = Math.max(0, lightVertex.hitRecord.normal.dot(lightToCameraNorm));
         }
@@ -334,24 +329,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         s.mult(lightContribution);
         s.mult(lightVertex.alpha);
         s.mult(cosLight / d2);
-        lightImage.put(pixel, s);
-    }
 
-    public void addLightImage(Film film)
-    {
-        for(Point2f p : lightImage.keySet()){
-            Spectrum s = lightImage.get(p);
-            film.addSample(p.x, p.y, s);
-        }
-    }
-
-    public BoxFilterFilm getLightImage()
-    {
-        int width = scene.getFilm().getWidth();
-        int height = scene.getFilm().getHeight();
-        BoxFilterFilm film = new BoxFilterFilm(width, height);
-
-        addLightImage(film);
-        return film;
+        lightImage.addSample(pixel.x, pixel.y, s);
     }
 }

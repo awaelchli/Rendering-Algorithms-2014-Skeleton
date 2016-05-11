@@ -21,7 +21,7 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 128;
+		SPP = 512;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
@@ -37,7 +37,7 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		tonemapper = new ClampTonemapper();
 
 		int s = 5;
-		int t = 5;
+		int t = 1;
 
         int minEyeDepth = t;
         int maxEyeDepth = t;
@@ -98,7 +98,8 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		lightList = new LightList();
 		lightList.add(rectangleLight);
 	}
-	
+
+	@Override
 	public void finish()
 	{
 		if(integratorFactory instanceof BDPathTracingIntegratorFactory)
@@ -106,5 +107,12 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 			((BDPathTracingIntegratorFactory) integratorFactory).writeLightImage("output/testscenes/assignment5/lightimageBoxSphereGlass");
 			((BDPathTracingIntegratorFactory) integratorFactory).addLightImage(film);
 		}
+	}
+
+	@Override
+	public void prepare()
+	{
+		super.prepare();
+		integratorFactory.prepareScene(this);
 	}
 }
