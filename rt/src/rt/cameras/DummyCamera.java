@@ -31,7 +31,7 @@ public class DummyCamera implements Camera {
 	}
 
 	@Override
-	public Point2f getImagePixel(Point3f point3D)
+	public Point2f project(Point3f point3D)
 	{
 		throw new UnsupportedOperationException();
 	}

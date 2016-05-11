@@ -84,15 +84,11 @@ public class PinholeCamera implements Camera {
         this.near = near;
         this.far = far;
 
-        // Make the matrix c*p*v that transforms a viewport pixel coordinate
+        // Make the matrix c*p that transforms a viewport pixel coordinate
         // to a world space point
-        Matrix4f v = getViewportMatrix();
-        v.invert();
         Matrix4f p = getProjectionMatrix();
-        p.invert();
         Matrix4f c = getCameraToWorldMatrix();
 
-        p.mul(v);
         c.mul(p);
         m = c;
         m_inv = new Matrix4f(m);
@@ -137,33 +133,17 @@ public class PinholeCamera implements Camera {
     public Matrix4f getProjectionMatrix() {
 
         Matrix4f p = new Matrix4f();
-        p.setIdentity();
         float top = (float) Math.tan(Math.toRadians(this.verticalFOV / 2));
         float right = this.aspect * top;
 
-        p.m00 = 1 / right;
-        p.m11 = 1 / top;
-        p.m22 = (this.near + this.far) / (this.near - this.far);
-        p.m32 = -1;
-        p.m23 = 2 * this.near * this.far / (this.near - this.far);
-        p.m33 = 0;
+        p.m00 = 2 * right / width;
+        p.m02 = right;
+        p.m11 = 2 * top / height;
+        p.m12 = top;
+        p.m22 = 1;
+        p.m33 = 1;
 
         return p;
-    }
-
-    public Matrix4f getViewportMatrix() {
-
-        Matrix4f v = new Matrix4f();
-        v.setIdentity();
-
-        v.m00 = this.width / 2;
-        v.m11 = this.height / 2;
-        v.m22 = 1;
-        v.m03 = this.width / 2;
-        v.m13 = this.height / 2;
-        v.m23 = 0;
-
-        return v;
     }
 
     @Override
@@ -183,14 +163,14 @@ public class PinholeCamera implements Camera {
     }
 
     @Override
-    public Point2f getImagePixel(Point3f point3D)
+    public Point2f project(Point3f point3D)
     {
         Vector4f p = new Vector4f(point3D.x, point3D.y, point3D.z, 1);
 
         m_inv.transform(p);
 
         // Homogeneous division
-        p.scale(1 / p.z);
+        p.scale(-1 / p.z);
 
         return new Point2f(p.x, p.y);
     }
