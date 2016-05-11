@@ -24,5 +24,5 @@ public interface Camera {
 	 */
 	public Ray makeWorldSpaceRay(int i, int j, float sample[]);
 
-	public Point2f getImagePixel(Point3f point3D);
+	public Point2f project(Point3f point3D);
 }
