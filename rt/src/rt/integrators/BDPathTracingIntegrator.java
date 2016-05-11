@@ -306,7 +306,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         if(isInShadow(cameraVertex.hitRecord, cameraToLight))
             return;
 
-        Point2f pixel = this.scene.getCamera().getImagePixel(lightVertex.hitRecord.position);
+        Point2f pixel = this.scene.getCamera().project(lightVertex.hitRecord.position);
         boolean validPixel = pixel.x >= 0 && pixel.y >= 0 && pixel.x <= scene.getFilm().getWidth() && pixel.y <= scene.getFilm().getHeight();
 
         // Check if the connection contributes to the camera image
