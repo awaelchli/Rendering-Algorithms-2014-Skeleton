@@ -13,10 +13,12 @@ public class PathTracingIntegrator extends AbstractIntegrator
     public static final int DEFAULT_MAX_DEPTH = 5;
     public static final int DEFAULT_MIN_DEPTH = 2;
     public static final float DEFAULT_TERMINATION_PROBABILITY = 0.5f;
+    public static final float DEFAULT_SHADOWRAY_CONTRIBUTION_THRESHOLD = 0.01f;
 
     int maxDepth;
     int minDepth;
     float terminationProbability;
+    float shadowRayContributionThreshold;
 
     public PathTracingIntegrator(Scene scene)
     {
@@ -24,6 +26,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
         maxDepth = DEFAULT_MAX_DEPTH;
         minDepth = DEFAULT_MIN_DEPTH;
         terminationProbability = DEFAULT_TERMINATION_PROBABILITY;
+        shadowRayContributionThreshold = DEFAULT_SHADOWRAY_CONTRIBUTION_THRESHOLD;
     }
 
     @Override
@@ -95,6 +98,14 @@ public class PathTracingIntegrator extends AbstractIntegrator
         if(!isPointLight) cos = Math.max(0, lightHit.w.dot(lightHit.normal));
         float conversionFactor = cos / d2;
 
+        // Russian Roulette on shadow ray
+        Spectrum test = lightHit.material.evaluateEmission(lightHit, lightHit.w);
+        test.mult(conversionFactor);
+        float length = (float) Math.sqrt(test.r * test.r + test.g * test.g + test.b * test.b);
+        // Do not trace the shadow ray if contribution is too low
+        if(length < shadowRayContributionThreshold)
+            return new Spectrum(0, 0, 0);
+
         Spectrum contribution = new Spectrum(1, 1, 1);
         contribution.mult(shade(surfaceHit, lightHit));
         if(!isPointLight) contribution.mult(1 / lightHit.p);
@@ -106,10 +117,12 @@ public class PathTracingIntegrator extends AbstractIntegrator
     protected Spectrum shade(HitRecord surfaceHit, HitRecord lightHit)
     {
         Vector3f lightDir = StaticVecmath.sub(lightHit.position, surfaceHit.position);
+
         if(isInShadow(surfaceHit, lightDir))
         {   // Point on surface is in shadow of light source
             return new Spectrum();
         }
+
         Spectrum s = lightHit.material.evaluateEmission(lightHit, lightHit.w);
         Vector3f wIn = StaticVecmath.negate(lightHit.w);
         s.mult(surfaceHit.material.evaluateBRDF(surfaceHit, surfaceHit.w, wIn));
