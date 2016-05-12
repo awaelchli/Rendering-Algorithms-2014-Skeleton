@@ -15,13 +15,13 @@ public class PathtracingBoxSphere extends Scene {
 	
 	public PathtracingBoxSphere()
 	{
-		outputFilename = new String("output/testscenes/assignment5/PathTracing/PathtracingBoxSphere");
+		outputFilename = new String("output/testscenes/assignment5/PathTracing/ShadowRayRR/PathtracingBoxSphere");
 				
 		// Specify pixel sampler to be used
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 1024;
+		SPP = 512;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
@@ -37,16 +37,18 @@ public class PathtracingBoxSphere extends Scene {
 		tonemapper = new ClampTonemapper();
 
 		int minDepth = 2;
-		int maxDepth = 10;
+		int maxDepth = 50;
 		float rrProbability = 0.5f;
+		float shThresh = 9;
 
-		outputFilename += String.format(" minDepth=%d maxDepth=%d rr=%.2f", minDepth, maxDepth, rrProbability);
+		outputFilename += String.format(" minDepth=%d maxDepth=%d rr=%.2f thresh=%.2f", minDepth, maxDepth, rrProbability, shThresh);
 		
 		// Specify integrator to be used
         PathTracingIntegratorFactory factory = new PathTracingIntegratorFactory();
 		factory.setMaxDepth(maxDepth);
 		factory.setMinDepth(minDepth);
 		factory.setTerminationProbability(rrProbability);
+		factory.setShadowRayContributionThreshold(shThresh);
         integratorFactory = factory;
 		
 		// List of objects

@@ -43,7 +43,7 @@ public class BDPathtracingBoxSphere extends Scene {
 		tonemapper = new ClampTonemapper();
 
 		int s = 5;
-		int t = 1;
+		int t = 5;
 
 		int minEyeDepth = t;
 		int maxEyeDepth = t;

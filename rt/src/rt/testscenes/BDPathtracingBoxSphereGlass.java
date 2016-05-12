@@ -36,8 +36,8 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		film = new BoxFilterFilm(width, height);						
 		tonemapper = new ClampTonemapper();
 
-		int s = 5;
-		int t = 1;
+		int s = 10;
+		int t = 10;
 
         int minEyeDepth = t;
         int maxEyeDepth = t;
@@ -104,7 +104,7 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 	{
 		if(integratorFactory instanceof BDPathTracingIntegratorFactory)
 		{
-			((BDPathTracingIntegratorFactory) integratorFactory).writeLightImage("output/testscenes/assignment5/lightimageBoxSphereGlass");
+			((BDPathTracingIntegratorFactory) integratorFactory).writeLightImage("output/testscenes/assignment5/BDPathTracing/lightimageBoxSphereGlass");
 			((BDPathTracingIntegratorFactory) integratorFactory).addLightImage(film);
 		}
 	}
