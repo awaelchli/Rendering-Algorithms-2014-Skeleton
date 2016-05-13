@@ -2,6 +2,7 @@ package rt.cameras;
 
 import rt.Camera;
 import rt.Ray;
+import rt.StaticVecmath;
 
 import javax.vecmath.*;
 
@@ -173,5 +174,13 @@ public class PinholeCamera implements Camera {
         p.scale(-1 / p.z);
 
         return new Point2f(p.x, p.y);
+    }
+
+    @Override
+    public Vector3f getViewingDirection()
+    {
+        Vector3f dir = StaticVecmath.sub(lookAt, position);
+        dir.normalize();
+        return dir;
     }
 }

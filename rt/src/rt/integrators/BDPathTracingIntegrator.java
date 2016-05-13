@@ -18,6 +18,8 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
     public static final int DEFAULT_MIN_VERTICES = 2;
     public static final float DEFAULT_TERMINATION_PROBABILITY = 0.5f;
 
+    static Spectrum total = new Spectrum(0, 0, 0);
+
     int minEyeVertices, maxEyeVertices;
     int minLightVertices, maxLightVertices;
     float eyeTerminationProbability, lightTerminationProbability;
@@ -53,7 +55,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         {
             if(lightList.contains(eyeVertex.hitRecord.intersectable))
             {   // Do not trace eye path further if a light source is hit
-                if(eyeVertex.index == 1)
+                if(eyeVertex.index == 1 || previousMaterialWasSpecular)
                 {   // Exception: Add the material emission if it is the first bounce (direct light hit).
                     Spectrum emission = eyeVertex.hitRecord.material.evaluateEmission(eyeVertex.hitRecord, eyeVertex.hitRecord.w);
                     outgoing.add(emission);
@@ -360,10 +362,13 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             cosLight = Math.max(0, lightVertex.hitRecord.normal.dot(lightToCameraNorm));
         }
 
+        // Cosine term for the eye vertex
+        float cosEye = scene.getCamera().getViewingDirection().dot(cameraToLightNorm);
+
         Spectrum s = new Spectrum(1, 1, 1);
         s.mult(lightContribution);
-        s.mult(lightVertex.alpha);
-        s.mult(cosLight / d2);
+        //s.mult(lightVertex.alpha);
+        s.mult(cosLight * cosEye / d2);
 
         lightImage.addSample(pixel.x, pixel.y, s);
     }
