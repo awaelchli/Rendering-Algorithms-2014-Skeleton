@@ -367,7 +367,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
 
         Spectrum s = new Spectrum(1, 1, 1);
         s.mult(lightContribution);
-        //s.mult(lightVertex.alpha);
+        s.mult(lightVertex.alpha);
         s.mult(cosLight * cosEye / d2);
 
         lightImage.addSample(pixel.x, pixel.y, s);
