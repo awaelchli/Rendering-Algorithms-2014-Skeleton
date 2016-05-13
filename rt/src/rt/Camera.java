@@ -27,5 +27,5 @@ public interface Camera {
 
 	public Point2f project(Point3f point3D);
 
-	public Vector3f getViewingDirection();
+	public Vector3f getImagePlaneNormal();
 }

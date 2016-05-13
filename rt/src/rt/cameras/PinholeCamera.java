@@ -177,7 +177,7 @@ public class PinholeCamera implements Camera {
     }
 
     @Override
-    public Vector3f getViewingDirection()
+    public Vector3f getImagePlaneNormal()
     {
         Vector3f dir = StaticVecmath.sub(lookAt, position);
         dir.normalize();

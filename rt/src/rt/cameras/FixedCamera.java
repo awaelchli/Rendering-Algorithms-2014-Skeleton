@@ -95,7 +95,7 @@ public class FixedCamera implements Camera {
 	}
 
 	@Override
-	public Vector3f getViewingDirection()
+	public Vector3f getImagePlaneNormal()
 	{
 		return new Vector3f(0, 0, -1);
 	}

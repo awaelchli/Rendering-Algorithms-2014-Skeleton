@@ -37,7 +37,7 @@ public class DummyCamera implements Camera {
 	}
 
 	@Override
-	public Vector3f getViewingDirection()
+	public Vector3f getImagePlaneNormal()
 	{
 		return null;
 	}
