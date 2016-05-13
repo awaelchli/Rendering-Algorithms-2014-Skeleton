@@ -18,8 +18,6 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
     public static final int DEFAULT_MIN_VERTICES = 2;
     public static final float DEFAULT_TERMINATION_PROBABILITY = 0.5f;
 
-    static Spectrum total = new Spectrum(0, 0, 0);
-
     int minEyeVertices, maxEyeVertices;
     int minLightVertices, maxLightVertices;
     float eyeTerminationProbability, lightTerminationProbability;
@@ -66,6 +64,9 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             // Connect the current eye vertex with every vertex in the light path
             for(PathVertex lightVertex : lightPath)
             {
+                if(eyeVertex.isRoot() && lightVertex.isRoot())
+                    continue;
+
                 if(eyeVertex.isRoot())
                 {
                     connectToCameraVertex(eyeVertex, lightVertex);
@@ -344,17 +345,6 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         if (!validPixel)
             return;
 
-        // Contribution from light vertex
-        Spectrum lightContribution;
-        if (lightVertex.isRoot())
-        {   // Light vertex is the first in the light path, need to evaluate emission
-            lightContribution = lightVertex.hitRecord.material.evaluateEmission(lightVertex.hitRecord, lightToCameraNorm);
-            lightContribution.mult(1 / lightVertex.hitRecord.p);
-        } else
-        {
-            lightContribution = lightVertex.hitRecord.material.evaluateBRDF(lightVertex.hitRecord, lightToCameraNorm, lightVertex.hitRecord.w);
-        }
-
         // Cosine term for light vertex
         float cosLight = 1; // In case it is a point light
         if (lightVertex.hitRecord.normal != null)
@@ -363,12 +353,12 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         }
 
         // Cosine term for the eye vertex
-        float cosEye = scene.getCamera().getViewingDirection().dot(cameraToLightNorm);
+        float cosEye = scene.getCamera().getImagePlaneNormal().dot(cameraToLightNorm);
 
-        Spectrum s = new Spectrum(1, 1, 1);
-        s.mult(lightContribution);
-        s.mult(lightVertex.alpha);
+        // Contribution from light vertex
+        Spectrum s = lightVertex.hitRecord.material.evaluateBRDF(lightVertex.hitRecord, lightToCameraNorm, lightVertex.hitRecord.w);
         s.mult(cosLight * cosEye / d2);
+        s.mult(lightVertex.alpha);
 
         lightImage.addSample(pixel.x, pixel.y, s);
     }
