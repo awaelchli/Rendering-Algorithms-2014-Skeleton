@@ -74,4 +74,11 @@ public class BlinnTexture implements Material {
     public boolean castsShadows() {
         return true;
     }
+
+    @Override
+    public float getProbability(HitRecord hitRecord, Vector3f direction)
+    {
+        // TODO: implement
+        throw new UnsupportedOperationException();
+    }
 }

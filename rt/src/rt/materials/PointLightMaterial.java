@@ -49,6 +49,12 @@ public class PointLightMaterial implements Material {
 		return false;
 	}
 
+	@Override
+	public float getProbability(HitRecord hitRecord, Vector3f direction)
+	{
+		return 0;
+	}
+
 	/** 
 	 * Shouldn't be called on a point light
 	 */

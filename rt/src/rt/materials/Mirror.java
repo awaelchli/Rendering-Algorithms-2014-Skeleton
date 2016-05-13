@@ -86,4 +86,10 @@ public class Mirror implements Material {
     {
         return true;
     }
+
+    @Override
+    public float getProbability(HitRecord hitRecord, Vector3f direction)
+    {
+        return 0;
+    }
 }

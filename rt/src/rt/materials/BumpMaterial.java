@@ -65,4 +65,11 @@ public class BumpMaterial implements Material {
     public boolean castsShadows() {
         return material.castsShadows();
     }
+
+    @Override
+    public float getProbability(HitRecord hitRecord, Vector3f direction)
+    {
+        // TODO: implement
+        throw new UnsupportedOperationException();
+    }
 }

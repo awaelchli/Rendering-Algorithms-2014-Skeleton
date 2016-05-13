@@ -7,7 +7,7 @@ import javax.vecmath.*;
  * are implemented using materials that return an emission term.
  */
 public interface Material {
-	
+
 	/**
 	 * Stores information about a shading sample.
 	 */
@@ -123,4 +123,9 @@ public interface Material {
 	 * Indicate whether the material casts shadows or not. 
 	 */
 	public boolean castsShadows();
+
+	/**
+	 * Calculate the probability that incoming light is reflected in the direction {@param direction}.
+     */
+	public float getProbability(HitRecord hitRecord, Vector3f direction);
 }

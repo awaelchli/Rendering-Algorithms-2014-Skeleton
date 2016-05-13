@@ -63,4 +63,10 @@ public class DiffuseTexture implements Material {
     public boolean castsShadows() {
         return true;
     }
+
+    @Override
+    public float getProbability(HitRecord hitRecord, Vector3f direction)
+    {
+        return (new Diffuse()).getProbability(hitRecord, direction);
+    }
 }

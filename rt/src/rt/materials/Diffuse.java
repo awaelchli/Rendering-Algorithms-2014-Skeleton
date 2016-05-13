@@ -78,7 +78,7 @@ public class Diffuse implements Material {
 		hitRecord.toTangentSpace(direction);
 
 		// Probability according to the cosine distribution
-		float p = (float) (hitRecord.normal.dot(direction) / Math.PI);
+		float p = getProbability(hitRecord, direction);
 
 		// Create the shading sample
 		ShadingSample shadingSample = new ShadingSample();
@@ -95,7 +95,13 @@ public class Diffuse implements Material {
 	{
 		return true;
 	}
-	
+
+	@Override
+	public float getProbability(HitRecord hitRecord, Vector3f direction)
+	{
+		return (float) (hitRecord.normal.dot(direction) / Math.PI);
+	}
+
 	public Spectrum evaluateEmission(HitRecord hitRecord, Vector3f wOut) {
 		return new Spectrum(0.f, 0.f, 0.f);
 	}
