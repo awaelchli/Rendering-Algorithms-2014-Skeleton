@@ -79,4 +79,10 @@ public class AreaLightMaterial implements Material
     {
         return false;
     }
+
+    @Override
+    public float getProbability(HitRecord hitRecord, Vector3f direction)
+    {
+        return 0;
+    }
 }

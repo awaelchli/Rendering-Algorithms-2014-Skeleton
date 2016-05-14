@@ -6,6 +6,7 @@ import rt.samplers.RandomSampler;
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+import java.util.HashMap;
 
 /**
  * Created by adrian on 04.05.16.
@@ -52,7 +53,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         {
             if(lightList.contains(eyeVertex.hitRecord.intersectable))
             {   // Do not trace eye path further if a light source is hit
-                if(eyeVertex.index == 1)
+                if(eyeVertex.index == 1 || previousMaterialWasSpecular)
                 {   // Exception: Add the material emission if it is the first bounce (direct light hit).
                     Spectrum emission = eyeVertex.hitRecord.material.evaluateEmission(eyeVertex.hitRecord, eyeVertex.hitRecord.w);
                     outgoing.add(emission);
@@ -60,9 +61,12 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
                 break;
             }
 
-            // Connect the current eye vertex with every vertex in the ligth path
+            // Connect the current eye vertex with every vertex in the light path
             for(PathVertex lightVertex : lightPath)
             {
+                if(eyeVertex.isRoot() && lightVertex.isRoot())
+                    continue;
+
                 if(eyeVertex.isRoot())
                 {
                     connectToCameraVertex(eyeVertex, lightVertex);
@@ -74,7 +78,9 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
                 eyeToLightConnection.mult(eyeVertex.alpha);
                 eyeToLightConnection.mult(lightVertex.alpha);
 
-                // TODO: MIS
+                int s = lightVertex.index + 1;
+                int t = eyeVertex.index + 1;
+                eyeToLightConnection.mult(computeMISWeight(s, t, lightPath, eyePath));
 
                 outgoing.add(eyeToLightConnection);
             }
@@ -108,7 +114,6 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         if(lightVertex.isRoot())
         {   // Light vertex is the first in the light path, need to evaluate emission
             lightContribution = lightVertex.hitRecord.material.evaluateEmission(lightVertex.hitRecord, lightToEyeNorm);
-            lightContribution.mult(1 / lightVertex.hitRecord.p);
         } else {
             lightContribution = lightVertex.hitRecord.material.evaluateBRDF(lightVertex.hitRecord, lightVertex.hitRecord.w, lightToEyeNorm);
         }
@@ -155,6 +160,23 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             current.shadingSample = surfaceHit.material.getShadingSample(surfaceHit, (new RandomSampler().makeSamples(1, 2)[0]));
             current.index = path.numberOfVertices();
             current.alpha = new Spectrum(alpha);
+
+            // Compute probabilities
+            PathVertex previous = path.get(current.index - 1);
+            float d2 = current.dist2(previous);
+
+            if(path.length() == 0)
+            {
+                current.pE = surfaceHit.normal.dot(surfaceHit.w) / d2;
+            } else {
+                current.pE = previous.shadingSample.p;
+                current.pE *= previous.hitRecord.normal.dot(previous.shadingSample.w);
+                current.pE /= d2;
+            }
+
+            previous.pL = current.hitRecord.material.getProbability(current.hitRecord, current.hitRecord.w);
+            previous.pL *= current.hitRecord.normal.dot(current.hitRecord.w);
+            previous.pL /= d2;
 
             path.add(current);
 
@@ -212,6 +234,17 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             current.index = path.numberOfVertices();
             current.alpha = new Spectrum(alpha);
 
+            // Compute probabilities
+            PathVertex previous = path.get(current.index - 1);
+            float d2 = previous.dist2(current);
+            current.pL = previous.shadingSample.p;
+            current.pL *= previous.hitRecord.normal.dot(previous.shadingSample.w);
+            current.pL /= d2;
+
+            previous.pE = current.hitRecord.material.getProbability(current.hitRecord, current.hitRecord.w);
+            previous.pE *= current.hitRecord.normal.dot(current.hitRecord.w);
+            previous.pE /= d2;
+
             path.add(current);
         }
 
@@ -266,6 +299,8 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         cameraVertex.hitRecord = new HitRecord();
         cameraVertex.hitRecord.position = new Point3f(cameraRay.origin);
         cameraVertex.alpha = new Spectrum(1, 1, 1);
+        cameraVertex.pE = 1;
+        cameraVertex.pL = 1;
         return cameraVertex;
     }
 
@@ -283,6 +318,8 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         vertex.index = 0;
         vertex.alpha = new Spectrum(1, 1, 1);
         vertex.alpha.mult(1 / lightHit.p);
+        vertex.pL = lightHit.p;
+        vertex.pE = 0;
 
         return vertex;
     }
@@ -297,7 +334,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         Vector3f cameraToLightNorm = StaticVecmath.normalize(cameraToLight);
 
         // If the camera vertex is in shadow of the light vertex, nothing has to be done
-        if (isInShadow(cameraVertex.hitRecord, cameraToLight))
+        if (isInShadow(lightVertex.hitRecord, lightToCamera))
             return;
 
         Point2f pixel = this.scene.getCamera().project(lightVertex.hitRecord.position);
@@ -307,17 +344,6 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         if (!validPixel)
             return;
 
-        // Contribution from light vertex
-        Spectrum lightContribution;
-        if (lightVertex.isRoot())
-        {   // Light vertex is the first in the light path, need to evaluate emission
-            lightContribution = lightVertex.hitRecord.material.evaluateEmission(lightVertex.hitRecord, lightToCameraNorm);
-            lightContribution.mult(1 / lightVertex.hitRecord.p);
-        } else
-        {
-            lightContribution = lightVertex.hitRecord.material.evaluateBRDF(lightVertex.hitRecord, lightToCameraNorm, lightVertex.hitRecord.w);
-        }
-
         // Cosine term for light vertex
         float cosLight = 1; // In case it is a point light
         if (lightVertex.hitRecord.normal != null)
@@ -325,11 +351,77 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             cosLight = Math.max(0, lightVertex.hitRecord.normal.dot(lightToCameraNorm));
         }
 
-        Spectrum s = new Spectrum(1, 1, 1);
-        s.mult(lightContribution);
+        // Cosine term for the eye vertex
+        float cosEye = scene.getCamera().getImagePlaneNormal().dot(cameraToLightNorm);
+
+        // Contribution from light vertex
+        Spectrum s = lightVertex.hitRecord.material.evaluateBRDF(lightVertex.hitRecord, lightToCameraNorm, lightVertex.hitRecord.w);
+        s.mult(cosLight * cosEye / d2);
         s.mult(lightVertex.alpha);
-        s.mult(cosLight / d2);
 
         lightImage.addSample(pixel.x, pixel.y, s);
+    }
+
+    protected float computeMISWeight(int s, int t, Path lightPath, Path eyePath)
+    {
+        PathVertex lastEyeVertex = eyePath.get(t - 1);
+        PathVertex lastLightVertex = lightPath.get(s - 1);
+
+        /*
+         *  Compute the values u_{s - i} for 0 < i <= s
+         */
+        HashMap<Integer, Float> uValues = new HashMap<>();
+
+        for(int i = 2; i <= s; i++)
+        {
+            PathVertex vertex = lightPath.get(s - i);
+            uValues.put(s - i, vertex.pE / vertex.pL);
+        }
+        // Need to re-compute pE for vertex s - 1 on the light path
+        Vector3f eyeToLightDir = lastEyeVertex.vector(lastLightVertex);
+        float d2 = eyeToLightDir.lengthSquared();
+        eyeToLightDir.normalize();
+
+        float pE_new = lastEyeVertex.hitRecord.material.getProbability(lastEyeVertex.hitRecord, eyeToLightDir);
+        pE_new *= lastEyeVertex.hitRecord.normal.dot(eyeToLightDir);
+        pE_new /= d2;
+        uValues.put(s - 1, pE_new / lastLightVertex.pL);
+
+        /*
+         *  Compute the values v_{t - i} for 0 < i <= t
+         */
+        HashMap<Integer, Float> vValues = new HashMap<>();
+
+        for(int i = 2; i <= t; i++)
+        {
+            PathVertex vertex = eyePath.get(t - i);
+            vValues.put(t - i, vertex.pL / vertex.pE);
+        }
+        // Need to re-compute pE for vertex s - 1 on the light path
+        Vector3f lightToEyeDir = StaticVecmath.negate(eyeToLightDir);
+        float pL_new = lastLightVertex.hitRecord.material.getProbability(lastLightVertex.hitRecord, lightToEyeDir);
+        pL_new *= lastLightVertex.hitRecord.normal.dot(lightToEyeDir);
+        pL_new /= d2;
+        vValues.put(t - 1, pL_new / lastEyeVertex.pE);
+
+        /*
+         *  Compute the sums for the uValues and the vValues
+         */
+        float uTempProduct = 1, vTempProduct = 1;
+        float uSum = 0, vSum = 0;
+
+        for(int i = 1; i <= s; i++)
+        {
+            uTempProduct *= uValues.get(s - i);
+            uSum += uTempProduct;
+        }
+
+        for(int i = 1; i <= t; i++)
+        {
+            vTempProduct *= vValues.get(t - i);
+            vSum += vTempProduct;
+        }
+
+        return 1 / (uSum + 1 + vSum);
     }
 }

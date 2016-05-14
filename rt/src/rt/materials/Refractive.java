@@ -121,6 +121,12 @@ public class Refractive implements Material {
         return true;
     }
 
+    @Override
+    public float getProbability(HitRecord hitRecord, Vector3f direction)
+    {
+        return 0;
+    }
+
     /**
      * Holds data for refraction of incident light with Schlick's approximation.
      */

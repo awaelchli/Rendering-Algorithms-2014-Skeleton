@@ -23,4 +23,11 @@ public class BlinnPlusMirror extends Mirror {
     public Spectrum evaluateBRDF(HitRecord hitRecord, Vector3f wOut, Vector3f wIn) {
         return blinn.evaluateBRDF(hitRecord, wOut, wIn);
     }
+
+    @Override
+    public float getProbability(HitRecord hitRecord, Vector3f direction)
+    {
+        // TODO: implement
+        throw new UnsupportedOperationException();
+    }
 }

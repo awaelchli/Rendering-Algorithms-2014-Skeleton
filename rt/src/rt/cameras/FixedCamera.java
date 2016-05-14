@@ -94,4 +94,10 @@ public class FixedCamera implements Camera {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public Vector3f getImagePlaneNormal()
+	{
+		return new Vector3f(0, 0, -1);
+	}
+
 }

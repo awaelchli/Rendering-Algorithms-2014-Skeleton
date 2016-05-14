@@ -161,6 +161,13 @@ public class Glossy implements Material
         return true;
     }
 
+    @Override
+    public float getProbability(HitRecord hitRecord, Vector3f direction)
+    {
+        // TODO: implement
+        throw new UnsupportedOperationException();
+    }
+
     private Vector3f computeHalfVector(Vector3f wOut, Vector3f wIn)
     {
         Vector3f halfVector = new Vector3f(wIn);

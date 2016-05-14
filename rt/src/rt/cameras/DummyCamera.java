@@ -36,4 +36,10 @@ public class DummyCamera implements Camera {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public Vector3f getImagePlaneNormal()
+	{
+		return null;
+	}
+
 }
