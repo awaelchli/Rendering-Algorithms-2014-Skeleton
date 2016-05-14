@@ -114,7 +114,6 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         if(lightVertex.isRoot())
         {   // Light vertex is the first in the light path, need to evaluate emission
             lightContribution = lightVertex.hitRecord.material.evaluateEmission(lightVertex.hitRecord, lightToEyeNorm);
-            lightContribution.mult(1 / lightVertex.hitRecord.p);
         } else {
             lightContribution = lightVertex.hitRecord.material.evaluateBRDF(lightVertex.hitRecord, lightVertex.hitRecord.w, lightToEyeNorm);
         }
@@ -335,7 +334,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         Vector3f cameraToLightNorm = StaticVecmath.normalize(cameraToLight);
 
         // If the camera vertex is in shadow of the light vertex, nothing has to be done
-        if (isInShadow(cameraVertex.hitRecord, cameraToLight))
+        if (isInShadow(lightVertex.hitRecord, lightToCamera))
             return;
 
         Point2f pixel = this.scene.getCamera().project(lightVertex.hitRecord.position);
