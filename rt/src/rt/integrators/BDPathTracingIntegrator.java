@@ -62,7 +62,7 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
             }
 
             if(eyeVertex.isRoot())
-            {
+            {   // Special case: Connections with the first eye vertex potentially project to different pixels on the image plane
                 connectToCameraVertex(eyeVertex, lightPath);
                 continue;
             }
