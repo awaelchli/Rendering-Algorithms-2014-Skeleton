@@ -325,9 +325,6 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
     {
         for(PathVertex lightVertex : lightPath)
         {
-            if (lightVertex.isRoot())
-                continue;
-
             Vector3f lightToCamera = StaticVecmath.sub(cameraVertex.hitRecord.position, lightVertex.hitRecord.position);
             Vector3f cameraToLight = StaticVecmath.negate(lightToCamera);
             float d2 = cameraToLight.lengthSquared();
