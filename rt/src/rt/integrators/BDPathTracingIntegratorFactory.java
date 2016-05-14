@@ -2,6 +2,7 @@ package rt.integrators;
 
 import rt.*;
 import rt.films.BoxFilterFilm;
+import rt.films.LightImage;
 import rt.tonemappers.ClampTonemapper;
 
 import javax.imageio.ImageIO;
@@ -21,7 +22,8 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
     float eyePathTerminationProbability = BDPathTracingIntegrator.DEFAULT_TERMINATION_PROBABILITY;
     float lightPathTerminationProbability = BDPathTracingIntegrator.DEFAULT_TERMINATION_PROBABILITY;
 
-    private BoxFilterFilm lightImage;
+    private LightImage lightImage;
+    private int spp;
 
     @Override
     public Integrator make(Scene scene)
@@ -70,12 +72,16 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
     @Override
     public void prepareScene(Scene scene)
     {
-        lightImage = new BoxFilterFilm(scene.getFilm().getWidth(), scene.getFilm().getHeight());
+        lightImage = new LightImage(scene.getFilm().getWidth(), scene.getFilm().getHeight());
+        spp = scene.getSPP();
     }
 
     public void writeLightImage(String s)
     {
+        lightImage.scale(1f / spp);
         BufferedImage img = new ClampTonemapper().process(lightImage);
+        lightImage.scale(spp);
+
         try
         {
             ImageIO.write(img, "png", new File(s + ".png"));
@@ -95,7 +101,7 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
         {
             for(int j = 0; j < lightImage.getHeight(); j++)
             {
-                film.addSample(i,j, img[i][j]);
+                film.addSample(i, j, img[i][j]);
             }
         }
     }
