@@ -61,18 +61,15 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
                 break;
             }
 
+            if(eyeVertex.isRoot())
+            {
+                connectToCameraVertex(eyeVertex, lightPath);
+                continue;
+            }
+
             // Connect the current eye vertex with every vertex in the light path
             for(PathVertex lightVertex : lightPath)
             {
-                if(eyeVertex.isRoot() && lightVertex.isRoot())
-                    continue;
-
-                if(eyeVertex.isRoot())
-                {
-                    connectToCameraVertex(eyeVertex, lightVertex);
-                    continue;
-                }
-
                 Spectrum eyeToLightConnection = evaluateEyeToLightConnection(eyeVertex, lightVertex);
 
                 eyeToLightConnection.mult(eyeVertex.alpha);
@@ -324,42 +321,48 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
         return vertex;
     }
 
-    private void connectToCameraVertex(PathVertex cameraVertex, PathVertex lightVertex)
+    private void connectToCameraVertex(PathVertex cameraVertex, Path lightPath)
     {
-        Vector3f lightToCamera = StaticVecmath.sub(cameraVertex.hitRecord.position, lightVertex.hitRecord.position);
-        Vector3f cameraToLight = StaticVecmath.negate(lightToCamera);
-        float d2 = cameraToLight.lengthSquared();
+        for(PathVertex lightVertex : lightPath)
+        {
+            if (lightVertex.isRoot())
+                continue;
 
-        Vector3f lightToCameraNorm = StaticVecmath.normalize(lightToCamera);
-        Vector3f cameraToLightNorm = StaticVecmath.normalize(cameraToLight);
+            Vector3f lightToCamera = StaticVecmath.sub(cameraVertex.hitRecord.position, lightVertex.hitRecord.position);
+            Vector3f cameraToLight = StaticVecmath.negate(lightToCamera);
+            float d2 = cameraToLight.lengthSquared();
 
-        // If the camera vertex is in shadow of the light vertex, nothing has to be done
-        if (isInShadow(lightVertex.hitRecord, lightToCamera))
-            return;
+            Vector3f lightToCameraNorm = StaticVecmath.normalize(lightToCamera);
+            Vector3f cameraToLightNorm = StaticVecmath.normalize(cameraToLight);
 
-        Point2f pixel = this.scene.getCamera().project(lightVertex.hitRecord.position);
-        boolean validPixel = pixel.x >= 0 && pixel.y >= 0 && pixel.x <= scene.getFilm().getWidth() && pixel.y <= scene.getFilm().getHeight();
+            // If the camera vertex is in shadow of the light vertex, nothing has to be done
+            if (isInShadow(lightVertex.hitRecord, lightToCamera))
+                continue;
 
-        // Check if the connection contributes to the camera image
-        if (!validPixel)
-            return;
+            Point2f pixel = this.scene.getCamera().project(lightVertex.hitRecord.position);
+            boolean validPixel = pixel.x >= 0 && pixel.y >= 0 && pixel.x <= scene.getFilm().getWidth() && pixel.y <= scene.getFilm().getHeight();
 
-        // Cosine term for light vertex
-        float cosLight = 1; // In case it is a point light
-        if (lightVertex.hitRecord.normal != null)
-        {   // In case the path connects to the back of the surface, the cos is set to zero
-            cosLight = Math.max(0, lightVertex.hitRecord.normal.dot(lightToCameraNorm));
+            // Check if the connection contributes to the camera image
+            if (!validPixel)
+                continue;
+
+            // Cosine term for light vertex
+            float cosLight = 1; // In case it is a point light
+            if (lightVertex.hitRecord.normal != null)
+            {   // In case the path connects to the back of the surface, the cos is set to zero
+                cosLight = Math.max(0, lightVertex.hitRecord.normal.dot(lightToCameraNorm));
+            }
+
+            // Cosine term for the eye vertex
+            float cosEye = scene.getCamera().getImagePlaneNormal().dot(cameraToLightNorm);
+
+            // Contribution from light vertex
+            Spectrum s = lightVertex.hitRecord.material.evaluateBRDF(lightVertex.hitRecord, lightToCameraNorm, lightVertex.hitRecord.w);
+            s.mult(cosLight * cosEye / d2);
+            s.mult(lightVertex.alpha);
+
+            lightImage.addSample(pixel.x, pixel.y, s);
         }
-
-        // Cosine term for the eye vertex
-        float cosEye = scene.getCamera().getImagePlaneNormal().dot(cameraToLightNorm);
-
-        // Contribution from light vertex
-        Spectrum s = lightVertex.hitRecord.material.evaluateBRDF(lightVertex.hitRecord, lightToCameraNorm, lightVertex.hitRecord.w);
-        s.mult(cosLight * cosEye / d2);
-        s.mult(lightVertex.alpha);
-
-        lightImage.addSample(pixel.x, pixel.y, s);
     }
 
     protected float computeMISWeight(int s, int t, Path lightPath, Path eyePath)
