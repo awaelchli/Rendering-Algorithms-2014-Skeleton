@@ -95,6 +95,8 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
         assert lightImage.getHeight() == film.getHeight();
         assert lightImage.getWidth() == film.getWidth();
 
+        lightImage.scale(1f / spp);
+
         Spectrum[][] img = lightImage.getImage();
 
         for(int i = 0; i < lightImage.getWidth(); i++)
