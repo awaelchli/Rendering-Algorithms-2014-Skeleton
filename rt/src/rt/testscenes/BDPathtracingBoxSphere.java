@@ -27,7 +27,7 @@ public class BDPathtracingBoxSphere extends Scene {
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 128;
+		SPP = 56;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
@@ -103,6 +103,23 @@ public class BDPathtracingBoxSphere extends Scene {
 		// List of lights
 		lightList = new LightList();
 		lightList.add(rectangleLight);
+	}
+
+	@Override
+	public void finish()
+	{
+		if(integratorFactory instanceof BDPathTracingIntegratorFactory)
+		{
+			((BDPathTracingIntegratorFactory) integratorFactory).writeLightImage("output/testscenes/assignment5/BDPathTracing/lightimageBoxSphere");
+			((BDPathTracingIntegratorFactory) integratorFactory).addLightImage(film);
+		}
+	}
+
+	@Override
+	public void prepare()
+	{
+		super.prepare();
+		integratorFactory.prepareScene(this);
 	}
 	
 }
