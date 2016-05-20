@@ -333,11 +333,6 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
                 continue;
 
             Point2f pixel = this.scene.getCamera().project(lightVertex.hitRecord.position);
-            boolean validPixel = pixel.x >= 0 && pixel.y >= 0 && pixel.x <= scene.getFilm().getWidth() && pixel.y <= scene.getFilm().getHeight();
-
-            // Check if the connection contributes to the camera image
-            if (!validPixel)
-                continue;
 
             // Cosine term for light vertex
             float cosLight = 1; // In case it is a point light

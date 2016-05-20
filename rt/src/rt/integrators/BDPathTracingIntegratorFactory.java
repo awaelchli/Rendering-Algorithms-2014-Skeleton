@@ -78,9 +78,9 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
 
     public void writeLightImage(String s)
     {
-        lightImage.scale(1f / spp);
+        //lightImage.scale(1f / spp);
         BufferedImage img = new ClampTonemapper().process(lightImage);
-        lightImage.scale(spp);
+        //lightImage.scale(spp);
 
         try
         {
@@ -92,19 +92,7 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
 
     public void addLightImage(Film film)
     {
-        assert lightImage.getHeight() == film.getHeight();
-        assert lightImage.getWidth() == film.getWidth();
-
         //lightImage.scale(1f / spp);
-
-        Spectrum[][] img = lightImage.getImage();
-
-        for(int i = 0; i < lightImage.getWidth(); i++)
-        {
-            for(int j = 0; j < lightImage.getHeight(); j++)
-            {
-                film.addSample(i, j, img[i][j]);
-            }
-        }
+        film.add(lightImage);
     }
 }
