@@ -10,6 +10,8 @@ public class LightImage implements Film
 {
     private int width, height;
     private Spectrum[][] image;
+    private Spectrum[][] unnormalized;
+    private int numSamples;
 
     public LightImage(int width, int height)
     {
@@ -20,18 +22,21 @@ public class LightImage implements Film
 
     private void init()
     {
+        unnormalized = new Spectrum[width][height];
         image = new Spectrum[width][height];
         for(int i = 0; i < width; i++)
         {
             for(int j = 0; j < height; j++)
             {
+                unnormalized[i][j] = new Spectrum();
                 image[i][j] = new Spectrum();
             }
         }
+        numSamples = 0;
     }
 
     /**
-     * Scale all values of this film by {@param scale}.
+     *  Scale all values of this film by {@param scale}.
      */
     public void scale(float scale)
     {
@@ -49,9 +54,14 @@ public class LightImage implements Film
     {
         int _x = (int) x;
         int _y = (int) y;
+        numSamples++;
         if(_x >= 0 && _x < width && _y >= 0 && _y < height)
         {
-            image[_x][_y].add(s);
+            unnormalized[_x][_y].add(s);
+
+            image[_x][_y] = new Spectrum(unnormalized[_x][_y]);
+            image[_x][_y].mult(width * height);
+            image[_x][_y].mult(1f / numSamples);
         }
     }
 
@@ -71,5 +81,21 @@ public class LightImage implements Film
     public int getHeight()
     {
         return this.height;
+    }
+
+    @Override
+    public void add(Film film)
+    {
+        assert film.getHeight() == this.getHeight() && film.getWidth() == this.getWidth();
+
+        Spectrum[][] im = film.getImage();
+
+        for(int i = 0; i < getWidth(); i++)
+        {
+            for(int j = 0; j < getHeight(); j++)
+            {
+                image[i][j].add(im[i][j]);
+            }
+        }
     }
 }

@@ -41,6 +41,9 @@ public class BoxFilterFilm implements Film {
 			int idx_y = (int)y;
 			unnormalized[idx_x][idx_y].add(s);
 			nSamples[idx_x][idx_y]++;
+
+			image[idx_x][idx_y] = new Spectrum(unnormalized[idx_x][idx_y]);
+			image[idx_x][idx_y].mult(1f / nSamples[idx_x][idx_y]);
 		}
 	}
 	
@@ -53,19 +56,25 @@ public class BoxFilterFilm implements Film {
 	{
 		return height;
 	}
-	
+
 	public Spectrum[][] getImage()
 	{
-		for(int i=0; i<width; i++)
+		return image;
+	}
+
+	@Override
+	public void add(Film film)
+	{
+		assert film.getHeight() == this.getHeight() && film.getWidth() == this.getWidth();
+
+		Spectrum[][] im = film.getImage();
+
+		for(int i = 0; i < getWidth(); i++)
 		{
-			for(int j=0; j<height; j++)
+			for(int j = 0; j < getHeight(); j++)
 			{
-				if(nSamples[i][j] == 0) continue;
-				image[i][j].r = unnormalized[i][j].r/nSamples[i][j];
-				image[i][j].g = unnormalized[i][j].g/nSamples[i][j];
-				image[i][j].b = unnormalized[i][j].b/nSamples[i][j];
+				image[i][j].add(im[i][j]);
 			}
 		}
-		return image;
 	}
 }
