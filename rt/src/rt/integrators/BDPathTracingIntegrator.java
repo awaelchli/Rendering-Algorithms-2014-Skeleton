@@ -46,14 +46,12 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
 
         Spectrum outgoing = new Spectrum();
 
-        boolean previousMaterialWasSpecular = false;
-
         // Traverse eye path and connect to the vertices of the light path
         for(PathVertex eyeVertex : eyePath)
         {
             if(lightList.contains(eyeVertex.hitRecord.intersectable))
             {   // Do not trace eye path further if a light source is hit
-                if(eyeVertex.index == 1 || previousMaterialWasSpecular)
+                if(eyeVertex.index == 1)
                 {   // Exception: Add the material emission if it is the first bounce (direct light hit).
                     Spectrum emission = eyeVertex.hitRecord.material.evaluateEmission(eyeVertex.hitRecord, eyeVertex.hitRecord.w);
                     outgoing.add(emission);
@@ -81,8 +79,6 @@ public class BDPathTracingIntegrator extends AbstractIntegrator
 
                 outgoing.add(eyeToLightConnection);
             }
-
-            previousMaterialWasSpecular = !eyeVertex.isRoot() && eyeVertex.shadingSample.isSpecular;
         }
 
         return outgoing;
