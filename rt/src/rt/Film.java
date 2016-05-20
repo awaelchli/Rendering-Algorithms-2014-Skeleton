@@ -38,4 +38,9 @@ public interface Film {
 	 */
 	public int getHeight();
 
+	/**
+	 * Add another {@param film} of the same size to this film
+     */
+	public void add(Film film);
+
 }
