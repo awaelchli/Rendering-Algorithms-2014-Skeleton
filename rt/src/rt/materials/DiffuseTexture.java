@@ -3,6 +3,7 @@ package rt.materials;
 import rt.HitRecord;
 import rt.Material;
 import rt.Spectrum;
+import rt.Medium;
 import rt.textures.Texture;
 
 import javax.vecmath.Vector3f;
@@ -68,5 +69,11 @@ public class DiffuseTexture implements Material {
     public float getProbability(HitRecord hitRecord, Vector3f direction)
     {
         return (new Diffuse()).getProbability(hitRecord, direction);
+    }
+
+    @Override
+    public Medium getMedium()
+    {
+        return null;
     }
 }

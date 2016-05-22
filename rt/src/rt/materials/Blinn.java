@@ -1,9 +1,7 @@
 package rt.materials;
 
-import rt.HitRecord;
-import rt.Material;
-import rt.Spectrum;
-import rt.StaticVecmath;
+import rt.*;
+import rt.Medium;
 
 import javax.vecmath.Vector3f;
 
@@ -100,5 +98,11 @@ public class Blinn implements Material {
     {
         // TODO: implement
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Medium getMedium()
+    {
+        return null;
     }
 }

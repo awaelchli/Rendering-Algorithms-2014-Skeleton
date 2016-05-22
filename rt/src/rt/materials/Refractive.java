@@ -1,10 +1,9 @@
 package rt.materials;
 
 import rt.*;
-import sun.security.provider.SHA;
+import rt.Medium;
 
 import javax.vecmath.Vector3f;
-import java.util.Random;
 
 /**
  * Created by Adrian on 11.03.2016.
@@ -196,5 +195,11 @@ public class Refractive implements Material {
         {
             return cosI > 0;
         }
+    }
+
+    @Override
+    public Medium getMedium()
+    {
+        return null;
     }
 }

@@ -3,6 +3,7 @@ package rt.materials;
 import rt.HitRecord;
 import rt.Material;
 import rt.Spectrum;
+import rt.Medium;
 import rt.textures.NormalDisplacement;
 
 import javax.vecmath.Vector3f;
@@ -71,5 +72,11 @@ public class BumpMaterial implements Material {
     {
         // TODO: implement
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Medium getMedium()
+    {
+        return null;
     }
 }

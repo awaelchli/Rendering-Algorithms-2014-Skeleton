@@ -1,9 +1,7 @@
 package rt.materials;
 
-import rt.HitRecord;
-import rt.Material;
-import rt.Spectrum;
-import rt.StaticVecmath;
+import rt.*;
+import rt.Medium;
 
 import javax.vecmath.Vector3f;
 
@@ -194,5 +192,11 @@ public class Glossy implements Material
         float tmp2 = 2 * eta * cosi;
         float tmp3 = cosi * cosi;
         return (tmp1 - tmp2 + tmp3) / (tmp1 + tmp2 + tmp3);
+    }
+
+    @Override
+    public Medium getMedium()
+    {
+        return null;
     }
 }

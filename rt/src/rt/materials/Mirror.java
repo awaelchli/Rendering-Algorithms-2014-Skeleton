@@ -4,6 +4,7 @@ import rt.HitRecord;
 import rt.Material;
 import rt.Ray;
 import rt.Spectrum;
+import rt.Medium;
 
 import javax.vecmath.Vector3f;
 
@@ -91,5 +92,11 @@ public class Mirror implements Material {
     public float getProbability(HitRecord hitRecord, Vector3f direction)
     {
         return 0;
+    }
+
+    @Override
+    public Medium getMedium()
+    {
+        return null;
     }
 }

@@ -3,6 +3,7 @@ package rt.materials;
 import rt.HitRecord;
 import rt.Material;
 import rt.Spectrum;
+import rt.Medium;
 import rt.textures.Texture;
 import javax.vecmath.Vector3f;
 
@@ -80,5 +81,11 @@ public class BlinnTexture implements Material {
     {
         // TODO: implement
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Medium getMedium()
+    {
+        return null;
     }
 }

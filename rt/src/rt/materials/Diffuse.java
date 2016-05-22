@@ -3,6 +3,7 @@ package rt.materials;
 import javax.vecmath.Vector3f;
 
 import rt.*;
+import rt.Medium;
 
 /**
  * A basic diffuse material.
@@ -109,5 +110,10 @@ public class Diffuse implements Material {
 	public ShadingSample getEmissionSample(HitRecord hitRecord, float[] sample) {
 		return new ShadingSample();
 	}
-	
+
+	@Override
+	public Medium getMedium()
+	{
+		return null;
+	}
 }

@@ -128,4 +128,6 @@ public interface Material {
 	 * Calculate the probability that incoming light is reflected in the direction {@param direction}.
      */
 	public float getProbability(HitRecord hitRecord, Vector3f direction);
+
+	public Medium getMedium();
 }

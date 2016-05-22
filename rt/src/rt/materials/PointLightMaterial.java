@@ -7,6 +7,7 @@ import javax.vecmath.Vector3f;
 import rt.HitRecord;
 import rt.Material;
 import rt.Spectrum;
+import rt.Medium;
 
 /**
  * This material should be used with {@link rt.lightsources.PointLight}.
@@ -91,5 +92,10 @@ public class PointLightMaterial implements Material {
 		return null;
 	}
 
+	@Override
+	public Medium getMedium()
+	{
+		return null;
+	}
 
 }
