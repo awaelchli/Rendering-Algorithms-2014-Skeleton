@@ -25,12 +25,12 @@ public class Main {
 	 * Only for debugging a single pixel
 	 */
 	public static boolean DEBUG_ON = false;
-	public static float[] DEBUG_PIXEL = {100, 55};
+	public static float[] DEBUG_PIXEL = {84, 100};
 
 	/** 
 	 * The scene to be rendered.
 	 */
-	public static Scene scene = new BDPathtracingBoxSphereGlass();
+	public static Scene scene = new ParticipatingMedia();
 	/**
 	 * A render task represents a rectangular image region that is rendered
 	 * by a thread in one chunk.

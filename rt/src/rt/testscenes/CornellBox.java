@@ -17,6 +17,8 @@ import javax.vecmath.Vector3f;
 public class CornellBox extends Scene
 {
 
+    Mesh tall_block, short_block;
+
     public CornellBox()
     {
         outputFilename = new String("output/testscenes/assignment5/PathTracing/CornellBox");
@@ -114,7 +116,7 @@ public class CornellBox extends Scene
                                         8, 9, 10, 8, 10, 11, // front
                                         12, 13, 14, 12, 14, 15, // right
                                         16, 18, 17, 16, 19, 18}; // back
-        Mesh short_block = new Mesh(short_block_vertices, short_block_normals, null, short_block_indices);
+        short_block = new Mesh(short_block_vertices, short_block_normals, null, short_block_indices);
         short_block.material = white;
         objects.add(short_block);
 
@@ -130,7 +132,7 @@ public class CornellBox extends Scene
                                         8, 9, 10, 8, 10, 11, // back
                                         12, 14, 13, 12, 15, 14, // right
                                         16, 17, 18, 16, 18, 19}; // front
-        Mesh tall_block = new Mesh(tall_block_vertices, tall_block_normals, null, tall_block_indices);
+        tall_block = new Mesh(tall_block_vertices, tall_block_normals, null, tall_block_indices);
         tall_block.material = white;
         objects.add(tall_block);
 
