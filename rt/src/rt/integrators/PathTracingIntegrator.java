@@ -55,18 +55,21 @@ public class PathTracingIntegrator extends AbstractIntegrator
                 color.add(lightSourceContribution);
             }
 
-//            // Go to next path segment
-//            Ray nextRay = new Ray(surfaceHit.position, shadingSample.w);
-//            epsilonTranslation(nextRay, nextRay.direction);
-//            HitRecord nextSurfaceHit = root.intersect(nextRay);
+//            Medium medium = vertex.hitRecord.material.getMedium();
+//            float cos = vertex.hitRecord.normal.dot(vertex.shadingSample.w);
+//            if(cos >= 0 || medium == null || vertex.index == path.length()) continue;
 //
-//            // Evaluate the transmission
-//            if(nextSurfaceHit != null && cos < 0)
+//            float d = vertex.vector(path.get(vertex.index + 1)).length();
+//            float ds = d / 10;
+//            for(float s_i = 0; s_i <= d; s_i += ds)
 //            {
-//                Spectrum transmission = surfaceHit.material.evaluateTransmission(nextRay, 0, nextSurfaceHit.t);
-//                //System.out.println(transmission);
-//                alpha.mult(transmission);
+//                Spectrum c = new Spectrum(sigma_t);
+//                c.mult(ds);
+//                c.mult(-1);
+//                c.add(1);
+//                transmission.mult(c);
 //            }
+
         }
         return color;
     }
@@ -80,16 +83,12 @@ public class PathTracingIntegrator extends AbstractIntegrator
         path.add(cameraVertex);
 
         Spectrum alpha = new Spectrum(cameraVertex.alpha);
-
         Ray nextRay = r;
-        while(true)
+        HitRecord surfaceHit = root.intersect(nextRay);
+
+        int k = 0;
+        while(surfaceHit != null && !terminatePath(k))
         {
-            if(terminatePath(path.length())) break;
-
-            HitRecord surfaceHit = root.intersect(nextRay);
-
-            if(surfaceHit == null) break;
-
             // Make the current vertex
             PathVertex current = new PathVertex();
             current.hitRecord = surfaceHit;
@@ -102,16 +101,47 @@ public class PathTracingIntegrator extends AbstractIntegrator
 
             // Update alpha
             float q = getTerminationProbability(current.index);
+            float cos = current.hitRecord.normal.dot(current.shadingSample.w);
             alpha.mult(current.shadingSample.brdf);
-            alpha.mult(Math.abs(current.hitRecord.normal.dot(current.shadingSample.w)));
+            alpha.mult(Math.abs(cos));
             alpha.mult(1 / (current.shadingSample.p * (1 - q)));
 
             // Prepare the intersection for the next vertex
             nextRay = new Ray(surfaceHit.position, current.shadingSample.w);
             epsilonTranslation(nextRay, nextRay.direction);
+
+            surfaceHit = root.intersect(nextRay);
+
+            k++;
+
+            // Update alpha in case the medium has transmission
+            Medium medium = current.hitRecord.material.getMedium();
+            if(cos >= 0 || medium == null || surfaceHit == null) continue;
+
+            float d = surfaceHit.t;
+            float ds = d / 10;
+            for(int i = 1; i < 10; i++)
+            {
+                alpha.mult(medium.evaluateTransmission(ds));
+
+                HitRecord mediumHit = new HitRecord();
+                mediumHit.position = nextRay.pointAt(i * ds);
+                mediumHit.normal = new Vector3f();
+                mediumHit.w = surfaceHit.w;
+                mediumHit.material = surfaceHit.material;
+                mediumHit.intersectable = surfaceHit.intersectable;
+
+                PathVertex mediumVertex = new PathVertex();
+                mediumVertex.hitRecord = mediumHit;
+                mediumVertex.shadingSample = current.shadingSample;
+                mediumVertex.index = path.numberOfVertices();
+                mediumVertex.alpha = new Spectrum(alpha);
+                path.add(mediumVertex);
+
+            }
+            alpha.mult(medium.evaluateTransmission(ds));
         }
 
-        assert path.numberOfVertices() <= maxDepth;
         return path;
     }
 
