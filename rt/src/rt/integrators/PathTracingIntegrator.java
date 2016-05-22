@@ -3,6 +3,7 @@ package rt.integrators;
 import rt.*;
 import rt.samplers.RandomSampler;
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 /**
@@ -33,48 +34,95 @@ public class PathTracingIntegrator extends AbstractIntegrator
     public Spectrum integrate(Ray r)
     {
         Spectrum color = new Spectrum();
-        Spectrum alpha = new Spectrum(1, 1, 1);
-        int k = 0;
-        boolean previousMaterialWasSpecular = false;
+        Path path = trace(r);
 
-        HitRecord surfaceHit = root.intersect(r);
 
-        while(true)
+        for(PathVertex vertex : path)
         {
-            if(surfaceHit == null) break;
+            if(vertex.index == 0) continue;
 
-            if(lightList.contains(surfaceHit.intersectable))
+            if(lightList.contains(vertex.hitRecord.intersectable))
             {   // The ray 'accidentally' hit the light source, do not further trace the ray
-                if(k == 0 || previousMaterialWasSpecular) // Eye ray directly hit the light source
-                    color.add(surfaceHit.material.evaluateEmission(surfaceHit, surfaceHit.w));
+                if(vertex.index == 1) // Eye ray directly hit the light source
+                    color.add(vertex.hitRecord.material.evaluateEmission(vertex.hitRecord, vertex.hitRecord.w));
                 break;
             }
 
-            Material.ShadingSample shadingSample = surfaceHit.material.getShadingSample(surfaceHit, (new RandomSampler().makeSamples(1, 2)[0]));
-
-            if(!shadingSample.isSpecular)
+            if(!vertex.shadingSample.isSpecular)
             {   // Do not add light source contribution on specular surfaces (mirrors, refractive materials)
-                Spectrum lightSourceContribution = lightSourceContribution(surfaceHit);
-                lightSourceContribution.mult(alpha);
+                Spectrum lightSourceContribution = lightSourceContribution(vertex.hitRecord);
+                lightSourceContribution.mult(vertex.alpha);
                 color.add(lightSourceContribution);
             }
 
-            if(terminatePath(k)) break;
+//            // Go to next path segment
+//            Ray nextRay = new Ray(surfaceHit.position, shadingSample.w);
+//            epsilonTranslation(nextRay, nextRay.direction);
+//            HitRecord nextSurfaceHit = root.intersect(nextRay);
+//
+//            // Evaluate the transmission
+//            if(nextSurfaceHit != null && cos < 0)
+//            {
+//                Spectrum transmission = surfaceHit.material.evaluateTransmission(nextRay, 0, nextSurfaceHit.t);
+//                //System.out.println(transmission);
+//                alpha.mult(transmission);
+//            }
+        }
+        return color;
+    }
 
-            float q = getTerminationProbability(k);
-            alpha.mult(shadingSample.brdf);
-            alpha.mult(Math.abs(surfaceHit.normal.dot(shadingSample.w)));
-            alpha.mult(1 / (shadingSample.p * (1 - q)));
+    public Path trace(Ray r)
+    {
+        Path path = new Path();
 
-            // Go to next path segment
-            Ray nextRay = new Ray(surfaceHit.position, shadingSample.w);
+        // The first vertex in the eye path is the camera
+        PathVertex cameraVertex = makeCameraVertex(r);
+        path.add(cameraVertex);
+
+        Spectrum alpha = new Spectrum(cameraVertex.alpha);
+
+        Ray nextRay = r;
+        while(true)
+        {
+            if(terminatePath(path.length())) break;
+
+            HitRecord surfaceHit = root.intersect(nextRay);
+
+            if(surfaceHit == null) break;
+
+            // Make the current vertex
+            PathVertex current = new PathVertex();
+            current.hitRecord = surfaceHit;
+            current.shadingSample = surfaceHit.material.getShadingSample(surfaceHit, (new RandomSampler().makeSamples(1, 2)[0]));
+            current.index = path.numberOfVertices();
+            current.alpha = new Spectrum(alpha);
+            path.add(current);
+
+            if(lightList.contains(surfaceHit.intersectable)) break;
+
+            // Update alpha
+            float q = getTerminationProbability(current.index);
+            alpha.mult(current.shadingSample.brdf);
+            alpha.mult(Math.abs(current.hitRecord.normal.dot(current.shadingSample.w)));
+            alpha.mult(1 / (current.shadingSample.p * (1 - q)));
+
+            // Prepare the intersection for the next vertex
+            nextRay = new Ray(surfaceHit.position, current.shadingSample.w);
             epsilonTranslation(nextRay, nextRay.direction);
-            surfaceHit = root.intersect(nextRay);
-            k++;
-            previousMaterialWasSpecular = shadingSample.isSpecular;
         }
 
-        return color;
+        assert path.numberOfVertices() <= maxDepth;
+        return path;
+    }
+
+    private PathVertex makeCameraVertex(Ray cameraRay)
+    {
+        PathVertex cameraVertex = new PathVertex();
+        cameraVertex.index = 0;
+        cameraVertex.hitRecord = new HitRecord();
+        cameraVertex.hitRecord.position = new Point3f(cameraRay.origin);
+        cameraVertex.alpha = new Spectrum(1, 1, 1);
+        return cameraVertex;
     }
 
     protected Spectrum lightSourceContribution(HitRecord surfaceHit)
@@ -97,14 +145,6 @@ public class PathTracingIntegrator extends AbstractIntegrator
         float cos = 1;
         if(!isPointLight) cos = Math.max(0, lightHit.w.dot(lightHit.normal));
         float conversionFactor = cos / d2;
-
-        // Russian Roulette on shadow ray
-        Spectrum test = lightHit.material.evaluateEmission(lightHit, lightHit.w);
-        test.mult(conversionFactor);
-        float length = (float) Math.sqrt(test.r * test.r + test.g * test.g + test.b * test.b);
-        // Do not trace the shadow ray if contribution is too low
-        if(length < shadowRayContributionThreshold)
-            return new Spectrum(0, 0, 0);
 
         Spectrum contribution = new Spectrum(1, 1, 1);
         contribution.mult(shade(surfaceHit, lightHit));
