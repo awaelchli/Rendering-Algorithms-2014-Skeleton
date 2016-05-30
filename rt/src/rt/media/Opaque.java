@@ -20,4 +20,10 @@ public class Opaque implements Medium
     {
         return new Spectrum();
     }
+
+    @Override
+    public PhaseFunction getPhaseFunction()
+    {
+        return null;
+    }
 }

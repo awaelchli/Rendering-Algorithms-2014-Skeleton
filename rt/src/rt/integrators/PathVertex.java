@@ -18,6 +18,8 @@ public class PathVertex
     Spectrum alpha;
     float pE, pL;
 
+    boolean isInsideMedium = false;
+
     public boolean isRoot()
     {
         return index == 0;

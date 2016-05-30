@@ -37,11 +37,18 @@ public class Homogeneous implements Material, Medium
     @Override
     public Spectrum evaluateTransmission(float ds)
     {
-        Spectrum transmission = new Spectrum(sigma_t);
-        transmission.mult(ds);
-        transmission.mult(-1);
-        transmission.add(1);
+        Spectrum transmission = new Spectrum();
+        transmission.r = (float) Math.exp(-sigma_t.r * ds);
+        transmission.g = (float) Math.exp(-sigma_t.g * ds);
+        transmission.b = (float) Math.exp(-sigma_t.b * ds);
+
         return  transmission;
+    }
+
+    @Override
+    public PhaseFunction getPhaseFunction()
+    {
+        return new HenyeyGreensteinPhaseFunction(new Spectrum(0, 0, 0));
     }
 
     @Override
@@ -86,6 +93,7 @@ public class Homogeneous implements Material, Medium
         ShadingSample s = new ShadingSample();
         s.w = StaticVecmath.negate(hitRecord.w);
         s.brdf = new Spectrum(1, 1, 1);
+        s.brdf.mult(1f / Math.abs(hitRecord.normal.dot(s.w)));
         s.emission = evaluateEmission(hitRecord, hitRecord.w);
         s.isSpecular = false;
         s.p = 1;
@@ -107,7 +115,7 @@ public class Homogeneous implements Material, Medium
     @Override
     public float getProbability(HitRecord hitRecord, Vector3f direction)
     {
-        return hitRecord.w.equals(StaticVecmath.negate(direction)) ? 1 : 0;
+        return 0;
     }
 
     @Override

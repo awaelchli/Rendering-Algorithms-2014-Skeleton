@@ -50,26 +50,16 @@ public class PathTracingIntegrator extends AbstractIntegrator
 
             if(!vertex.shadingSample.isSpecular)
             {   // Do not add light source contribution on specular surfaces (mirrors, refractive materials)
-                Spectrum lightSourceContribution = lightSourceContribution(vertex.hitRecord);
+                Spectrum lightSourceContribution = new Spectrum();
+                if(vertex.isInsideMedium)
+                {
+                    lightSourceContribution = connectMediumWithLightSource(vertex);
+                } else {
+                    lightSourceContribution = lightSourceContribution(vertex.hitRecord);
+                }
                 lightSourceContribution.mult(vertex.alpha);
                 color.add(lightSourceContribution);
             }
-
-//            Medium medium = vertex.hitRecord.material.getMedium();
-//            float cos = vertex.hitRecord.normal.dot(vertex.shadingSample.w);
-//            if(cos >= 0 || medium == null || vertex.index == path.length()) continue;
-//
-//            float d = vertex.vector(path.get(vertex.index + 1)).length();
-//            float ds = d / 10;
-//            for(float s_i = 0; s_i <= d; s_i += ds)
-//            {
-//                Spectrum c = new Spectrum(sigma_t);
-//                c.mult(ds);
-//                c.mult(-1);
-//                c.add(1);
-//                transmission.mult(c);
-//            }
-
         }
         return color;
     }
@@ -119,8 +109,9 @@ public class PathTracingIntegrator extends AbstractIntegrator
             if(cos >= 0 || medium == null || surfaceHit == null) continue;
 
             float d = surfaceHit.t;
-            float ds = d / 10;
-            for(int i = 1; i < 10; i++)
+            int n = 4;
+            float ds = d / n;
+            for(int i = 1; i < n; i++)
             {
                 alpha.mult(medium.evaluateTransmission(ds));
 
@@ -136,6 +127,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
                 mediumVertex.shadingSample = current.shadingSample;
                 mediumVertex.index = path.numberOfVertices();
                 mediumVertex.alpha = new Spectrum(alpha);
+                mediumVertex.isInsideMedium = true;
                 path.add(mediumVertex);
 
             }
@@ -182,6 +174,46 @@ public class PathTracingIntegrator extends AbstractIntegrator
         contribution.mult(conversionFactor);
 
         return contribution;
+    }
+
+    protected Spectrum connectMediumWithLightSource(PathVertex vertex)
+    {
+        LightGeometry light = getRandomLight();
+        RandomSampler sampler = new RandomSampler();
+        HitRecord lightHit = light.sample(sampler.makeSamples(1, 2)[0]);
+        lightHit.p /= lightList.size();
+        lightHit.w = StaticVecmath.sub(vertex.hitRecord.position, lightHit.position);
+
+        Vector3f lightDir = StaticVecmath.negate(lightHit.w);
+        lightHit.w.normalize();
+
+        // Shoot ray towards boundary of medium
+        Ray shadowRay = new Ray(vertex.hitRecord.position, lightDir);
+        HitRecord boundaryHit = root.intersect(shadowRay);
+
+        Vector3f boundaryToLight = StaticVecmath.sub(lightHit.position, boundaryHit.position);
+        float d2 = boundaryToLight.lengthSquared();
+
+        if(isInShadow(boundaryHit, boundaryToLight))
+            return new Spectrum();
+
+        Medium medium = vertex.hitRecord.material.getMedium();
+        assert  medium != null;
+
+        Spectrum connection = lightHit.material.evaluateEmission(lightHit, lightHit.w);
+        connection.mult(medium.evaluateTransmission(boundaryHit.t));
+
+        float cos = Math.max(0, lightHit.w.dot(lightHit.normal));
+        float conversionFactor = cos / d2;
+
+        connection.mult(conversionFactor);
+        connection.mult(1 / lightHit.p);
+
+        Spectrum phaseFunction = medium.getPhaseFunction().probability(StaticVecmath.negate(vertex.hitRecord.w), StaticVecmath.normalize(lightDir));
+
+        connection.mult(phaseFunction);
+
+        return connection;
     }
 
     protected Spectrum shade(HitRecord surfaceHit, HitRecord lightHit)
