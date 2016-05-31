@@ -26,4 +26,16 @@ public class Opaque implements Medium
     {
         return null;
     }
+
+    @Override
+    public Spectrum getAbsorptionCoefficient()
+    {
+        return new Spectrum();
+    }
+
+    @Override
+    public Spectrum getScatteringCoefficient()
+    {
+        return new Spectrum();
+    }
 }

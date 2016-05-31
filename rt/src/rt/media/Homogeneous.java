@@ -7,18 +7,21 @@ import javax.vecmath.Vector3f;
 /**
  * Created by adrian on 20.05.16.
  */
-public class Homogeneous implements Material, Medium
+public abstract class Homogeneous implements Material, Medium
 {
-    Spectrum sigma_t;
-    Spectrum emission;
-    int n;
-
-    public Homogeneous(Spectrum sigma_t, Spectrum emission, int nSamples)
-    {
-        this.sigma_t = new Spectrum(sigma_t);
-        this.emission = new Spectrum(emission);
-        this.n = nSamples;
-    }
+    int n = 10;
+//    Spectrum sigma_t;
+//    Spectrum sigma_s;
+//    Spectrum emission;
+//    int n;
+//
+//    public Homogeneous(Spectrum sigma_t, Spectrum sigma_s, Spectrum emission, int nSamples)
+//    {
+//        this.sigma_t = new Spectrum(sigma_t);
+//        this.sigma_s = new Spectrum(sigma_s);
+//        this.emission = new Spectrum(emission);
+//        this.n = nSamples;
+//    }
 
     @Override
     public Spectrum evaluateTransmission(Ray r, float s_in, float s_out)
@@ -37,18 +40,13 @@ public class Homogeneous implements Material, Medium
     @Override
     public Spectrum evaluateTransmission(float ds)
     {
+        Spectrum sigma_t = getAbsorptionCoefficient();
         Spectrum transmission = new Spectrum();
         transmission.r = (float) Math.exp(-sigma_t.r * ds);
         transmission.g = (float) Math.exp(-sigma_t.g * ds);
         transmission.b = (float) Math.exp(-sigma_t.b * ds);
 
         return  transmission;
-    }
-
-    @Override
-    public PhaseFunction getPhaseFunction()
-    {
-        return new HenyeyGreensteinPhaseFunction(new Spectrum(0, 0, 0));
     }
 
     @Override

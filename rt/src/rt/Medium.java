@@ -14,4 +14,8 @@ public interface Medium
     public Spectrum evaluateTransmission(float ds);
 
     public PhaseFunction getPhaseFunction();
+
+    public Spectrum getAbsorptionCoefficient();
+
+    public Spectrum getScatteringCoefficient();
 }

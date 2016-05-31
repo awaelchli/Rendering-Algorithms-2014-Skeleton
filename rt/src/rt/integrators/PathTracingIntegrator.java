@@ -54,6 +54,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
                 if(vertex.isInsideMedium)
                 {
                     lightSourceContribution = connectMediumWithLightSource(vertex);
+                    // TODO: Add emission of medium
                 } else {
                     lightSourceContribution = lightSourceContribution(vertex.hitRecord);
                 }
@@ -109,7 +110,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
             if(cos >= 0 || medium == null || surfaceHit == null) continue;
 
             float d = surfaceHit.t;
-            int n = 4;
+            int n = 10;
             float ds = d / n;
             for(int i = 1; i < n; i++)
             {
@@ -127,7 +128,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
                 mediumVertex.shadingSample = current.shadingSample;
                 mediumVertex.index = path.numberOfVertices();
                 mediumVertex.alpha = new Spectrum(alpha);
-                mediumVertex.isInsideMedium = true;
+                mediumVertex.isInsideMedium = i > 1;
                 path.add(mediumVertex);
 
             }
@@ -212,6 +213,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
         Spectrum phaseFunction = medium.getPhaseFunction().probability(StaticVecmath.negate(vertex.hitRecord.w), StaticVecmath.normalize(lightDir));
 
         connection.mult(phaseFunction);
+        connection.mult(medium.getScatteringCoefficient());
 
         return connection;
     }

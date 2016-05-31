@@ -61,6 +61,13 @@ public class Spectrum {
 		b = b+s.b;
 	}
 
+	public void sub(Spectrum s)
+	{
+		r -= s.r;
+		g -= s.g;
+		b -= s.b;
+	}
+
 	public void add(float t)
 	{
 		add(new Spectrum(t, t, t));

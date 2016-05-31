@@ -11,7 +11,9 @@ import rt.intersectables.*;
 import rt.lightsources.RectangleLight;
 import rt.materials.Diffuse;
 import rt.materials.Refractive;
+import rt.media.Beer;
 import rt.media.Homogeneous;
+import rt.media.Milk;
 import rt.samplers.RandomSamplerFactory;
 import rt.tonemappers.ClampTonemapper;
 
@@ -55,15 +57,8 @@ public class ParticipatingMedia extends CornellBox {
 		integratorFactory = iF;
 
 		build();
-// 0.009126 0.0010748 0.0012500
-// 0.009124 0.0010744 0.0012492
-		Spectrum sigmaMilk = new Spectrum(0.000002f, 0.0000004f, 0.0000008f);
-		sigmaMilk.mult(1);
-		Spectrum test = new Spectrum(0.000008f, 0.0000008f, 0.0000008f);
-		Spectrum sigmaWater = new Spectrum(0.001886f, 0.0018308f, 0.0020025f);
-
-		Spectrum g = new Spectrum(0.932f, 0.902f, 0.859f);
-		sphere.material = new Homogeneous(sigmaMilk, new Spectrum(0, 0, 0), 100);
+		
+		sphere.material = new Beer();
 	}
 
 	protected void build()
