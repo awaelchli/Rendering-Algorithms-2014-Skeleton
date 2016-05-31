@@ -15,13 +15,21 @@ import javax.vecmath.Vector4f;
 public class ApertureCamera extends PinholeCamera
 {
     float apertureRadius;
+    float focalDistance;
     Matrix4f cameraToWorld;
+
+    public ApertureCamera(Vector3f position, Vector3f lookAt, Vector3f up, float verticalFOV, float aspect, int width, int height, float aperture, float focalDistance)
+    {
+        this(position, lookAt, up, verticalFOV, aspect, width, height, aperture);
+        this.focalDistance = -focalDistance;
+    }
 
     public ApertureCamera(Vector3f position, Vector3f lookAt, Vector3f up, float verticalFOV, float aspect, int width, int height, float aperture)
     {
         super(position, lookAt, up, verticalFOV, aspect, width, height);
         this.apertureRadius = aperture;
         cameraToWorld = getCameraToWorldMatrix();
+        focalDistance = lookAt.dot(getImagePlaneNormal());
     }
 
     @Override
@@ -41,7 +49,7 @@ public class ApertureCamera extends PinholeCamera
         // Find intersection with plane in look-At point (at focal distance)
         Vector3f normal = getImagePlaneNormal();
         normal.negate();
-        float focalDistance = -lookAt.dot(normal);
+//        float focalDistance = -lookAt.dot(normal);
         float t = -(normal.dot(new Vector3f(r.origin)) + focalDistance) / normal.dot(r.direction);
         Point3f imagePoint = r.pointAt(t);
 
