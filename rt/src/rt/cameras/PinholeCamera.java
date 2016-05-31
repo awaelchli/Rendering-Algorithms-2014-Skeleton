@@ -17,49 +17,49 @@ public class PinholeCamera implements Camera {
     /**
      * Camera position in world coordinates
      */
-    private Vector3f position;
+    Vector3f position;
 
     /**
      * Up vector in world coordinates
      */
-    private Vector3f up;
+    Vector3f up;
 
     /**
      * Look-at point
      */
-    private Vector3f lookAt;
+    Vector3f lookAt;
 
     /**
      * Vertical field of view in degrees
      */
-    private float verticalFOV;
+    float verticalFOV;
 
     /**
      * Aspect ratio of the image
      */
-    private float aspect;
+    float aspect;
 
     /**
      * Width and height of the image
      */
-    private int width;
-    private int height;
+    int width;
+    int height;
 
     /**
      * Near and far clipping planes
      */
-    private float near;
-    private float far;
+    float near;
+    float far;
 
     /**
      * Transformation from viewport to world
      */
-    private Matrix4f m;
+    Matrix4f m;
 
     /**
      * Transformation from world to viewport
      */
-    private Matrix4f m_inv;
+    Matrix4f m_inv;
 
     /**
      * Creates a pinhole camera.
