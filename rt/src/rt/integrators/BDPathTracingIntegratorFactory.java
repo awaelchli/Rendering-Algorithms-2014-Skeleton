@@ -23,7 +23,6 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
     float lightPathTerminationProbability = BDPathTracingIntegrator.DEFAULT_TERMINATION_PROBABILITY;
 
     private LightImage lightImage;
-    private int spp;
 
     @Override
     public Integrator make(Scene scene)
@@ -73,14 +72,11 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
     public void prepareScene(Scene scene)
     {
         lightImage = new LightImage(scene.getFilm().getWidth(), scene.getFilm().getHeight());
-        spp = scene.getSPP();
     }
 
     public void writeLightImage(String s)
     {
-        //lightImage.scale(1f / spp);
         BufferedImage img = new ClampTonemapper().process(lightImage);
-        //lightImage.scale(spp);
 
         try
         {
@@ -92,7 +88,6 @@ public class BDPathTracingIntegratorFactory implements IntegratorFactory
 
     public void addLightImage(Film film)
     {
-        //lightImage.scale(1f / spp);
         film.add(lightImage);
     }
 }

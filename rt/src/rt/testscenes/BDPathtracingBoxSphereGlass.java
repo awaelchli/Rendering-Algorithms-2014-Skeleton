@@ -21,7 +21,7 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 256;
+		SPP = 512;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
