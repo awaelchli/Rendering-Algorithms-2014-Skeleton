@@ -57,7 +57,7 @@ public class ParticipatingMedia extends CornellBox {
 		integratorFactory = iF;
 
 		build();
-		
+
 		sphere.material = new Beer();
 	}
 
