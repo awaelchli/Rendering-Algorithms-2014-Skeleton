@@ -69,7 +69,6 @@ public class BumpMaterial implements Material {
     @Override
     public float getProbability(HitRecord hitRecord, Vector3f direction)
     {
-        // TODO: implement
-        throw new UnsupportedOperationException();
+        return material.getProbability(hitRecord, direction);
     }
 }

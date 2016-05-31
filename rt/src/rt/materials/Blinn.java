@@ -98,7 +98,14 @@ public class Blinn implements Material {
     @Override
     public float getProbability(HitRecord hitRecord, Vector3f direction)
     {
-        // TODO: implement
-        throw new UnsupportedOperationException();
+        Vector3f halfVector = new Vector3f(hitRecord.w);
+        halfVector.add(direction);
+        halfVector.normalize();
+
+        float cosTheta = hitRecord.normal.dot(direction);
+        float p_h = (float) ((shininess + 1) * Math.pow(cosTheta, shininess)/ (2 * Math.PI));
+        float p_i = p_h / (4 * halfVector.dot(hitRecord.w));
+
+        return p_i;
     }
 }

@@ -27,7 +27,6 @@ public class BlinnPlusMirror extends Mirror {
     @Override
     public float getProbability(HitRecord hitRecord, Vector3f direction)
     {
-        // TODO: implement
-        throw new UnsupportedOperationException();
+        return 0;
     }
 }
