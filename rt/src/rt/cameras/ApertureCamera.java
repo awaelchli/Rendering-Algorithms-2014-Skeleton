@@ -27,10 +27,7 @@ public class ApertureCamera extends PinholeCamera
     @Override
     public Ray makeWorldSpaceRay(int i, int j, float[] sample)
     {
-        float focalDistance = StaticVecmath.sub(position, lookAt).length();
-        // Make point on image plane in viewport coordinates, that is range [0,width-1] x [0,height-1]
-        // The assumption is that pixel [i,j] is the square [i,i+1] x [j,j+1] in viewport coordinates
-        Vector4f d = new Vector4f((float) i + sample[0], (float) j + sample[1], -1.f, 1.f);
+        Ray r = super.makeWorldSpaceRay(i, j, sample);
 
         // Sample a point on the aperture disk
         float[][] apSample = (new RandomSampler()).makeSamples(1, 2);
@@ -38,25 +35,16 @@ public class ApertureCamera extends PinholeCamera
         float tmp = (float) Math.sqrt(apSample[0][1] * apertureRadius);
         float apertureX = (float) (Math.cos(phi) * tmp);
         float apertureY = (float) (Math.sin(phi) * tmp);
-        Vector4f aperturePoint = new Vector4f(apertureX, apertureY, 0, 1);
-
-        m.transform(d);
+        Point3f aperturePoint = new Point3f(apertureX, apertureY, 0);
         cameraToWorld.transform(aperturePoint);
 
-        // Make ray consisting of origin and direction in world coordinates
-        Vector3f dir = new Vector3f();
-        dir.sub(new Vector3f(d.x, d.y, d.z), position);
-        Point3f pinhole = new Point3f(position);
-
-        Ray r = new Ray(pinhole, dir);
-
-        // Find intersection with plane in look-At point
+        // Find intersection with plane in look-At point (at focal distance)
         Vector3f normal = getImagePlaneNormal();
-        float planeDistance = lookAt.dot(normal);
         normal.negate();
-        float t = -(normal.dot(new Vector3f(r.origin)) + planeDistance) / normal.dot(r.direction);
+        float focalDistance = -lookAt.dot(normal);
+        float t = -(normal.dot(new Vector3f(r.origin)) + focalDistance) / normal.dot(r.direction);
         Point3f imagePoint = r.pointAt(t);
-        Point3f apPoint = new Point3f(aperturePoint.x, aperturePoint.y, aperturePoint.z);
-        return new Ray(apPoint, StaticVecmath.sub(imagePoint, apPoint));
+
+        return new Ray(aperturePoint, StaticVecmath.sub(imagePoint, aperturePoint));
     }
 }
