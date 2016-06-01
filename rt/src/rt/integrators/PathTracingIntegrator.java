@@ -43,8 +43,12 @@ public class PathTracingIntegrator extends AbstractIntegrator
 
             if(lightList.contains(vertex.hitRecord.intersectable))
             {   // The ray 'accidentally' hit the light source, do not further trace the ray
-                if(vertex.index == 1) // Eye ray directly hit the light source
-                    color.add(vertex.hitRecord.material.evaluateEmission(vertex.hitRecord, vertex.hitRecord.w));
+                if(vertex.index == 1 || (vertex.index == 2 && path.get(1).shadingSample.isSpecular))
+                {   // Eye ray directly hit the light source
+                    Spectrum emission = vertex.hitRecord.material.evaluateEmission(vertex.hitRecord, vertex.hitRecord.w);
+                    color.add(emission);
+                }
+
                 break;
             }
 
