@@ -203,7 +203,7 @@ public class PathTracingIntegrator extends AbstractIntegrator
             return new Spectrum();
 
         Medium medium = vertex.hitRecord.material.getMedium();
-        assert  medium != null;
+        if(medium == null) return new Spectrum();
 
         Spectrum connection = lightHit.material.evaluateEmission(lightHit, lightHit.w);
         connection.mult(medium.evaluateTransmission(boundaryHit.t));

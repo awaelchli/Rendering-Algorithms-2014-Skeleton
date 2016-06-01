@@ -28,13 +28,13 @@ public class ParticipatingMedia extends CornellBox {
 
 	public ParticipatingMedia()
 	{
-		outputFilename = new String("output/testscenes/assignment6/ParticipatingMedia");
+		outputFilename = new String("output/testscenes/assignment6/ParticipatingMedia/PM");
 				
 		// Specify pixel sampler to be used
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 128;
+		SPP = 500;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 
 		// Make camera and film
@@ -42,8 +42,8 @@ public class ParticipatingMedia extends CornellBox {
 		Vector3f lookAt = new Vector3f(278, 273, 0);
 		Vector3f up = new Vector3f(0, 1, 0);
 		float fov = 40;
-		int width = 128;
-		int height = 128;
+		int width = 512;
+		int height = 512;
 		float aspect = (float) width / (float) height;
 		camera = new PinholeCamera(eye, lookAt, up, fov, aspect, width, height);
 		film = new BoxFilterFilm(width, height);
@@ -112,7 +112,7 @@ public class ParticipatingMedia extends CornellBox {
 		objects.add(left_wall);
 
 		// Short block
-		sphere = new Sphere(new Point3f(130, 100, 65), 100);
+		sphere = new Sphere(new Point3f(190, 100, 65), 100);
 		objects.add(sphere);
 //		float[] short_block_vertices = {130, 165, 65, 82, 165, 225, 240, 165, 272, 290, 165, 114, // top
 //				290, 0, 114, 290, 165, 114, 240, 165, 272, 240, 0, 272, // left

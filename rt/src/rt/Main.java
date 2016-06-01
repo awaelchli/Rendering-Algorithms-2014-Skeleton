@@ -30,7 +30,7 @@ public class Main {
 	/** 
 	 * The scene to be rendered.
 	 */
-	public static Scene scene = new DepthOfFieldTestScene();
+	public static Scene scene = new ParticipatingMedia();
 	/**
 	 * A render task represents a rectangular image region that is rendered
 	 * by a thread in one chunk.
