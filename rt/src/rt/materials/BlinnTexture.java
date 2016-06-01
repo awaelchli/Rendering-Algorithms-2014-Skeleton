@@ -79,8 +79,9 @@ public class BlinnTexture implements Material {
     @Override
     public float getProbability(HitRecord hitRecord, Vector3f direction)
     {
-        // TODO: implement
-        throw new UnsupportedOperationException();
+        Spectrum kd = texture.lookUp(hitRecord.u, hitRecord.v);
+        Blinn blinn = new Blinn(kd, ks, shininess);
+        return blinn.getProbability(hitRecord, direction);
     }
 
     @Override
