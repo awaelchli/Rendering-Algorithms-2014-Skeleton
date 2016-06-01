@@ -21,7 +21,7 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 512;
+		SPP = 500;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
@@ -29,8 +29,8 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		Vector3f lookAt = new Vector3f(0.f,1.f,0.f);
 		Vector3f up = new Vector3f(0.f,1.f,0.f);
 		float fov = 60.f;
-		int width = 128;
-		int height = 128;
+		int width = 512;
+		int height = 512;
 		float aspect = (float)width/(float)height;
 		camera = new PinholeCamera(eye, lookAt, up, fov, aspect, width, height);
 		film = new BoxFilterFilm(width, height);						
