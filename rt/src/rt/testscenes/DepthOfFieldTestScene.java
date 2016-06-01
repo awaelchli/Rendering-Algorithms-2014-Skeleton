@@ -47,12 +47,12 @@ public class DepthOfFieldTestScene extends Scene
         height = 512;
 
         // Number of samples per pixel
-        SPP = 50;
+        SPP = 256;
         outputFilename += " " + SPP + "SPP";
 
         // Specify which camera, film, and tonemapper to use
         Vector3f eye = new Vector3f(0, 2f, 3.5f);
-        Vector3f lookAt = new Vector3f(0, 2f, 0.5f); // 0.5, -1
+        Vector3f lookAt = new Vector3f(0, 2f, -1f); //1.2, 1, -1
         Vector3f up = new Vector3f(0.f, 1.f, 0.f);
         float fov = 60.f;
         float aspect = 1;
@@ -65,8 +65,8 @@ public class DepthOfFieldTestScene extends Scene
 
         epsilon = 0.01f;
 
-        int s = 10;
-        int t = 5;
+        int s = 5;
+        int t = 10;
         float rrProbability = 0.5f;
 
         outputFilename += String.format(" s=%d t=%d rr=%.2f", s, t, rrProbability);
@@ -84,6 +84,7 @@ public class DepthOfFieldTestScene extends Scene
         factory.setMaxDepth(t);
         factory.setMinDepth(t);
         factory.setTerminationProbability(rrProbability);
+        factory.setShadowRayContributionThreshold(0);
 
         integratorFactory = factory;
         samplerFactory = new RandomSamplerFactory();
@@ -153,12 +154,12 @@ public class DepthOfFieldTestScene extends Scene
 
 
         Sphere sphere = new Sphere(new Point3f(), 1);
-        BlinnTexture blinn_earth = new BlinnTexture(tex_earth, new Spectrum(0.1f, 0.1f, 0.1f), 20);
+        DiffuseTexture blinn_earth = new DiffuseTexture(tex_earth);
         sphere.material = new BumpMaterial(blinn_earth, new NormalMap(map_earth));
         trafo.setIdentity();
         Vector3f ax = new Vector3f(1, 1, 0);
         ax.normalize();
-        trafo.setRotation(new AxisAngle4f(ax, (float) Math.toRadians(100)));
+        trafo.setRotation(new AxisAngle4f(ax, (float) Math.toRadians(120)));
         trafo.setTranslation(new Vector3f(0.7f, 1.1f, 0.5f));
         Instance sphereInstance = new Instance(sphere, trafo);
 
@@ -169,8 +170,8 @@ public class DepthOfFieldTestScene extends Scene
         Instance glassSphereInstance = new Instance(glassSphere, trafo);
 
         Sphere diffuseSphere = new Sphere(new Point3f(), 1);
-        diffuseSphere.material = new Diffuse(new Spectrum(0, 0.7f, 0.9f));
-//        diffuseSphere.material = new Mirror();
+//        diffuseSphere.material = new Diffuse(new Spectrum(0, 0.7f, 0.9f));
+        diffuseSphere.material = new Mirror();
         trafo.setIdentity();
         trafo.setTranslation(new Vector3f(-1f, 1.1f, -1));
         Instance diffuseSphereInstance = new Instance(diffuseSphere, trafo);
@@ -197,7 +198,7 @@ public class DepthOfFieldTestScene extends Scene
         root = sceneObjects;
 
         // Light source
-        Point3f bottomLeft = new Point3f(1f, 3.7f, 0.5f);
+        Point3f bottomLeft = new Point3f(1f, 3.7f, 0f);
         Vector3f right = new Vector3f(0, 0, 1);
         Vector3f top = new Vector3f(-1, 0, 0);
         Spectrum emission = new Spectrum(100, 100, 100);
