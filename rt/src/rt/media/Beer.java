@@ -20,7 +20,7 @@ public class Beer extends Homogeneous
     public Spectrum getAbsorptionCoefficient()
     {
         Spectrum absorption = new Spectrum(extinction);
-        absorption.sub(extinction);
+        absorption.sub(getScatteringCoefficient());
         return  absorption;
     }
 
